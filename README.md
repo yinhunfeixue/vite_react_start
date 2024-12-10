@@ -1,50 +1,40 @@
-# React + TypeScript + Vite
+# vite + react
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 快速开始
 
-Currently, two official plugins are available:
+> 请在 vscode 中操作
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 启动项目
 
-## Expanding the ESLint configuration
+  1.  `npm i`
+  2.  `npm start`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- [新建页面](./doc/新建页面.md)
 
-- Configure the top-level `parserOptions` property like this:
+* [页面跳转与参数](./doc/页面跳转与参数.md)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 其它功能
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+1. [项目配置](./doc/修改项目配置.md)
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+1. [字体图标](./doc/字体图标.md)
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+1. [图片](./doc/图片.md)
+
+1. [代码片段](./doc/代码片段.md)
+
+1. [全局数据](./doc/全局数据.md)
+
+1. [国际化](./doc/国际化.md)
+
+1. [外部容器通信](./doc/外部容器通信.md)
+
+1. [样式主题](./doc/样式主题.md)
+
+## 其它配置
+
+1. 增加了 eslint 规则
+1. 增加了 vscode 配置，用 vscode 开发有助于保持代码结构一致
+1. 增加了 alias 配置，`@/***` = `src/***`
+1. 支持 less
+1. 内置了 `antd` `axios` `@ant-design/icons`
