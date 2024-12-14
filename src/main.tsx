@@ -17,18 +17,13 @@ AxiosInit.init();
 const AppWrap = () => {
   const language = userProjectStore((state) => state.language);
   const [locale, setLocal] = useState<string>(language || DEFAULT_LANGUAGE);
-  const localData = i18nData[locale];
 
   useEffect(() => {
     document.title = APP_NAME;
   }, []);
 
   return (
-    <Local
-      defaultLocal={DEFAULT_LANGUAGE}
-      messages={localData}
-      onChange={(value) => setLocal(value)}
-    >
+    <Local locale={locale} i18nData={i18nData} onChange={setLocal}>
       <App local={locale} />
     </Local>
   );

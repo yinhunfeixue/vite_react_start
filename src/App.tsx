@@ -7,6 +7,8 @@ import antdZH from 'antd/lib/locale/zh_CN';
 
 import { Locale } from 'antd/es/locale';
 
+import 'dayjs/locale/zh-cn';
+
 const antdLocalDic: {
   [key: string]: Locale;
 } = {

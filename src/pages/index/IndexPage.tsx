@@ -2,7 +2,7 @@ import Assets from '@/Assets';
 import TestTemp from '@/pages/index/component/TestTemp';
 import TestUser from '@/pages/index/component/TestUser';
 import IconFont from '@/preset/component/IconFont';
-import { Card } from 'antd';
+import { Card, DatePicker } from 'antd';
 import classNames from 'classnames';
 import styles from './IndexPage.module.less';
 
@@ -26,6 +26,7 @@ function IndexPage() {
       <Card title="数据仓库">
         <TestUser />
         <TestTemp />
+        <DatePicker />
       </Card>
     </div>
   );

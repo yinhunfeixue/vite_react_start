@@ -1,36 +1,34 @@
-import { useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createIntl, IntlConfig, IntlProvider } from 'react-intl';
 import LocalUtil from '../tools/LocalUtil';
 
 interface ILocalProps extends Omit<IntlConfig, 'locale'> {
-  defaultLocal: string;
+  locale: string;
   children: React.ReactNode;
   onChange?: (local: string) => void;
+  i18nData: Record<string, any>;
 }
 /**
  * Local
  */
 function Local(props: ILocalProps) {
-  const { children, onChange, defaultLocal, ...otherProps } = props;
-  const [local, setLocal] = useState(defaultLocal);
+  const { children, onChange, locale, i18nData, ...otherProps } = props;
 
-  LocalUtil.intl = createIntl({ locale: local, messages: props.messages });
-
-  useEffect(() => {
-    LocalUtil.setLocal = (local) => {
-      setLocal(local);
-      onChange?.(local);
-    };
-  }, []);
-
-  useEffect(() => {
-    LocalUtil.intl = createIntl({ locale: local, messages: props.messages });
-  }, [local]);
+  const messages = useMemo(() => i18nData[locale] || [], [locale, i18nData]);
+  LocalUtil.intl = useMemo(() => {
+    return createIntl({ locale, messages });
+  }, [locale, messages]);
+  LocalUtil.setLocal = useCallback(
+    (locale) => {
+      onChange?.(locale);
+    },
+    [onChange]
+  );
 
   return (
-    <IntlProvider {...otherProps} locale={local}>
+    <IntlProvider {...otherProps} locale={locale} messages={messages}>
       {children}
     </IntlProvider>
   );
 }
-export default Local;
+export default React.memo(Local);
