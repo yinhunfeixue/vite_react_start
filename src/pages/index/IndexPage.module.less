@@ -1,5 +1,39 @@
 .IndexPage {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  height: 100%;
+
+  > * {
+    background-color: #888888;
+  }
+
+  .Header {
+    height: 160px;
+    max-height: 0px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .HeaderShow {
+    max-height: 150px;
+  }
+
+  > main {
+    flex: 1;
+    display: flex;
+    overflow: auto;
+    > * {
+      border: 1px solid green;
+      overflow: auto;
+    }
+
+    .ContentWrap {
+      flex: 1;
+    }
+
+    .Content,
+    .List {
+      height: 2000px;
+    }
+  }
 }

@@ -1,33 +1,55 @@
-import Assets from '@/Assets';
-import TestTemp from '@/pages/index/component/TestTemp';
-import TestUser from '@/pages/index/component/TestUser';
-import IconFont from '@/preset/component/IconFont';
-import { Card, DatePicker } from 'antd';
 import classNames from 'classnames';
+import { useState } from 'react';
 import styles from './IndexPage.module.less';
 
 /**
  * IndexPage
  */
 function IndexPage() {
+  const [showHeader, setShowHeader] = useState(true);
+
   return (
     <div className={classNames(styles.IndexPage)}>
-      <Card title="图片">
-        <img src={Assets.react} />
-      </Card>
-      <Card title="字体图标">
-        <div className="HGroup">
-          <span>多彩图标：</span>
-          <IconFont type="icon-dianpu_" />
-          <span>单色图标：</span>
-          <IconFont type="e646" useCss />
+      <header
+        className={classNames(styles.Header, showHeader && styles.HeaderShow)}
+        onClick={() => {
+          setShowHeader(!showHeader);
+        }}
+      >
+        <div>header</div>
+      </header>
+      <div>tabs</div>
+      <main>
+        <div>
+          <div className={styles.List}>leftContent</div>
         </div>
-      </Card>
-      <Card title="数据仓库">
-        <TestUser />
-        <TestTemp />
-        <DatePicker />
-      </Card>
+        <div
+          className={styles.ContentWrap}
+          onWheel={(event) => {
+            const { currentTarget, deltaY } = event;
+            const { scrollTop } = currentTarget as HTMLElement;
+
+            const direction = deltaY > 0 ? 'down' : 'up';
+
+            console.log('scrollTop', scrollTop, direction);
+            if (direction === 'down') {
+              if (showHeader) {
+                setShowHeader(false);
+              }
+            } else {
+              if (scrollTop === 0) {
+                setShowHeader(true);
+              }
+            }
+          }}
+        >
+          <div className={styles.Content}>
+            {new Array(1000).fill(0).map((_, index) => (
+              <div key={index}>{index}</div>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
