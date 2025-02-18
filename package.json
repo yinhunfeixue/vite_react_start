@@ -24,6 +24,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-intl": "^7.0.4",
+    "react-plaid-link": "^3.6.1",
     "react-router-dom": "^7.0.2",
     "url": "^0.11.4",
     "zustand": "^5.0.2"
