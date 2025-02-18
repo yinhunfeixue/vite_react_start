@@ -8,8 +8,8 @@ import axios, { AxiosResponse } from 'axios';
  */
 class AxiosInit {
   static init() {
-    axios.defaults.baseURL = './';
-    axios.defaults.withCredentials = true;
+    axios.defaults.baseURL = 'http://127.0.0.1:9002';
+    axios.defaults.withCredentials = false;
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.interceptors.response.use(
       AxiosInit.successHandler,
@@ -21,6 +21,10 @@ class AxiosInit {
       if (token) {
         config.headers.token = token;
       }
+
+      config.headers.token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM1OTA1ZTg5LWI4MmItNDc1YS1iMDVhLTk4ODk3ZmJjMWFhZSIsImlhdCI6MTczOTgwODU5NSwiZXhwIjoxNzQwNjcyNTk1fQ.DlVGwLoNyR8at2Ve2uUDn-NUVSqTOTDlAyL8Cpu-dKw';
+      config.headers.companyId = 'e06c5c92-4b95-4273-9192-f763a9042636';
       return config;
     });
   }
@@ -33,7 +37,7 @@ class AxiosInit {
   static successHandler(response: AxiosResponse) {
     //当出错时，执行全局响应处理，并不再向后执行
     const { code, message } = response.data;
-    if (code !== 200) {
+    if (code !== 0) {
       AxiosInit.showErrorMessage(message);
       return Promise.reject();
     }

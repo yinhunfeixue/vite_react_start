@@ -22,7 +22,7 @@ const routeConfig = [
         path: '/index',
         icon: <BookOutlined />,
         title: 'functionExample',
-        component: loadable(() => import('@/pages/index/IndexPage')),
+        component: loadable(() => import('@/pages/plaid/AddAccount')),
       },
       {
         path: '/userList',
