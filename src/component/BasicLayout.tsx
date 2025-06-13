@@ -45,7 +45,7 @@ function BasicLayout() {
         language,
         theme,
       };
-    })
+    }),
   );
 
   const [loadingUser, setLoadingUser] = useState(false);
@@ -93,7 +93,7 @@ function BasicLayout() {
           return true;
         }
         return false;
-      }
+      },
     );
 
     return chain ? chain.map((item) => item.path) : [];
@@ -108,8 +108,8 @@ function BasicLayout() {
       <div className={styles.Left}>
         <div className={styles.Logo}>{APP_NAME}</div>
         <Menu
-          theme="dark"
-          mode="inline"
+          theme='dark'
+          mode='inline'
           items={createMenuItems()}
           openKeys={openMenuKeys as string[]}
           selectedKeys={selectedMenuKeys as string[]}
@@ -124,33 +124,34 @@ function BasicLayout() {
       <div className={styles.Right}>
         <header>
           <span>标题</span>
-          <div className="HGroup">
+          <div className='HGroup'>
             {user ? (
               <>
                 <span>temp: {temp || '-'}</span>
                 <a>
-                  <FormattedMessage id="username" />: {user?.nickName}
+                  <FormattedMessage id='username' />: {user?.nickName}
                 </a>
+                <Button type='primary'>aa</Button>
                 <Button
                   danger
                   onClick={() => {
                     LoginApi.logout();
                   }}
                 >
-                  <FormattedMessage id="logout" />
+                  <FormattedMessage id='logout' />
                 </Button>
               </>
             ) : (
               <Button
                 loading={loadingUser}
-                type="link"
+                type='link'
                 onClick={() => PageUtil.openLoginPage()}
               >
                 登录
               </Button>
             )}
             <Select
-              placeholder="主题"
+              placeholder='主题'
               value={theme}
               style={{ width: 100 }}
               allowClear

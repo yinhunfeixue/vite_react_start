@@ -28,7 +28,12 @@ function App(props: AppProps) {
   const localSetting = antdLocaleMap[local] || antdLocaleMap[DEFAULT_LANGUAGE];
 
   return (
-    <ConfigProvider locale={localSetting}>
+    <ConfigProvider
+      locale={localSetting}
+      theme={{
+        cssVar: true,
+      }}
+    >
       <RouterRender routeConfig={routeConfig} />
     </ConfigProvider>
   );
