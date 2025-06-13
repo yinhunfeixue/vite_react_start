@@ -1,3 +1,6 @@
+/**
+ * 应用根组件
+ */
 import { DEFAULT_LANGUAGE } from '@/config/ProjectConfig';
 import { routeConfig } from '@/config/RouteConfig';
 import RouterRender from '@/preset/component/RouterRender';
@@ -9,16 +12,20 @@ import { Locale } from 'antd/es/locale';
 
 import 'dayjs/locale/zh-cn';
 
-const antdLocalDic: {
+interface AppProps {
+  local: string;
+}
+
+const antdLocaleMap: {
   [key: string]: Locale;
 } = {
   'zh-CN': antdZH,
   en: antdEN,
 };
 
-function App(props: { local: string }) {
+function App(props: AppProps) {
   const { local } = props;
-  const localSetting = antdLocalDic[local] || antdLocalDic[DEFAULT_LANGUAGE];
+  const localSetting = antdLocaleMap[local] || antdLocaleMap[DEFAULT_LANGUAGE];
 
   return (
     <ConfigProvider locale={localSetting}>

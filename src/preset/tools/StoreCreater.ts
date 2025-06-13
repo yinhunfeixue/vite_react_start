@@ -39,12 +39,12 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
   constructor(
     public readonly option: {
       storageName: string;
-      stoargetKeyList: (keyof DATA)[];
+      storageKeyList: (keyof DATA)[];
     }
   ) {}
 
   create(initData?: Partial<DATA>) {
-    const { storageName, stoargetKeyList } = this.option;
+    const { storageName, storageKeyList } = this.option;
     type storeType = IStoreActions<DATA> & Partial<DATA>;
 
     // 创建 Zustand Store
@@ -72,12 +72,12 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
           name: storageName,
           partialize: (state) => {
             // 筛选需要持久化的键
-            if (!stoargetKeyList?.length) {
+            if (!storageKeyList?.length) {
               return {} as storeType;
             }
 
             return Object.fromEntries(
-              stoargetKeyList.map((key) => [key, state[key]])
+              storageKeyList.map((key) => [key, state[key]])
             ) as unknown as storeType;
           },
         }

@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
- * useTheme
+ * useTheme - 主题切换 Hook
+ * 管理应用主题状态，动态加载对应的主题 CSS 文件
+ * @param defaultTheme 默认主题名称
+ * @returns [当前主题, 设置主题函数]
  */
 function useTheme(
   defaultTheme?: string
 ): [string | undefined, (theme: string) => void] {
   const [theme, setTheme] = useState<string | undefined>(defaultTheme);
-  useEffect(() => {
-    loadTheme();
-  }, [theme]);
 
   /**
-   * 1. 如果无主题，则移除href
-   * 2. 如果有主题，则设置 href
-   * @returns
+   * 加载主题样式
+   * 动态创建或更新主题样式链接元素
    */
-  const loadTheme = () => {
+  const loadTheme = useCallback(() => {
     let themeElement = document.getElementById('theme-css') as HTMLLinkElement;
     if (!themeElement) {
       themeElement = document.createElement('link');
@@ -32,7 +31,12 @@ function useTheme(
       themeElement.setAttribute('href', `/themes/${theme}.css`);
       themeElement.setAttribute('data-theme', theme);
     }
-  };
+  }, [theme]);
+
+  useEffect(() => {
+    loadTheme();
+  }, [loadTheme]);
+
   return [theme, setTheme];
 }
 export default useTheme;

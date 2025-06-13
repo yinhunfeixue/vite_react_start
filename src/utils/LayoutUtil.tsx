@@ -6,14 +6,25 @@ import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 /**
- * LayoutUtil
+ * 布局工具类
+ * 提供菜单项生成、路由转换等布局相关的工具方法
  */
 class LayoutUtil {
+  /**
+   * 根据路由配置创建 Antd 菜单项
+   * @param data - 路由配置数组
+   * @param renderTitle - 自定义标题渲染函数，可选
+   * @returns Antd 菜单项数组
+   * @example
+   * ```tsx
+   * const menuItems = LayoutUtil.createMenuItems(routes);
+   * ```
+   */
   static createMenuItems(
     data: IRouteItem[],
     renderTitle?: (item: IRouteItem) => ReactNode
   ): ItemType[] {
-    const titleFun = (item: IRouteItem) => {
+    const renderMenuTitle = (item: IRouteItem): ReactNode => {
       if (renderTitle) {
         return renderTitle(item);
       }
@@ -24,12 +35,13 @@ class LayoutUtil {
         </Link>
       );
     };
+
     return data
       .filter((item) => {
-        return !(item.hideInMenu || item.redirect);
+        return !(item.menuHidden || item.redirect);
       })
       .map((item) => {
-        if (item.children && item.children.length) {
+        if (item.children?.length) {
           return {
             key: item.path,
             label: item.title,
@@ -40,7 +52,7 @@ class LayoutUtil {
           return {
             key: item.path,
             icon: item.icon,
-            label: titleFun(item),
+            label: renderMenuTitle(item),
           };
         }
       });

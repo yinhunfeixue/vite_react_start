@@ -61,7 +61,7 @@ function Login() {
               },
             ]}
           >
-            <Input placeholder="密码" />
+            <Input.Password placeholder="密码" />
           </FormItem>
           <FormItem>
             <Button
@@ -70,7 +70,6 @@ function Login() {
               type="primary"
               block
               size="large"
-              onClick={() => {}}
             >
               登录
             </Button>

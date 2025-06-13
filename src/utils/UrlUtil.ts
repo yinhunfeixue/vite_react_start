@@ -44,6 +44,9 @@ class UrlUtil {
    * @example  UrlUtil.getUrl('/profile', { userId: 123 });
    */
   static getUrl(pathname: string, query?: Record<string, any>) {
+    if (!query || Object.keys(query).length === 0) {
+      return pathname;
+    }
     const urlParams = new URLSearchParams(query).toString();
     return `${pathname}?${urlParams}`;
   }

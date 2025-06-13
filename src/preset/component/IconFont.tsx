@@ -32,25 +32,40 @@ const IconFontWrap = createFromIconfontCN({
  */
 function IconFont(props: IIconFontProps) {
   const { className, style, type, useCss, disabled, onClick } = props;
-
   const effectStyle: CSSProperties = {
     ...style,
     cursor: disabled ? 'not-allowed' : onClick ? 'pointer' : 'unset',
     opacity: disabled ? 0.5 : 1,
+    pointerEvents: disabled ? 'none' : 'auto',
   };
 
+  const handleClick = (event: React.MouseEvent) => {
+    if (disabled) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    onClick?.(event);
+  };
   if (useCss) {
-    const char = unescape(`%u${type}`);
+    const char = String.fromCharCode(parseInt(type, 16));
     return (
       <span
         style={effectStyle}
-        className={classNames('IconFont', className)}
-        onClick={disabled ? undefined : onClick}
+        className={classNames('IconFont', className, { disabled })}
+        onClick={handleClick}
       >
         {char}
       </span>
     );
   }
-  return <IconFontWrap style={effectStyle} type={type} disabled={disabled} />;
+  return (
+    <IconFontWrap
+      style={effectStyle}
+      className={classNames(className, { disabled })}
+      type={type}
+      onClick={handleClick}
+    />
+  );
 }
 export default IconFont;

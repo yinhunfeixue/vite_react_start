@@ -1,17 +1,31 @@
 import path from 'path-browserify';
 
 /**
- * ProjectUtil
+ * 项目工具类
+ * 提供项目中常用的工具方法，包括异步延迟、路径解析等功能
  */
 class ProjectUtil {
-  static sleep(time = 1000) {
+  /**
+   * 异步延迟函数
+   * @param time - 延迟时间，单位毫秒，默认 1000ms
+   * @returns Promise 对象，在指定时间后 resolve
+   * @example
+   * ```typescript
+   * await ProjectUtil.sleep(1000); // 延迟 1 秒
+   * ```
+   */
+  static sleep(time: number = 1000): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
 
   /**
    * 获取路径中的各级目录
    * @param inputPath - 需要解析的路径
-   * @returns 返回路径中的所有一级目录
+   * @returns 返回路径中的所有目录层级（按层级顺序）
+   * @example
+   * ```typescript
+   * ProjectUtil.getDirectories('src/pages/user/index.tsx'); // ['src', 'pages', 'user', 'index.tsx']
+   * ```
    */
   static getDirectories(inputPath: string): string[] {
     // 使用 path.normalize 规范化路径

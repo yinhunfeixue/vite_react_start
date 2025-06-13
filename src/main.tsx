@@ -1,3 +1,6 @@
+/**
+ * 应用程序入口文件
+ */
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { APP_NAME, DEFAULT_LANGUAGE } from './config/ProjectConfig.ts';
@@ -14,16 +17,17 @@ import AxiosInit from './api/AxiosInit.ts';
 import ProjectStoreInit from './model/ProjectStoreInit.ts';
 
 AxiosInit.init();
+
 const AppWrap = () => {
   const language = userProjectStore((state) => state.language);
-  const [locale, setLocal] = useState<string>(language || DEFAULT_LANGUAGE);
+  const [locale, setLocale] = useState<string>(language || DEFAULT_LANGUAGE);
 
   useEffect(() => {
     document.title = APP_NAME;
   }, []);
 
   return (
-    <Local locale={locale} i18nData={i18nData} onChange={setLocal}>
+    <Local locale={locale} i18nData={i18nData} onChange={setLocale}>
       <App local={locale} />
     </Local>
   );

@@ -19,7 +19,9 @@ import { useShallow } from 'zustand/shallow';
 import styles from './BasicLayout.module.less';
 
 /**
- * BasicLayout
+ * BasicLayout - 基础布局组件
+ * 提供应用的主要布局结构，包括侧边菜单、顶部导航栏和主内容区域
+ * 负责用户认证状态管理、主题切换、语言切换等全局功能
  */
 function BasicLayout() {
   const [openMenuKeys, setOpenMenuKeys] = useState<Key[]>([]);
@@ -75,11 +77,11 @@ function BasicLayout() {
 
     setOpenMenuKeys(keys);
     setSelectedMenuKeys(keys);
-  }, [MENU_LIST]);
+  }, []);
 
   useEffect(() => {
     updateSelectedKeys();
-  }, [location.pathname, updateSelectedKeys, MENU_LIST]);
+  }, [location.pathname, updateSelectedKeys]);
 
   const getSelectedKeys = () => {
     const currentPath = window.location.hash.substring(1);

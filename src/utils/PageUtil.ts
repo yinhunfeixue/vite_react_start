@@ -1,13 +1,14 @@
 import UrlUtil from '@/utils/UrlUtil';
 
 /**
- * PageUtil
+ * PageUtil - 页面导航工具类
  */
 class PageUtil {
-  static openLoginPage(back?: string) {
-    if (back === undefined) {
-      back = window.location.href;
-    }
+  /**
+   * 打开登录页面
+   * @param back 登录成功后返回的页面地址，默认为当前页面
+   */
+  static openLoginPage(back: string = window.location.href) {
     UrlUtil.toUrl('/Login', { query: { back: encodeURIComponent(back) } });
   }
 }

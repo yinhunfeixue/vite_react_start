@@ -1,12 +1,15 @@
 import PageUtil from '@/utils/PageUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { notification } from 'antd';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 /**
- * AxiosInit
+ * AxiosInit - Axios 网络请求初始化配置类
  */
 class AxiosInit {
+  /**
+   * 初始化 Axios 全局配置
+   */
   static init() {
     axios.defaults.baseURL = './';
     axios.defaults.withCredentials = true;
@@ -26,9 +29,10 @@ class AxiosInit {
   }
 
   /**
-   * 请求响应拦截器。
-   * 通常，需要对一些消息做全局的错误处理，在此处进行。
-   * 处理完成后，如果不希望
+   * 请求响应拦截器
+   * 对响应数据进行统一处理，检查业务状态码
+   * @param response Axios 响应对象
+   * @returns 处理后的响应或被拒绝的 Promise
    */
   static successHandler(response: AxiosResponse) {
     //当出错时，执行全局响应处理，并不再向后执行
@@ -43,9 +47,11 @@ class AxiosInit {
 
   /**
    * 全局错误拦截器
-   * @param {*} error
+   * 处理网络错误和HTTP状态码错误
+   * @param error Axios 错误对象
+   * @returns 被拒绝的 Promise
    */
-  static errorHandler(error: any) {
+  static errorHandler(error: AxiosError) {
     const { message, response } = error;
     if (response) {
       const { status } = response;
@@ -54,7 +60,7 @@ class AxiosInit {
           PageUtil.openLoginPage(window.location.href);
           break;
         default:
-          AxiosInit.showErrorMessage(message, status);
+          AxiosInit.showErrorMessage(message, status.toString());
           break;
       }
     } else {
@@ -63,6 +69,11 @@ class AxiosInit {
     return Promise.reject();
   }
 
+  /**
+   * 显示错误提示消息
+   * @param resMessage 响应错误消息
+   * @param status HTTP状态码
+   */
   static showErrorMessage(resMessage?: string, status?: string) {
     const message = resMessage || `未知错误： ${status || ''}`;
     notification.error({

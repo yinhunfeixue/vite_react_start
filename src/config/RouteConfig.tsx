@@ -2,12 +2,12 @@ import IRouteItem from '@/preset/config/IRouteItem';
 import { BookOutlined, UserOutlined } from '@ant-design/icons';
 import loadable from '@loadable/component';
 
-const routeConfig = [
+const routeConfig: IRouteItem[] = [
   {
     title: '登录',
     path: '/Login',
     component: loadable(() => import('@/pages/Login')),
-    hideInMenu: true,
+    menuHidden: true,
   },
   {
     title: '主页',
@@ -26,7 +26,6 @@ const routeConfig = [
       },
       {
         path: '/userList',
-        href: '/userList',
         title: 'userList',
         icon: <UserOutlined />,
         component: loadable(() => import('@/pages/user/UserListPage')),

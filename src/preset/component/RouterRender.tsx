@@ -27,7 +27,7 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
         if (item.redirect) {
           return <Navigate key={index} to={item.redirect} />;
         }
-        let ClassType: any = item.component;
+        let ClassType = item.component;
         if (ClassType) {
           return <ClassType {...props} />;
         }
