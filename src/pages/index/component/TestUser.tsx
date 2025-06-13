@@ -17,7 +17,7 @@ function TestUser() {
 
   useEffect(() => {
     message.info('user render');
-  });
+  }, [user]);
 
   return (
     <Card title="用户信息" size="small" extra="修改我，页面右上角信息也会变">

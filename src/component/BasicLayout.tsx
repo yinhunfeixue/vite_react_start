@@ -166,7 +166,7 @@ function BasicLayout() {
               value={language}
               onChange={(value) => {
                 assignStore({ language: value });
-                LocaleUtil.setLocal(value);
+                LocaleUtil.setLocale(value);
               }}
             />
           </div>
