@@ -5,7 +5,7 @@ import useTheme from '@/hooks/useTheme';
 import IUser from '@/model/interface/IUser';
 import useProjectStore from '@/model/ProjectStore';
 import IRouteItem from '@/preset/config/IRouteItem';
-import LocalUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocalUtil';
 import LayoutUtil from '@/utils/LayoutUtil';
 import PageUtil from '@/utils/PageUtil';
 import ProjectUtil from '@/utils/ProjectUtil';
@@ -166,7 +166,7 @@ function BasicLayout() {
               value={language}
               onChange={(value) => {
                 assignStore({ language: value });
-                LocalUtil.setLocal(value);
+                LocaleUtil.setLocal(value);
               }}
             />
           </div>

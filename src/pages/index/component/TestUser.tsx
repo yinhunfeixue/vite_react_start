@@ -1,5 +1,5 @@
 import useProjectStore from '@/model/ProjectStore';
-import LocalUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocalUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { Card, Input, message } from 'antd';
 import { useEffect } from 'react';
@@ -22,7 +22,7 @@ function TestUser() {
   return (
     <Card title="用户信息" size="small" extra="修改我，页面右上角信息也会变">
       <Input
-        placeholder={LocalUtil.formatMessage({ id: 'username' })}
+        placeholder={LocaleUtil.formatMessage({ id: 'username' })}
         value={user?.nickName}
         onChange={(event) => {
           const value = event.target.value;

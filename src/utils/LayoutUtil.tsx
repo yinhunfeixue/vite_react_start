@@ -1,5 +1,5 @@
 import IRouteItem from '@/preset/config/IRouteItem';
-import LocalUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocalUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { ItemType } from 'antd/es/menu/interface';
 import { ReactNode } from 'react';
@@ -31,7 +31,7 @@ class LayoutUtil {
       const href = item.href || item.path;
       return (
         <Link to={UrlUtil.getUrl(href)}>
-          {LocalUtil.formatMessage({ id: item.title })}
+          {LocaleUtil.formatMessage({ id: item.title })}
         </Link>
       );
     };

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { createIntl, IntlConfig, IntlProvider } from 'react-intl';
-import LocalUtil from '../tools/LocalUtil';
+import LocaleUtil from '../tools/LocalUtil';
 
 interface ILocalProps extends Omit<IntlConfig, 'locale'> {
   locale: string;
@@ -15,10 +15,10 @@ function Local(props: ILocalProps) {
   const { children, onChange, locale, i18nData, ...otherProps } = props;
 
   const messages = useMemo(() => i18nData[locale] || [], [locale, i18nData]);
-  LocalUtil.intl = useMemo(() => {
+  LocaleUtil.intl = useMemo(() => {
     return createIntl({ locale, messages });
   }, [locale, messages]);
-  LocalUtil.setLocal = useCallback(
+  LocaleUtil.setLocale = useCallback(
     (locale) => {
       onChange?.(locale);
     },

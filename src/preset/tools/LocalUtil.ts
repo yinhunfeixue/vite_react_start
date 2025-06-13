@@ -22,7 +22,7 @@ class LocalUtilData {
  * 使 LocalUtil.intl.formatMessage() 可简化为 LocalUtil.formatMessage()
  * 自动将 intl 的方法代理到 LocalUtil 上，提供更简洁的调用方式
  */
-const LocalUtil = new Proxy(LocalUtilData, {
+const LocaleUtil = new Proxy(LocalUtilData, {
   get(target, property: string) {
     if (target.intl && property in target.intl) {
       const method = (target.intl as any)[property];
@@ -31,4 +31,4 @@ const LocalUtil = new Proxy(LocalUtilData, {
     return (target as any)[property];
   },
 });
-export default LocalUtil as typeof LocalUtil & IntlShape;
+export default LocaleUtil as typeof LocaleUtil & IntlShape;

@@ -1,6 +1,6 @@
 import IUser from '@/model/interface/IUser';
 import useProjectStore from '@/model/ProjectStore';
-import LocalUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocalUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { Button, Form, Input, message } from 'antd';
 import { useState } from 'react';
@@ -50,7 +50,7 @@ function Login() {
               },
             ]}
           >
-            <Input placeholder={LocalUtil.formatMessage({ id: 'username' })} />
+            <Input placeholder={LocaleUtil.formatMessage({ id: 'username' })} />
           </FormItem>
           <FormItem
             label="密码"
