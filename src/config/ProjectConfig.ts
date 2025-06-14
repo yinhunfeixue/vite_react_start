@@ -25,7 +25,8 @@ export const LANGUAGE_LIST = [
 /**
  * 默认语言
  */
-export const DEFAULT_LANGUAGE: (typeof LANGUAGE_LIST)[number]['value'] = 'en';
+export const DEFAULT_LANGUAGE: (typeof LANGUAGE_LIST)[number]['value'] =
+  'zh-CN';
 
 /**
  * 支持的主题列表

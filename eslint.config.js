@@ -82,7 +82,7 @@ export default tseslint.config(
         },
       ],
       'react/jsx-key': 'error',
-      'react-hooks/exhaustive-deps': 0,
+      'react-hooks/exhaustive-deps': 'error',
     },
-  }
+  },
 );

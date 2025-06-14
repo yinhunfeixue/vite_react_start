@@ -1,0 +1,55 @@
+.ItemL1 {
+  > header {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    > *:not(:last-child) {
+      margin-right: 4px;
+    }
+  }
+  > main {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    .ContentItem {
+      display: flex;
+      align-items: center;
+      color: #5e6266;
+      .ContentItemIcon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  > footer {
+    display: flex;
+    align-items: center;
+    .FooterContent {
+      flex-grow: 1;
+      flex-shrink: 1;
+      display: flex;
+      align-items: center;
+
+      > *:not(:last-child) {
+        margin-right: 4px;
+      }
+    }
+
+    .ItemL1_MenuIcon {
+      color: rgb(91, 127, 163);
+    }
+
+    .ItemL1_MenuIcon_WhenHover {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &:hover {
+    .ItemL1_MenuIcon_WhenHover {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+}
