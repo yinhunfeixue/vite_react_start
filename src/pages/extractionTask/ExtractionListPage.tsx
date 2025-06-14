@@ -8,6 +8,7 @@ import ProjectUtil from '@/utils/ProjectUtil';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useCallback } from 'react';
+import TaskEdit from './component/TaskEdit';
 import styles from './ExtractionListPage.module.less';
 import IExtractionTask from './interface/IExtractionTask';
 interface IExtractionListPageProps {
@@ -50,7 +51,9 @@ function ExtractionListPage(props: IExtractionListPageProps) {
         className={styles.ContentLayout}
         header={{
           title: '任务列表',
-          extra: <Button type='primary'>新增任务</Button>,
+          extra: (
+            <TaskEdit trigger={<Button type='primary'>新增任务</Button>} />
+          ),
         }}
         footer={
           <XPagination

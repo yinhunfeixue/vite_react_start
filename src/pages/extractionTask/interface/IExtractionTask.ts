@@ -6,6 +6,7 @@ import { Key } from 'react';
 export default interface IExtractionTask {
   id: Key;
   name: string;
+  desc?: string;
   createrName?: string;
   updateTime?: string;
 

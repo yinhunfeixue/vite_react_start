@@ -1,12 +1,12 @@
 /**
  * 应用名称
  */
-export const APP_NAME = 'APP名称';
+export const APP_NAME = '数据抽取系统';
 
 /**
  * 应用描述
  */
-export const APP_DESC = 'APP描述';
+export const APP_DESC = '数据抽取系统';
 
 /**
  * 应用 LOGO URL
