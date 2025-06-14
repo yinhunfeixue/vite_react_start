@@ -1,0 +1,52 @@
+.ListItemWrap {
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 16px;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s;
+  overflow: hidden;
+
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  &:hover {
+    border-color: rgba(68, 113, 243, 1);
+    box-shadow: 0px 2px 16px 0px rgba(0, 0, 0, 0.12);
+  }
+
+  &.ListItemWrapSelected {
+    background: #f1f4ff;
+    border-color: rgba(68, 113, 243, 1);
+
+    &.ListItemWraperror {
+      border-color: #cc0000;
+    }
+  }
+
+  &.ListItemWraperror {
+    background: linear-gradient(
+      270deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(245, 75, 69, 0.1) 100%
+    );
+    &:hover {
+      border-color: #cc0000;
+    }
+  }
+
+  &.ListItemWrapDisabled {
+    opacity: 0.3;
+    filter: grayscale(100%);
+    pointer-events: none;
+  }
+
+  .ListItemWrapIconChecked {
+    position: absolute;
+    right: -1px;
+    top: -1px;
+    z-index: 1;
+    font-size: 24px;
+  }
+}

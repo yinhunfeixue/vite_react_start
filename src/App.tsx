@@ -32,6 +32,10 @@ function App(props: AppProps) {
       locale={localSetting}
       theme={{
         cssVar: true,
+        token: {
+          borderRadius: 2,
+          colorPrimary: 'rgba(0, 98, 235, 1)',
+        },
       }}
     >
       <RouterRender routeConfig={routeConfig} />

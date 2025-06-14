@@ -1,7 +1,7 @@
 /**
  * 应用程序入口文件
  */
-import { StrictMode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { APP_NAME, DEFAULT_LANGUAGE } from './config/ProjectConfig.ts';
 import './fonts/iconfont.css';
@@ -34,10 +34,10 @@ const AppWrap = () => {
 };
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <>
     <ProjectStoreInit />
-    <StyleProvider hashPriority="low">
+    <StyleProvider hashPriority='low'>
       <AppWrap />
     </StyleProvider>
-  </StrictMode>
+  </>,
 );
