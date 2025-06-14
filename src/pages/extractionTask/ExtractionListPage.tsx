@@ -2,7 +2,7 @@ import ItemL1 from '@/component/listItem/itemL1/ItemL1';
 import ListItemWrap from '@/component/listItem/ListItemWrap';
 import AutoColumnGrid from '@/component/normal/autoColumnGrid/AutoColumnGrid';
 import XPagination from '@/component/normal/XPagination';
-import ContentLayout from '@/component/page/ContentLayout';
+import ContentLayout from '@/component/layout/ContentLayout';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { Button } from 'antd';

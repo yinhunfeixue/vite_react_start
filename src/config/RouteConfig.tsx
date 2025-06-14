@@ -21,9 +21,15 @@ const routeConfig: IRouteItem[] = [
       {
         path: '/index',
         icon: <BookOutlined />,
-        title: 'functionExample',
         component: loadable(
           () => import('@/pages/extractionTask/ExtractionListPage'),
+        ),
+      },
+      {
+        path: '/detail',
+        icon: <BookOutlined />,
+        component: loadable(
+          () => import('@/pages/extractionTask/ExtractionDetailPage'),
         ),
       },
     ],
