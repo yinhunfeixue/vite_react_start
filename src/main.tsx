@@ -36,7 +36,7 @@ const AppWrap = () => {
 createRoot(document.getElementById('root')!).render(
   <>
     <ProjectStoreInit />
-    <StyleProvider hashPriority='low'>
+    <StyleProvider hashPriority='high'>
       <AppWrap />
     </StyleProvider>
   </>,
