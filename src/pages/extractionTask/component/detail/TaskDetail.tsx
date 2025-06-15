@@ -3,7 +3,7 @@ import LinkButton from '@/component/linkButton/LinkButton';
 import ListItemWrap2 from '@/component/listItem/listItemWrap2/ListItemWrap2';
 import AutoTip from '@/component/normal/autoTip/AutoTip';
 import ProjectUtil from '@/utils/ProjectUtil';
-import { SearchOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
 import { GetProp, Input, List, Tabs, Tag } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useState } from 'react';
@@ -19,6 +19,11 @@ function TaskDetail(props: ITaskDetailProps) {
   const { className, style } = props;
 
   const [selectedTabKey, setSelectedTabKey] = useState<string>();
+
+  //#region 页面状态
+  const [openList, setopenList] = useState(true);
+
+  //#endregion
 
   //#region 目标表
   const [targetTableList, settargetTableList] = useState<any[]>();
@@ -121,13 +126,24 @@ function TaskDetail(props: ITaskDetailProps) {
   ];
 
   return (
-    <div className={classNames(styles.TaskDetail, className)} style={style}>
+    <div
+      className={classNames(
+        styles.TaskDetail,
+        openList && styles.TaskDetailOpenList,
+        className,
+      )}
+      style={style}
+    >
       <div className={styles.TabWrap}>
         <Tabs
           activeKey={selectedTabKey}
           onChange={(key) => setSelectedTabKey(key)}
           items={tabItems.map((item) => ({ ...item, children: null }))}
-          tabBarExtraContent={<LinkButton type='text'>{'<'} 收起</LinkButton>}
+          tabBarExtraContent={
+            <LinkButton type='text' onClick={() => setopenList(false)}>
+              <LeftOutlined style={{ fontSize: 12 }} /> 收起
+            </LinkButton>
+          }
           tabBarStyle={{ paddingLeft: 16, paddingRight: 16 }}
         />
         <Tabs
@@ -140,6 +156,9 @@ function TaskDetail(props: ITaskDetailProps) {
         <h5>抽取结果</h5>
         <div>最新抽取时间: ****</div>
       </main>
+      <LinkButton className={styles.BtnOpen} onClick={() => setopenList(true)}>
+        <RightOutlined style={{ fontSize: 12 }} />
+      </LinkButton>
     </div>
   );
 }

@@ -3,11 +3,28 @@
   gap: 20px;
   overflow: hidden;
   height: 100%;
+  position: relative;
 
   .TabWrap {
     width: 300px;
+    overflow: hidden;
     background-color: white;
     border-radius: 8px;
+    max-width: 0;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .BtnOpen {
+    position: absolute;
+    top: 10px;
+    left: 0;
+
+    background: #ffffff;
+    box-shadow: 1px 0px 4px 0px rgba(0, 0, 0, 0.12);
+    border-radius: 0px 2px 2px 0px;
+    padding: 8px 4px;
+    transform: none;
+    transition: all 0.3s ease-in-out;
   }
 
   :global {
@@ -29,6 +46,16 @@
 
     > main {
       flex: 100px 1 1;
+    }
+  }
+
+  &.TaskDetailOpenList {
+    .BtnOpen {
+      transform: translateX(-110%);
+    }
+
+    .TabWrap {
+      max-width: 300px;
     }
   }
 }
