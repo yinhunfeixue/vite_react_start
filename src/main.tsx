@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import './antd.less';
 import { APP_NAME, DEFAULT_LANGUAGE } from './config/ProjectConfig.ts';
 import './fonts/iconfont.css';
 import './index.less';

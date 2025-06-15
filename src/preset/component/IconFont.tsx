@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React, { CSSProperties } from 'react';
 import './IconFont.less';
 
-interface IIconFontProps {
+export interface IIconFontProps {
   className?: string;
   style?: CSSProperties;
 
