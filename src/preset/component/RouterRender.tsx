@@ -33,6 +33,7 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
         }
         return null;
       };
+      console.log('item', item);
 
       return (
         <Route

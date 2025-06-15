@@ -37,5 +37,17 @@ class ProjectUtil {
     // 过滤掉无效部分，如 '.' 或空字符串
     return parts.filter((part) => part !== '.' && part !== '');
   }
+
+  /**
+   * 渲染两个名称
+   * 如果两个都有值，则格式为 ： 1[2]
+   * 否则，只显示有值的名字
+   */
+  static renderName(name1?: string, name2?: string): string {
+    if (name1 && name2) {
+      return `${name1}[${name2}]`;
+    }
+    return name1 || name2 || '';
+  }
 }
 export default ProjectUtil;

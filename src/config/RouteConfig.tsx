@@ -1,5 +1,4 @@
 import IRouteItem from '@/preset/config/IRouteItem';
-import { BookOutlined } from '@ant-design/icons';
 import loadable from '@loadable/component';
 
 const routeConfig: IRouteItem[] = [
@@ -15,22 +14,27 @@ const routeConfig: IRouteItem[] = [
     component: loadable(() => import('@/component/BasicLayout')),
     children: [
       {
-        path: '/',
-        redirect: '/index',
-      },
-      {
-        path: '/index',
-        icon: <BookOutlined />,
-        component: loadable(
-          () => import('@/pages/extractionTask/ExtractionListPage'),
-        ),
-      },
-      {
-        path: '/detail',
-        icon: <BookOutlined />,
-        component: loadable(
-          () => import('@/pages/extractionTask/ExtractionDetailPage'),
-        ),
+        path: '/extraction',
+        children: [
+          {
+            path: '/extraction/list',
+            component: loadable(
+              () => import('@/pages/extractionTask/ExtractionListPage'),
+            ),
+          },
+          {
+            path: '/extraction/fileManage',
+            component: loadable(
+              () => import('@/pages/extractionTask/ExtractionFilePage'),
+            ),
+          },
+          {
+            path: '/extraction/detail',
+            component: loadable(
+              () => import('@/pages/extractionTask/ExtractionDetailPage'),
+            ),
+          },
+        ],
       },
     ],
   },
