@@ -14,6 +14,10 @@ const routeConfig: IRouteItem[] = [
     component: loadable(() => import('@/component/BasicLayout')),
     children: [
       {
+        path: '/',
+        redirect: '/extraction/list',
+      },
+      {
         path: '/extraction',
         children: [
           {
