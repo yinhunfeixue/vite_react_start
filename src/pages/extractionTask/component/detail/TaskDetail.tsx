@@ -4,9 +4,18 @@ import ListItemWrap2 from '@/component/listItem/listItemWrap2/ListItemWrap2';
 import AutoTip from '@/component/normal/autoTip/AutoTip';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
-import { GetProp, Input, List, Tabs, Tag } from 'antd';
+import { Button, Card, GetProp, Input, List, Space, Tabs, Tag } from 'antd';
 import classNames from 'classnames';
-import React, { CSSProperties, useEffect, useState } from 'react';
+import React, {
+  CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { createEditor, Descendant } from 'slate';
+import { withHistory } from 'slate-history';
+import { Editable, Slate, withReact } from 'slate-react';
 import styles from './TaskDetail.module.less';
 interface ITaskDetailProps {
   className?: string;
@@ -107,6 +116,104 @@ function TaskDetail(props: ITaskDetailProps) {
   };
   //#endregion
 
+  //#region 选中文本
+  const editRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
+
+  const renderSelectionButton = () => {
+    if (!selection) {
+      return null;
+    }
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    console.log('rect', rect);
+
+    return (
+      <Button
+        style={{
+          position: 'fixed',
+          top: rect.top + window.scrollY + rect.height + 8,
+          left: rect.left + window.scrollX,
+          zIndex: 1000,
+        }}
+        onClick={() => {
+          // const text = selection.toString();
+          // editRef.current?.focus();
+          // document.execCommand('insertText', false, text);
+          // setSelection(null);
+
+          editor.insertNode({
+            type: 'docNode',
+            children: [{ text: selection.toString() }],
+            option: {
+              from: 'doc',
+              sourceId: '123',
+            },
+          });
+        }}
+      >
+        复制
+      </Button>
+    );
+  };
+  //#endregion
+
+  //#region slate
+
+  const editor = useMemo(() => {
+    const result = withHistory(withReact(createEditor()));
+    result.isInline = (element) => {
+      return element.type === 'button' || element.type === 'docNode';
+    };
+    return result;
+  }, []);
+
+  const initialValue: Descendant[] = useMemo(() => {
+    return [
+      {
+        type: 'paragraph',
+        children: [
+          {
+            text: 'In addition to block nodes, you can create inline nodes. Here is a ',
+          },
+          {
+            text: ', and here is a more unusual inline: an ',
+          },
+          {
+            type: 'button',
+            children: [{ text: 'editable button' }],
+          },
+          {
+            text: '! Here is a read-only inline: ',
+          },
+          {
+            text: '.',
+          },
+        ],
+      },
+      {
+        type: 'paragraph',
+        children: [
+          {
+            text: 'There are two ways to add links. You can either add a link via the toolbar icon above, or if you want in on a little secret, copy a URL to your keyboard and paste it while a range of text is selected. ',
+          },
+          // The following is an example of an inline at the end of a block.
+          // This is an edge case that can cause issues.
+          {
+            type: 'link',
+            url: 'https://twitter.com/JustMissEmma/status/1448679899531726852',
+            children: [{ text: 'Finally, here is our favorite dog video.' }],
+          },
+          { text: '' },
+        ],
+      },
+    ];
+  }, []);
+
+  //#endregion
+
   useEffect(() => {
     requestTargetTableList();
     requestDocumentList();
@@ -124,6 +231,17 @@ function TaskDetail(props: ITaskDetailProps) {
       children: renderDocumentList(),
     },
   ];
+
+  const InlineChromiumBugfix = () => (
+    <span
+      contentEditable={false}
+      className={`
+        font-size: 0;
+      `}
+    >
+      {String.fromCodePoint(160) /* Non-breaking space */}
+    </span>
+  );
 
   return (
     <div
@@ -155,6 +273,90 @@ function TaskDetail(props: ITaskDetailProps) {
       <main>
         <h5>抽取结果</h5>
         <div>最新抽取时间: ****</div>
+        <Space>
+          <Card title='html'>
+            <div
+              ref={editRef}
+              contentEditable
+              dangerouslySetInnerHTML={{ __html: '<span>aaaa</span>' }}
+              style={{
+                border: '1px solid #ccc',
+                padding: '4px 8px',
+                height: 300,
+                width: 200,
+              }}
+            />
+
+            <div
+              onMouseUp={(event) => {
+                const selection = window.getSelection();
+                console.log('selection', selection, selection?.rangeCount);
+
+                if (
+                  selection &&
+                  selection.rangeCount > 0 &&
+                  selection.toString() !== ''
+                ) {
+                  setSelection(selection);
+                } else {
+                  setSelection(null);
+                }
+              }}
+              style={{
+                border: '1px solid #ccc',
+                padding: '4px 8px',
+                height: 300,
+                width: 200,
+              }}
+            >
+              doc abc 123
+            </div>
+            {renderSelectionButton()}
+          </Card>
+
+          <Card title='slate'>
+            <Slate
+              editor={editor}
+              initialValue={initialValue}
+              onValueChange={(value) => {
+                console.log('value', value);
+              }}
+            >
+              <Editable
+                style={{
+                  width: 300,
+                  height: 300,
+                  border: '1px solid gray',
+                  outline: 'none',
+                }}
+                renderLeaf={(props) => {
+                  const { attributes, children } = props;
+                  return <span {...attributes}>{children}</span>;
+                }}
+                renderElement={(props) => {
+                  const { attributes, children, element } = props;
+
+                  const { type } = element;
+
+                  switch (type as any) {
+                    case 'button':
+                      return <span {...attributes}>{children}</span>;
+                    case 'docNode':
+                      return (
+                        <span>
+                          <InlineChromiumBugfix />
+                          {children}
+                          <InlineChromiumBugfix />
+                        </span>
+                      );
+                    default:
+                      return <p {...attributes}>{children}</p>;
+                  }
+                }}
+              />
+            </Slate>
+          </Card>
+        </Space>
       </main>
       <LinkButton className={styles.BtnOpen} onClick={() => setopenList(true)}>
         <RightOutlined style={{ fontSize: 12 }} />
