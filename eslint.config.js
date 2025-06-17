@@ -69,20 +69,8 @@ export default tseslint.config(
       //}
       'padded-blocks': ['error', 'never'],
       'no-useless-concat': 'off',
-      'require-jsdoc': [
-        'error',
-        {
-          require: {
-            FunctionDeclaration: false,
-            MethodDefinition: false,
-            ClassDeclaration: true,
-            ArrowFunctionExpression: false,
-            FunctionExpression: false,
-          },
-        },
-      ],
       'react/jsx-key': 'error',
       'react-hooks/exhaustive-deps': 0,
     },
-  }
+  },
 );
