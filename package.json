@@ -25,6 +25,7 @@
     "react-dom": "^18.3.1",
     "react-intl": "^7.1.11",
     "react-router-dom": "^7.6.2",
+    "react-syntax-highlighter": "^15.6.1",
     "slate": "^0.117.0",
     "slate-history": "^0.113.1",
     "slate-react": "^0.117.1",
