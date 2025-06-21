@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react';
 import { createEditor, Descendant, Element, Node } from 'slate';
 import { withHistory } from 'slate-history';
@@ -23,14 +24,14 @@ type IDocNode = Element & {
   };
 };
 
-type IInserNode = Node | IDocNode;
+type ISlateNode = Node | IDocNode;
 
 export interface IResultEditorRef {
   /**
    * 插入节点到编辑器
    * @param nodes 要插入的节点数组
    */
-  insertNodes: (nodes: IInserNode[]) => void;
+  insertNodes: (nodes: ISlateNode[]) => void;
 }
 
 /**
@@ -39,6 +40,8 @@ export interface IResultEditorRef {
 const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
   (props, ref) => {
     const { className, style } = props;
+
+    const editorRef = useRef<HTMLDivElement>(null);
 
     const editor = useMemo(() => {
       const result = withHistory(withReact(createEditor()));
@@ -63,8 +66,9 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
     }, []);
 
     useImperativeHandle(ref, () => ({
-      insertNodes: (nodes: IInserNode[]) => {
+      insertNodes: (nodes: ISlateNode[]) => {
         editor.insertNodes(nodes);
+        editorRef.current?.focus();
       },
     }));
 
@@ -100,6 +104,7 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
         <Editable
           className={classNames(styles.ResultEditor, className)}
           style={style}
+          ref={editorRef}
           renderElement={renderElement}
         />
       </Slate>
