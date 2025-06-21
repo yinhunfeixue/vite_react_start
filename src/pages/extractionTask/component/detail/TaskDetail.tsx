@@ -4,7 +4,17 @@ import ListItemWrap2 from '@/component/listItem/listItemWrap2/ListItemWrap2';
 import AutoTip from '@/component/normal/autoTip/AutoTip';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Card, GetProp, Input, List, Space, Tabs, Tag } from 'antd';
+import {
+  Button,
+  Card,
+  GetProp,
+  Input,
+  List,
+  Menu,
+  Space,
+  Tabs,
+  Tag,
+} from 'antd';
 import classNames from 'classnames';
 import React, {
   CSSProperties,
@@ -18,6 +28,7 @@ import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 import styles from './TaskDetail.module.less';
 
+import SelectionControl from '@/component/selectionControl/SelectionControl';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 interface ITaskDetailProps {
@@ -300,30 +311,33 @@ function TaskDetail(props: ITaskDetailProps) {
                 }}
               />
             </Slate>
-            <div
-              onMouseUp={(event) => {
-                const selection = window.getSelection();
-                console.log('selection', selection, selection?.rangeCount);
 
-                if (
-                  selection &&
-                  selection.rangeCount > 0 &&
-                  selection.toString() !== ''
-                ) {
-                  setSelection(selection);
-                } else {
-                  setSelection(null);
-                }
-              }}
-              style={{
-                border: '1px solid #ccc',
-                padding: '4px 8px',
-                height: 300,
-                width: 200,
+            <SelectionControl
+              renderControls={(text, close) => {
+                console.log('text', text);
+                return (
+                  <Menu
+                    onClick={(info) => {
+                      console.log('info', info);
+                      close();
+                    }}
+                    items={[
+                      {
+                        key: 'copy',
+                        label: '复制',
+                      },
+                      {
+                        key: 'replace',
+                        label: '替换',
+                      },
+                    ]}
+                  />
+                );
               }}
             >
-              doc abc 123
-            </div>
+              <div>aaaa ejajjgsd;f adsf ds </div>
+            </SelectionControl>
+            {/* {renderSelectionButton()} */}
             <SyntaxHighlighter
               wrapLines
               wrapLongLines
@@ -338,7 +352,6 @@ function TaskDetail(props: ITaskDetailProps) {
             >
               {JSON.stringify(slateValue, null, 2)}
             </SyntaxHighlighter>
-            {renderSelectionButton()}
           </Space>
         </Card>
       </main>
