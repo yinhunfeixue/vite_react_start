@@ -92,31 +92,6 @@ function TaskDetail(props: ITaskDetailProps) {
               />
             </Slate>
 
-            <SelectionControl
-              renderControls={(text, close) => {
-                console.log('text', text);
-                return (
-                  <Menu
-                    onClick={(info) => {
-                      console.log('info', info);
-                      close();
-                    }}
-                    items={[
-                      {
-                        key: 'copy',
-                        label: '复制',
-                      },
-                      {
-                        key: 'replace',
-                        label: '替换',
-                      },
-                    ]}
-                  />
-                );
-              }}
-            >
-              <div>aaaa ejajjgsd;f adsf ds </div>
-            </SelectionControl>
             {/* {renderSelectionButton()} */}
             <SyntaxHighlighter
               wrapLines
@@ -325,6 +300,15 @@ function TaskDetail(props: ITaskDetailProps) {
   //#region 文档
 
   const [openDocument, setOpenDocument] = useState(false);
+
+  const [documentContent, setDocumentContent] = useState<string>();
+
+  const requestDocumentContent = async () => {
+    await ProjectUtil.sleep();
+    setDocumentContent(
+      `aaaa <span style="color: red;">这是文档内容的示例文本。可以在这里展示文档的详细内容。</span> <span style="color: blue;">可以使用不同的颜色来突出显示文本。</span> 这是一个简单的示例，展示了如何在文档中使用 HTML 标签来格式化文本。<h3>标题</h3> <p>这是一个段落。</p> <ul><li>列表项1</li><li>列表项2</li></ul>`,
+    );
+  };
   const renderDocument = () => {
     return (
       <div
@@ -345,9 +329,54 @@ function TaskDetail(props: ITaskDetailProps) {
             </>
           }
         />
+        <SelectionControl
+          style={{ padding: '8px', border: '1px solid red' }}
+          renderControls={(text, close) => {
+            console.log('text', text);
+            return (
+              <Menu
+                onClick={(info) => {
+                  console.log('info', info);
+                  close();
+                  if (info.key === 'copy') {
+                    editor.insertNodes([
+                      {
+                        type: 'docNode' as any,
+                        children: [{ text }],
+                        option: {
+                          from: 'doc',
+                          sourceId: '123',
+                        },
+                      },
+                      {
+                        text: ' ',
+                      },
+                    ]);
+                  }
+                }}
+                items={[
+                  {
+                    key: 'copy',
+                    label: '复制',
+                  },
+                  {
+                    key: 'replace',
+                    label: '替换',
+                  },
+                ]}
+              />
+            );
+          }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: documentContent || '' }} />
+        </SelectionControl>
       </div>
     );
   };
+
+  useEffect(() => {
+    requestDocumentContent();
+  }, []);
 
   //#endregion
 
