@@ -1,6 +1,6 @@
 import { GetProps, Input } from 'antd';
 import React from 'react';
-interface IXInputSearchProps extends GetProps<typeof Input.Search> {}
+type IXInputSearchProps = GetProps<typeof Input.Search>;
 /**
  * XInputSearch
  */

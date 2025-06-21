@@ -1,10 +1,4 @@
-import PageSmallHeader from '@/component/layout/PageSmallHeader';
-import LinkButton from '@/component/linkButton/LinkButton';
-import { EditOutlined } from '@ant-design/icons';
-import { Space } from 'antd';
-import classNames from 'classnames';
 import React, { CSSProperties } from 'react';
-import styles from './ExtractionDetailPage.module.less';
 import TaskDetail from './component/detail/TaskDetail';
 interface IExtractionDetailPageProps {
   className?: string;
@@ -15,25 +9,6 @@ interface IExtractionDetailPageProps {
  */
 function ExtractionDetailPage(props: IExtractionDetailPageProps) {
   const { className, style } = props;
-  return (
-    <div
-      className={classNames(styles.ExtractionDetailPage, className)}
-      style={style}
-    >
-      <PageSmallHeader
-        title={
-          <Space>
-            <span>****任务名称</span>
-            <LinkButton type='text'>
-              <EditOutlined />
-            </LinkButton>
-          </Space>
-        }
-      />
-      <main>
-        <TaskDetail />
-      </main>
-    </div>
-  );
+  return <TaskDetail className={className} style={style} />;
 }
 export default React.memo(ExtractionDetailPage);

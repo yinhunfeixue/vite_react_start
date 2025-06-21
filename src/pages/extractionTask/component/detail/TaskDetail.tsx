@@ -3,31 +3,23 @@ import LinkButton from '@/component/linkButton/LinkButton';
 import ListItemWrap2 from '@/component/listItem/listItemWrap2/ListItemWrap2';
 import AutoTip from '@/component/normal/autoTip/AutoTip';
 import ProjectUtil from '@/utils/ProjectUtil';
-import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  GetProp,
-  Input,
-  List,
-  Menu,
-  Space,
-  Tabs,
-  Tag,
-} from 'antd';
+  CloseOutlined,
+  EditOutlined,
+  LeftOutlined,
+  RightOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
+import { Card, GetProp, Input, List, Menu, Space, Tabs, Tag } from 'antd';
 import classNames from 'classnames';
-import React, {
-  CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { createEditor, Descendant } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, withReact } from 'slate-react';
 import styles from './TaskDetail.module.less';
 
+import PageSmallHeader from '@/component/layout/PageSmallHeader';
+import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -48,223 +40,11 @@ function TaskDetail(props: ITaskDetailProps) {
 
   //#endregion
 
-  //#region 目标表
-  const [targetTableList, settargetTableList] = useState<any[]>();
-  const [loadingTargetTableList, setLoadingTargetTableList] = useState(false);
-
-  const requestTargetTableList = async () => {
-    setLoadingTargetTableList(true);
-    await ProjectUtil.sleep();
-    const res = [{}, {}];
-    settargetTableList(res);
-    setLoadingTargetTableList(false);
-  };
-
-  const renderTargetTableList = () => {
+  //#region 抽取结果
+  const renderTaskResult = () => {
     return (
-      <List
-        header={<Input prefix={<SearchOutlined />} placeholder='目标搜索' />}
-        loading={loadingTargetTableList}
-        dataSource={targetTableList}
-        split={false}
-        style={{ padding: '4px' }}
-        renderItem={(item) => {
-          return (
-            <ListItemWrap2>
-              <div className='bold' style={{ padding: '8px 12px' }}>
-                {ProjectUtil.renderName('aa', 'bb')}
-              </div>
-            </ListItemWrap2>
-          );
-        }}
-      />
-    );
-  };
-  //#endregion
-
-  //#region 文档
-  const [documentList, setDocumentList] = useState<any[]>();
-  const [loadingDocumentList, setLoadingDocumentList] = useState(false);
-
-  const requestDocumentList = async () => {
-    setLoadingDocumentList(true);
-    await ProjectUtil.sleep();
-    const res = [{}, {}];
-    setDocumentList(res);
-    setLoadingDocumentList(false);
-  };
-
-  const renderDocumentItem = (item: any) => {
-    return (
-      <div className={styles.DocumentItem}>
-        <img src={Assets.fileIcon_excel} />
-        <main>
-          <h6>****文档标题</h6>
-          <div className='HGroupSpace'>
-            <AutoTip content={<time>****2025</time>} />
-            <Tag
-              color='yellow'
-              style={{ backgroundColor: 'transparent', margin: 0 }}
-            >
-              ***
-            </Tag>
-          </div>
-        </main>
-      </div>
-    );
-  };
-
-  const renderDocumentList = () => {
-    return (
-      <List
-        header={<Input prefix={<SearchOutlined />} placeholder='文档搜索' />}
-        loading={loadingDocumentList}
-        dataSource={documentList}
-        split={false}
-        style={{ padding: '4px' }}
-        renderItem={(item) => {
-          return <ListItemWrap2>{renderDocumentItem(item)}</ListItemWrap2>;
-        }}
-      />
-    );
-  };
-  //#endregion
-
-  //#region 选中文本
-  const editRef = useRef<HTMLDivElement>(null);
-  const [selection, setSelection] = useState<Selection | null>(null);
-
-  const renderSelectionButton = () => {
-    if (!selection) {
-      return null;
-    }
-
-    const range = selection.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-
-    console.log('rect', rect);
-
-    return (
-      <Button
-        style={{
-          position: 'fixed',
-          top: rect.top + window.scrollY + rect.height + 8,
-          left: rect.left + window.scrollX,
-          zIndex: 1000,
-        }}
-        onClick={() => {
-          // const text = selection.toString();
-          // editRef.current?.focus();
-          // document.execCommand('insertText', false, text);
-          // setSelection(null);
-
-          editor.insertNodes([
-            {
-              type: 'docNode',
-              children: [{ text: selection.toString() }],
-              option: {
-                from: 'doc',
-                sourceId: '123',
-              },
-            },
-            {
-              text: ' ',
-            },
-          ]);
-          setSelection(null);
-        }}
-      >
-        复制
-      </Button>
-    );
-  };
-  //#endregion
-
-  //#region slate
-
-  const editor = useMemo(() => {
-    const result = withHistory(withReact(createEditor()));
-    result.isInline = (element) => {
-      return element.type === 'button' || element.type === 'docNode';
-    };
-    return result;
-  }, []);
-
-  const initialValue: Descendant[] = useMemo(() => {
-    return [
-      {
-        type: 'paragraph',
-        children: [
-          {
-            text: 'init value',
-          },
-        ],
-      },
-    ];
-  }, []);
-
-  const [slateValue, setSlateValue] = useState<any>(initialValue);
-
-  //#endregion
-
-  useEffect(() => {
-    requestTargetTableList();
-    requestDocumentList();
-  }, []);
-
-  const tabItems: GetProp<typeof Tabs, 'items'> = [
-    {
-      key: 'targetTable',
-      label: '目标视角',
-      children: renderTargetTableList(),
-    },
-    {
-      key: 'extractionRule',
-      label: '文档视角',
-      children: renderDocumentList(),
-    },
-  ];
-
-  const InlineChromiumBugfix = () => (
-    <span
-      contentEditable={false}
-      className={`
-        font-size: 0;
-      `}
-    >
-      {String.fromCodePoint(160) /* Non-breaking space */}
-    </span>
-  );
-
-  return (
-    <div
-      className={classNames(
-        styles.TaskDetail,
-        openList && styles.TaskDetailOpenList,
-        className,
-      )}
-      style={style}
-    >
-      <div className={styles.TabWrap}>
-        <Tabs
-          activeKey={selectedTabKey}
-          onChange={(key) => setSelectedTabKey(key)}
-          items={tabItems.map((item) => ({ ...item, children: null }))}
-          tabBarExtraContent={
-            <LinkButton type='text' onClick={() => setopenList(false)}>
-              <LeftOutlined style={{ fontSize: 12 }} /> 收起
-            </LinkButton>
-          }
-          tabBarStyle={{ paddingLeft: 16, paddingRight: 16 }}
-        />
-        <Tabs
-          activeKey={selectedTabKey}
-          items={tabItems}
-          renderTabBar={() => <></>}
-        />
-      </div>
-      <main>
-        <h5>抽取结果</h5>
+      <div className={styles.TaskResult}>
+        <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
         <div>最新抽取时间: ****</div>
         <Card title='copy'>
           <Space>
@@ -354,10 +134,227 @@ function TaskDetail(props: ITaskDetailProps) {
             </SyntaxHighlighter>
           </Space>
         </Card>
-      </main>
-      <LinkButton className={styles.BtnOpen} onClick={() => setopenList(true)}>
-        <RightOutlined style={{ fontSize: 12 }} />
-      </LinkButton>
+      </div>
+    );
+  };
+
+  const renderListAndResult = () => {
+    return (
+      <div
+        className={classNames(
+          styles.ListAndResult,
+          openList && styles.ListAndResultOpenList,
+        )}
+      >
+        <PageSmallHeader
+          title={
+            <Space>
+              <span>****任务名称</span>
+              <LinkButton type='text'>
+                <EditOutlined />
+              </LinkButton>
+            </Space>
+          }
+        />
+        <main>
+          {renderList()}
+          {renderTaskResult()}
+          <LinkButton
+            className={styles.BtnOpen}
+            onClick={() => setopenList(true)}
+          >
+            <RightOutlined style={{ fontSize: 12 }} />
+          </LinkButton>
+        </main>
+      </div>
+    );
+  };
+
+  //#endregion
+
+  //#region 目标表
+  const [targetTableList, settargetTableList] = useState<any[]>();
+  const [loadingTargetTableList, setLoadingTargetTableList] = useState(false);
+
+  const requestTargetTableList = async () => {
+    setLoadingTargetTableList(true);
+    await ProjectUtil.sleep();
+    const res = [{}, {}];
+    settargetTableList(res);
+    setLoadingTargetTableList(false);
+  };
+
+  const renderTargetTableList = () => {
+    return (
+      <List
+        header={<Input prefix={<SearchOutlined />} placeholder='目标搜索' />}
+        loading={loadingTargetTableList}
+        dataSource={targetTableList}
+        split={false}
+        style={{ padding: '4px' }}
+        renderItem={() => {
+          return (
+            <ListItemWrap2>
+              <div className='bold' style={{ padding: '8px 12px' }}>
+                {ProjectUtil.renderName('aa', 'bb')}
+              </div>
+            </ListItemWrap2>
+          );
+        }}
+      />
+    );
+  };
+
+  const [documentList, setDocumentList] = useState<any[]>();
+  const [loadingDocumentList, setLoadingDocumentList] = useState(false);
+
+  const requestDocumentList = async () => {
+    setLoadingDocumentList(true);
+    await ProjectUtil.sleep();
+    const res = [{}, {}];
+    setDocumentList(res);
+    setLoadingDocumentList(false);
+  };
+
+  const renderDocumentItem = () => {
+    return (
+      <div className={styles.DocumentItem}>
+        <img src={Assets.fileIcon_excel} />
+        <main>
+          <h6>****文档标题</h6>
+          <div className='HGroupSpace'>
+            <AutoTip content={<time>****2025</time>} />
+            <Tag
+              color='yellow'
+              style={{ backgroundColor: 'transparent', margin: 0 }}
+            >
+              ***
+            </Tag>
+          </div>
+        </main>
+      </div>
+    );
+  };
+
+  const renderDocumentList = () => {
+    return (
+      <List
+        header={<Input prefix={<SearchOutlined />} placeholder='文档搜索' />}
+        loading={loadingDocumentList}
+        dataSource={documentList}
+        split={false}
+        style={{ padding: '4px' }}
+        renderItem={() => {
+          return <ListItemWrap2>{renderDocumentItem()}</ListItemWrap2>;
+        }}
+      />
+    );
+  };
+
+  const tabItems: GetProp<typeof Tabs, 'items'> = [
+    {
+      key: 'targetTable',
+      label: '目标视角',
+      children: renderTargetTableList(),
+    },
+    {
+      key: 'extractionRule',
+      label: '文档视角',
+      children: renderDocumentList(),
+    },
+  ];
+
+  const renderList = () => {
+    return (
+      <div className={styles.TabWrap}>
+        <Tabs
+          activeKey={selectedTabKey}
+          onChange={(key) => setSelectedTabKey(key)}
+          items={tabItems.map((item) => ({ ...item, children: null }))}
+          tabBarExtraContent={
+            <LinkButton type='text' onClick={() => setopenList(false)}>
+              <LeftOutlined style={{ fontSize: 12 }} /> 收起
+            </LinkButton>
+          }
+          tabBarStyle={{ paddingLeft: 16, paddingRight: 16 }}
+        />
+        <Tabs
+          activeKey={selectedTabKey}
+          items={tabItems}
+          renderTabBar={() => <></>}
+        />
+      </div>
+    );
+  };
+  //#endregion
+
+  //#region slate
+
+  const editor = useMemo(() => {
+    const result = withHistory(withReact(createEditor()));
+    result.isInline = (element) => {
+      return (
+        element.type === 'button' || (element.type as string) === 'docNode'
+      );
+    };
+    return result;
+  }, []);
+
+  const initialValue: Descendant[] = useMemo(() => {
+    return [
+      {
+        type: 'paragraph',
+        children: [
+          {
+            text: 'init value',
+          },
+        ],
+      },
+    ];
+  }, []);
+
+  const [slateValue, setSlateValue] = useState<any>(initialValue);
+
+  //#endregion
+
+  useEffect(() => {
+    requestTargetTableList();
+    requestDocumentList();
+  }, []);
+
+  //#region 文档
+
+  const [openDocument, setOpenDocument] = useState(false);
+  const renderDocument = () => {
+    return (
+      <div
+        className={classNames(
+          styles.Document,
+          openDocument && styles.DocumentOpen,
+        )}
+      >
+        <PageSmallHeader
+          disableBack
+          title='查看来源'
+          extra={
+            <>
+              <XInputSearch placeholder='关键词搜索' />
+              <LinkButton onClick={() => setOpenDocument(false)}>
+                <CloseOutlined />
+              </LinkButton>
+            </>
+          }
+        />
+      </div>
+    );
+  };
+
+  //#endregion
+
+  return (
+    <div className={classNames(styles.TaskDetail, className)} style={style}>
+      {renderListAndResult()}
+      {renderDocument()}
     </div>
   );
 }
