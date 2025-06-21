@@ -12,10 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Card, GetProp, Input, List, Menu, Space, Tabs, Tag } from 'antd';
 import classNames from 'classnames';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { createEditor, Descendant } from 'slate';
-import { withHistory } from 'slate-history';
-import { Editable, Slate, withReact } from 'slate-react';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import styles from './TaskDetail.module.less';
 
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
@@ -23,6 +20,7 @@ import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
 interface ITaskDetailProps {
   className?: string;
   style?: CSSProperties;
@@ -41,6 +39,8 @@ function TaskDetail(props: ITaskDetailProps) {
   //#endregion
 
   //#region 抽取结果
+
+  const editorRef = useRef<IResultEditorRef>(null);
   const renderTaskResult = () => {
     return (
       <div className={styles.TaskResult}>
@@ -48,51 +48,10 @@ function TaskDetail(props: ITaskDetailProps) {
         <div>最新抽取时间: ****</div>
         <Card title='copy'>
           <Space>
-            <Slate
-              editor={editor}
-              initialValue={initialValue}
-              onValueChange={(value) => {
-                setSlateValue(value);
-              }}
-            >
-              <Editable
-                style={{
-                  width: 300,
-                  height: 300,
-                  border: '1px solid gray',
-                  outline: 'none',
-                }}
-                renderLeaf={(props) => {
-                  const { attributes, children } = props;
-                  return <span {...attributes}>{children}</span>;
-                }}
-                renderElement={(props) => {
-                  const { attributes, children, element } = props;
-
-                  const { type } = element;
-
-                  switch (type as any) {
-                    case 'button':
-                      return <span {...attributes}>{children}</span>;
-                    case 'docNode':
-                      console.log('attributes', attributes, children);
-
-                      return (
-                        <span
-                          {...attributes}
-                          style={{ textDecoration: 'underline' }}
-                        >
-                          {children}
-                        </span>
-                      );
-                    default:
-                      return <p {...attributes}>{children}</p>;
-                  }
-                }}
-              />
-            </Slate>
-
-            {/* {renderSelectionButton()} */}
+            <ResultEditor
+              ref={editorRef}
+              style={{ border: '1px solid red', width: 300, height: 200 }}
+            />
             <SyntaxHighlighter
               wrapLines
               wrapLongLines
@@ -105,7 +64,8 @@ function TaskDetail(props: ITaskDetailProps) {
               style={a11yLight}
               showInlineLineNumbers={false}
             >
-              {JSON.stringify(slateValue, null, 2)}
+              aaa
+              {/* {JSON.stringify(slateValue, null, 2)} */}
             </SyntaxHighlighter>
           </Space>
         </Card>
@@ -263,35 +223,6 @@ function TaskDetail(props: ITaskDetailProps) {
   };
   //#endregion
 
-  //#region slate
-
-  const editor = useMemo(() => {
-    const result = withHistory(withReact(createEditor()));
-    result.isInline = (element) => {
-      return (
-        element.type === 'button' || (element.type as string) === 'docNode'
-      );
-    };
-    return result;
-  }, []);
-
-  const initialValue: Descendant[] = useMemo(() => {
-    return [
-      {
-        type: 'paragraph',
-        children: [
-          {
-            text: 'init value',
-          },
-        ],
-      },
-    ];
-  }, []);
-
-  const [slateValue, setSlateValue] = useState<any>(initialValue);
-
-  //#endregion
-
   useEffect(() => {
     requestTargetTableList();
     requestDocumentList();
@@ -299,7 +230,7 @@ function TaskDetail(props: ITaskDetailProps) {
 
   //#region 文档
 
-  const [openDocument, setOpenDocument] = useState(false);
+  const [openDocument, setOpenDocument] = useState(true);
 
   const [documentContent, setDocumentContent] = useState<string>();
 
@@ -339,13 +270,13 @@ function TaskDetail(props: ITaskDetailProps) {
                   console.log('info', info);
                   close();
                   if (info.key === 'copy') {
-                    editor.insertNodes([
+                    editorRef.current?.insertNodes([
                       {
-                        type: 'docNode' as any,
+                        type: 'docNode',
                         children: [{ text }],
-                        option: {
+                        docOption: {
                           from: 'doc',
-                          sourceId: '123',
+                          sourceNodeId: '123',
                         },
                       },
                       {
