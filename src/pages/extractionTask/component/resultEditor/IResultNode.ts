@@ -9,6 +9,7 @@ type IResultNode = Element & {
     from: string; // 来源
     sourceNodeId?: string; // 来源节点ID
   };
+  children: ISlateNode[];
 };
 
 export type ISlateNode = Node | IResultNode;

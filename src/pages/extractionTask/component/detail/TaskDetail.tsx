@@ -8,7 +8,17 @@ import {
   RightOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, GetProp, Input, List, Menu, Space, Tabs } from 'antd';
+import {
+  Alert,
+  Button,
+  GetProp,
+  Input,
+  List,
+  Menu,
+  message,
+  Space,
+  Tabs,
+} from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import styles from './TaskDetail.module.less';
@@ -19,6 +29,7 @@ import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
 import ITaskResultTableData from '../../interface/ITaskResultTableData';
 import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
+import DataInsert from './DataInsert';
 import DocumentItem from './DocumentItem';
 interface ITaskDetailProps {
   className?: string;
@@ -155,7 +166,9 @@ function TaskDetail(props: ITaskDetailProps) {
             <>
               <LinkButton>入库记录</LinkButton>
               <LinkButton>文件管理</LinkButton>
-              <Button type='primary'>数据入库</Button>
+              <Button type='primary' onClick={() => setOpenDataInsert(true)}>
+                数据入库
+              </Button>
             </>
           }
         />
@@ -368,10 +381,30 @@ function TaskDetail(props: ITaskDetailProps) {
 
   //#endregion
 
+  //#region 数据入库
+
+  const [openDataInsert, setOpenDataInsert] = useState(false);
+
+  const renderDataInsert = () => {
+    return (
+      <DataInsert
+        open={openDataInsert}
+        onCancel={() => setOpenDataInsert(false)}
+        onSuccess={() => {
+          message.success('数据入库成功');
+          setOpenDataInsert(false);
+        }}
+      />
+    );
+  };
+
+  //#endregion
+
   return (
     <div className={classNames(styles.TaskDetail, className)} style={style}>
       {renderListAndResult()}
       {renderDocument()}
+      {renderDataInsert()}
     </div>
   );
 }
