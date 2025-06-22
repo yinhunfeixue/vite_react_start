@@ -1,7 +1,5 @@
-import Assets from '@/Assets';
 import LinkButton from '@/component/linkButton/LinkButton';
 import ListItemWrap2 from '@/component/listItem/listItemWrap2/ListItemWrap2';
-import AutoTip from '@/component/normal/autoTip/AutoTip';
 import ProjectUtil from '@/utils/ProjectUtil';
 import {
   CloseOutlined,
@@ -10,17 +8,18 @@ import {
   RightOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { Card, GetProp, Input, List, Menu, Space, Tabs, Tag } from 'antd';
+import { GetProp, Input, List, Menu, Space, Tabs } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import styles from './TaskDetail.module.less';
 
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
+import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import ITaskResultTableData from '../../interface/ITaskResultTableData';
 import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
+import DocumentItem from './DocumentItem';
 interface ITaskDetailProps {
   className?: string;
   style?: CSSProperties;
@@ -40,13 +39,95 @@ function TaskDetail(props: ITaskDetailProps) {
 
   //#region 抽取结果
 
-  const editorRef = useRef<IResultEditorRef>(null);
+  const [taskResultData, setTaskResultData] = useState<ITaskResultTableData>();
+  const [loadingTaskResultData, setLoadingTaskResultData] = useState(false);
+
+  const editorRef = useRef<IResultEditorRef>();
+
+  // 单元格的ref列表
+  const cellRefs = useRef<(IResultEditorRef | null)[][]>([]);
+
+  const requestTaskResultData = async () => {
+    setLoadingTaskResultData(true);
+    await ProjectUtil.sleep();
+    const res: ITaskResultTableData = {
+      columns: [{ title: '列1' }, { title: '列2' }],
+      dataSource: [
+        [
+          [
+            {
+              type: 'p',
+              children: [
+                { text: '普通文本' },
+                {
+                  type: 'docNode',
+                  children: [{ text: '文档内容1' }],
+                  docOption: { from: 'doc', sourceNodeId: '123' },
+                },
+                {
+                  text: ' ',
+                },
+              ],
+            },
+          ],
+          null,
+        ],
+      ],
+    };
+    setTaskResultData(res);
+    setLoadingTaskResultData(false);
+  };
+
+  const renderResultTable = () => {
+    if (!taskResultData) {
+      return <XEmpty loading={loadingTaskResultData} />;
+    }
+
+    const { columns, dataSource } = taskResultData;
+    return (
+      <table className={styles.ResultTable}>
+        <thead>
+          <tr>
+            {columns.map((col) => (
+              <th key={col.title}>{col.title}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {dataSource.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex}>
+                  <ResultEditor
+                    className={styles.ResultEditor}
+                    initValue={cell}
+                    ref={(ref) => {
+                      if (!cellRefs.current[rowIndex]) {
+                        cellRefs.current[rowIndex] = [];
+                      }
+                      cellRefs.current[rowIndex][cellIndex] = ref;
+                    }}
+                    onClick={() => {
+                      editorRef.current =
+                        cellRefs.current[rowIndex][cellIndex] || undefined;
+                    }}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   const renderTaskResult = () => {
     return (
       <div className={styles.TaskResult}>
         <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
         <div>最新抽取时间: ****</div>
-        <Card title='copy'>
+        {renderResultTable()}
+        {/* <Card title='copy'>
           <Space>
             <ResultEditor
               ref={editorRef}
@@ -65,10 +146,9 @@ function TaskDetail(props: ITaskDetailProps) {
               showInlineLineNumbers={false}
             >
               aaa
-              {/* {JSON.stringify(slateValue, null, 2)} */}
             </SyntaxHighlighter>
           </Space>
-        </Card>
+        </Card> */}
       </div>
     );
   };
@@ -152,23 +232,7 @@ function TaskDetail(props: ITaskDetailProps) {
   };
 
   const renderDocumentItem = () => {
-    return (
-      <div className={styles.DocumentItem}>
-        <img src={Assets.fileIcon_excel} />
-        <main>
-          <h6>****文档标题</h6>
-          <div className='HGroupSpace'>
-            <AutoTip content={<time>****2025</time>} />
-            <Tag
-              color='yellow'
-              style={{ backgroundColor: 'transparent', margin: 0 }}
-            >
-              ***
-            </Tag>
-          </div>
-        </main>
-      </div>
-    );
+    return <DocumentItem />;
   };
 
   const renderDocumentList = () => {
@@ -226,6 +290,7 @@ function TaskDetail(props: ITaskDetailProps) {
   useEffect(() => {
     requestTargetTableList();
     requestDocumentList();
+    requestTaskResultData();
   }, []);
 
   //#region 文档
@@ -260,47 +325,51 @@ function TaskDetail(props: ITaskDetailProps) {
             </>
           }
         />
-        <SelectionControl
-          style={{ padding: '8px', border: '1px solid red' }}
-          renderControls={(text, close) => {
-            console.log('text', text);
-            return (
-              <Menu
-                onClick={(info) => {
-                  console.log('info', info);
-                  close();
-                  if (info.key === 'copy') {
-                    editorRef.current?.insertNodes([
-                      {
-                        type: 'docNode',
-                        children: [{ text }],
-                        docOption: {
-                          from: 'doc',
-                          sourceNodeId: '123',
+        <div className={styles.DocumentBody}>
+          <SelectionControl
+            renderControls={(text, close) => {
+              return (
+                <Menu
+                  style={{ width: 100 }}
+                  onClick={(info) => {
+                    close();
+                    if (info.key === 'copy') {
+                      editorRef.current?.insertNodes([
+                        {
+                          type: 'docNode',
+                          children: [{ text }],
+                          docOption: {
+                            from: 'doc',
+                            sourceNodeId: '123',
+                          },
                         },
-                      },
-                      {
-                        text: ' ',
-                      },
-                    ]);
-                  }
-                }}
-                items={[
-                  {
-                    key: 'copy',
-                    label: '复制',
-                  },
-                  {
-                    key: 'replace',
-                    label: '替换',
-                  },
-                ]}
-              />
-            );
-          }}
-        >
-          <div dangerouslySetInnerHTML={{ __html: documentContent || '' }} />
-        </SelectionControl>
+                        {
+                          text: ' ',
+                        },
+                      ]);
+                    }
+                  }}
+                  items={[
+                    {
+                      key: 'copy',
+                      label: '复制',
+                    },
+                    {
+                      key: 'replace',
+                      label: '替换',
+                    },
+                  ]}
+                />
+              );
+            }}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: documentContent || '' }}
+              className={styles.DocumentContent}
+            />
+          </SelectionControl>
+          <footer>******.pdf</footer>
+        </div>
       </div>
     );
   };

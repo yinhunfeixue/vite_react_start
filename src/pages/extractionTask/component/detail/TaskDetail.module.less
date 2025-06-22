@@ -22,6 +22,37 @@
 
       .TaskResult {
         flex: 100px 1 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ResultTable {
+        overflow: auto;
+        border-collapse: collapse;
+        margin-top: 16px;
+        table-layout: fixed;
+        width: fit-content;
+
+        td,
+        th {
+          border: 1px solid #e6e8ed;
+          background-color: white;
+          width: 300px;
+          height: 1px; // 让表格内容的height:100% 生效
+          padding: 12px;
+        }
+
+        th {
+          padding: 10px 12px;
+          line-height: 1;
+          text-align: left;
+          font-weight: 500;
+        }
+
+        .ResultEditor {
+          height: 136px;
+          overflow: auto;
+        }
       }
     }
 
@@ -71,25 +102,34 @@
     width: 0;
     overflow: hidden;
 
+    display: flex;
+    flex-direction: column;
+
     &.DocumentOpen {
       width: 44%;
       flex-grow: 1;
       flex-shrink: 1;
     }
-  }
 
-  .DocumentItem {
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-    padding: 12px;
-
-    > img {
-      width: 14px;
-    }
-
-    > main {
+    .DocumentBody {
       flex: 100px 1 1;
+      overflow: auto;
+      position: relative;
+
+      .DocumentContent {
+        padding: 12px;
+      }
+
+      > footer {
+        background: #f7f8fa;
+        padding: 5px 24px;
+
+        color: #5e6266;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
     }
   }
 }

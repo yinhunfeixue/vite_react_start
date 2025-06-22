@@ -6,25 +6,21 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { createEditor, Descendant, Element, Node } from 'slate';
+import { createEditor, Descendant } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, RenderElementProps, Slate, withReact } from 'slate-react';
+import IResultNode, { ISlateNode } from './IResultNode';
 import styles from './ResultEditor.module.less';
 
 interface IResultEditorProps {
   className?: string;
   style?: CSSProperties;
+
+  initValue?: ISlateNode[] | null; // 初始值
+
+  readOnly?: boolean;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
-
-type IDocNode = Element & {
-  type: string;
-  docOption?: {
-    from: string; // 来源
-    sourceNodeId?: string; // 来源节点ID
-  };
-};
-
-type ISlateNode = Node | IDocNode;
 
 export interface IResultEditorRef {
   /**
@@ -39,31 +35,30 @@ export interface IResultEditorRef {
  */
 const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
   (props, ref) => {
-    const { className, style } = props;
+    const { className, style, initValue, readOnly, onClick } = props;
 
     const editorRef = useRef<HTMLDivElement>(null);
 
     const editor = useMemo(() => {
       const result = withHistory(withReact(createEditor()));
       result.isInline = (element) => {
-        const type = (element as IDocNode).type;
+        const type = (element as IResultNode).type;
         return type === 'docNode';
       };
       return result;
     }, []);
 
     const initialValue: Descendant[] = useMemo(() => {
+      if (initValue) {
+        return initValue;
+      }
       return [
         {
-          type: 'paragraph',
-          children: [
-            {
-              text: 'init value',
-            },
-          ],
+          type: 'p',
+          children: [{ text: '' }],
         },
       ];
-    }, []);
+    }, [initValue]);
 
     useImperativeHandle(ref, () => ({
       insertNodes: (nodes: ISlateNode[]) => {
@@ -75,14 +70,8 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
     const renderElement = useMemo(() => {
       return (props: RenderElementProps) => {
         const { attributes, children } = props;
-        const element = props.element as IDocNode;
+        const element = props.element as IResultNode;
         switch (element.type as string) {
-          case 'button':
-            return (
-              <button {...attributes} className={styles.Button}>
-                {children}
-              </button>
-            );
           case 'docNode':
             return (
               <span
@@ -105,13 +94,14 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
           className={classNames(styles.ResultEditor, className)}
           style={style}
           ref={editorRef}
+          readOnly={readOnly}
+          placeholder='请输入内容...'
           renderElement={renderElement}
+          onClick={onClick}
         />
       </Slate>
     );
   },
 );
-
-ResultEditor.displayName = 'ResultEditor';
 
 export default React.memo(ResultEditor);
