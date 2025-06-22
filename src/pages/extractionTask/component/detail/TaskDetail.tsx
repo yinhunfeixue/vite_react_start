@@ -30,6 +30,7 @@ import SelectionControl from '@/component/selectionControl/SelectionControl';
 import ITaskResultTableData from '../../interface/ITaskResultTableData';
 import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
 import DataInsert from './DataInsert';
+import DataInsertRecord from './DataInsertRecord';
 import DocumentItem from './DocumentItem';
 interface ITaskDetailProps {
   className?: string;
@@ -164,7 +165,9 @@ function TaskDetail(props: ITaskDetailProps) {
           }
           extra={
             <>
-              <LinkButton>入库记录</LinkButton>
+              <LinkButton onClick={() => setOpenDataInsertRecord(true)}>
+                入库记录
+              </LinkButton>
               <LinkButton>文件管理</LinkButton>
               <Button type='primary' onClick={() => setOpenDataInsert(true)}>
                 数据入库
@@ -384,6 +387,7 @@ function TaskDetail(props: ITaskDetailProps) {
   //#region 数据入库
 
   const [openDataInsert, setOpenDataInsert] = useState(false);
+  const [openDataInsertRecord, setOpenDataInsertRecord] = useState(false);
 
   const renderDataInsert = () => {
     return (
@@ -398,6 +402,15 @@ function TaskDetail(props: ITaskDetailProps) {
     );
   };
 
+  const renderDataInsertRecord = () => {
+    return (
+      <DataInsertRecord
+        open={openDataInsertRecord}
+        onCancel={() => setOpenDataInsertRecord(false)}
+      />
+    );
+  };
+
   //#endregion
 
   return (
@@ -405,6 +418,7 @@ function TaskDetail(props: ITaskDetailProps) {
       {renderListAndResult()}
       {renderDocument()}
       {renderDataInsert()}
+      {renderDataInsertRecord()}
     </div>
   );
 }
