@@ -8,7 +8,7 @@ import {
   RightOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { GetProp, Input, List, Menu, Space, Tabs } from 'antd';
+import { Alert, Button, GetProp, Input, List, Menu, Space, Tabs } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import styles from './TaskDetail.module.less';
@@ -124,31 +124,12 @@ function TaskDetail(props: ITaskDetailProps) {
   const renderTaskResult = () => {
     return (
       <div className={styles.TaskResult}>
-        <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
-        <div>最新抽取时间: ****</div>
+        <div>
+          <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
+          <div>最新抽取时间: ****</div>
+        </div>
+        <Alert message='a*****' showIcon />
         {renderResultTable()}
-        {/* <Card title='copy'>
-          <Space>
-            <ResultEditor
-              ref={editorRef}
-              style={{ border: '1px solid red', width: 300, height: 200 }}
-            />
-            <SyntaxHighlighter
-              wrapLines
-              wrapLongLines
-              language='json'
-              customStyle={{
-                backgroundColor: 'transparent',
-                marginBottom: 0,
-                ...style,
-              }}
-              style={a11yLight}
-              showInlineLineNumbers={false}
-            >
-              aaa
-            </SyntaxHighlighter>
-          </Space>
-        </Card> */}
       </div>
     );
   };
@@ -169,6 +150,13 @@ function TaskDetail(props: ITaskDetailProps) {
                 <EditOutlined />
               </LinkButton>
             </Space>
+          }
+          extra={
+            <>
+              <LinkButton>入库记录</LinkButton>
+              <LinkButton>文件管理</LinkButton>
+              <Button type='primary'>数据入库</Button>
+            </>
           }
         />
         <main>
