@@ -38,6 +38,13 @@ const routeConfig: IRouteItem[] = [
               () => import('@/pages/extractionTask/ExtractionDetailPage'),
             ),
           },
+          {
+            path: '/extraction/document-renderer',
+            component: loadable(
+              () =>
+                import('@/component/documentRenderer/DocumentRendererExample'),
+            ),
+          },
         ],
       },
     ],

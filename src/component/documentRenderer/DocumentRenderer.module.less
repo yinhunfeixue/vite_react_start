@@ -1,0 +1,433 @@
+:global {
+  /* 文档渲染器主容器 */
+  .document-renderer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* 文档头部 */
+  .doc-header {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #1890ff;
+  }
+
+  .doc-header h1 {
+    margin: 0 0 10px 0;
+    color: #262626;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .doc-info {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .doc-info span {
+    padding: 4px 8px;
+    background: #e6f7ff;
+    border-radius: 4px;
+    color: #0050b3;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* 页面容器 */
+  .doc-pages {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  /* 单个页面 */
+  .doc-page {
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    position: relative;
+  }
+
+  /* 页面头部 */
+  .doc-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .doc-page-number {
+    font-weight: 600;
+    color: #262626;
+  }
+
+  .doc-page-size {
+    color: #8c8c8c;
+    font-size: 12px;
+  } /* 内容块基础样式 - 适应绝对定位 */
+  .doc-block {
+    /* position: absolute 由内联样式设置 */
+    box-sizing: border-box;
+    padding: 2px 4px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    line-height: 1.2;
+    overflow: visible;
+    border: none; /* 移除边框 */
+  }
+  .doc-block:hover {
+    /* 移除悬停时的边框效果 */
+    box-shadow: none;
+  }
+
+  /* 块类型标签 */
+  .doc-block-type-label {
+    position: absolute;
+    top: -6px;
+    right: 2px;
+    background: #1890ff;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    z-index: 10;
+  } /* 标题块 - 移除边框样式 */
+
+  .doc-title-content {
+    margin: 0;
+    color: #531dab;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  /* 文本块 - 移除边框样式 */
+
+  .doc-text-content {
+    margin: 0;
+    color: #262626;
+    line-height: 1.3;
+    font-size: 11px;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .doc-deleted-note {
+    color: #ff4d4f;
+    font-style: italic;
+    font-size: 12px;
+  } /* 表格块 - 移除边框样式 */
+
+  .doc-table-placeholder {
+    color: #d46b08;
+    font-weight: 500;
+    text-align: center;
+    font-size: 10px;
+    padding: 2px;
+    border: 1px dashed #ffec3d;
+    border-radius: 2px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 图片块 - 移除边框样式 */
+
+  .doc-image-placeholder {
+    color: #08979c;
+    font-weight: 500;
+    text-align: center;
+    font-size: 10px;
+    padding: 2px;
+    border: 1px dashed #36cfc9;
+    border-radius: 2px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 列表块 - 移除边框样式 */
+
+  .doc-list-content {
+    margin: 0;
+    color: #262626;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1.3;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  /* 公式块 - 移除边框样式 */
+
+  .doc-equation-placeholder {
+    color: #1d39c4;
+    font-weight: 500;
+    text-align: center;
+    font-size: 10px;
+    padding: 2px;
+    border: 1px dashed #597ef7;
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 索引块 - 移除边框样式 */
+
+  .doc-index-content {
+    color: #262626;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  /* 丢弃块 - 移除边框样式，保留透明度 */
+  .doc-discarded {
+    opacity: 0.6;
+  }
+
+  .doc-discarded-content {
+    color: #8c8c8c;
+    font-style: italic;
+    font-size: 10px;
+  }
+
+  /* 页面统计 */
+  .doc-page-stats {
+    display: flex;
+    gap: 15px;
+    padding: 12px 20px;
+    background: #fafafa;
+    border-top: 1px solid #e8e8e8;
+    font-size: 12px;
+  }
+
+  .doc-page-stats span {
+    color: #595959;
+    font-weight: 500;
+  }
+
+  .doc-page-stats span:before {
+    content: '• ';
+    color: #d9d9d9;
+  }
+
+  /* 精细文字渲染样式 */
+  .doc-detailed-text {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .doc-text-line {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+  .doc-text-span {
+    position: absolute;
+    display: inline-block;
+    color: inherit;
+    font-family: inherit;
+    text-align: left;
+    vertical-align: top;
+    user-select: text;
+    cursor: text;
+    border: 1px solid rgba(24, 144, 255, 0.3);
+    border-radius: 2px;
+    background-color: rgba(24, 144, 255, 0.05);
+  }
+
+  .doc-text-span:hover {
+    background-color: rgba(24, 144, 255, 0.15);
+    border-color: rgba(24, 144, 255, 0.6);
+    box-shadow: 0 1px 3px rgba(24, 144, 255, 0.2);
+  }
+
+  /* 表格内容的文字span样式 */
+  .doc-table-content .doc-text-span {
+    border: 1px solid rgba(250, 140, 22, 0.5); /* 橙色边框 */
+    background-color: rgba(250, 140, 22, 0.1);
+  }
+
+  .doc-table-content .doc-text-span:hover {
+    background-color: rgba(250, 140, 22, 0.2);
+    border-color: rgba(250, 140, 22, 0.8);
+    box-shadow: 0 1px 3px rgba(250, 140, 22, 0.3);
+  }
+
+  /* 标题内容的文字span样式 */
+  .doc-title-content .doc-text-span {
+    border: 1px solid rgba(114, 46, 209, 0.5); /* 紫色边框 */
+    background-color: rgba(114, 46, 209, 0.1);
+  }
+
+  .doc-title-content .doc-text-span:hover {
+    background-color: rgba(114, 46, 209, 0.2);
+    border-color: rgba(114, 46, 209, 0.8);
+    box-shadow: 0 1px 3px rgba(114, 46, 209, 0.3);
+  }
+
+  /* 列表内容的文字span样式 */
+  .doc-list-content .doc-text-span {
+    border: 1px solid rgba(235, 47, 150, 0.5); /* 粉色边框 */
+    background-color: rgba(235, 47, 150, 0.1);
+  }
+
+  .doc-list-content .doc-text-span:hover {
+    background-color: rgba(235, 47, 150, 0.2);
+    border-color: rgba(235, 47, 150, 0.8);
+    box-shadow: 0 1px 3px rgba(235, 47, 150, 0.3);
+  }
+
+  /* 索引内容的文字span样式 */
+  .doc-index-content .doc-text-span {
+    border: 1px solid rgba(250, 84, 28, 0.5); /* 橙红色边框 */
+    background-color: rgba(250, 84, 28, 0.1);
+  }
+
+  .doc-index-content .doc-text-span:hover {
+    background-color: rgba(250, 84, 28, 0.2);
+    border-color: rgba(250, 84, 28, 0.8);
+    box-shadow: 0 1px 3px rgba(250, 84, 28, 0.3);
+  }
+
+  /* 图片内容的文字span样式 */
+  .doc-image-content .doc-text-span {
+    border: 1px solid rgba(19, 194, 194, 0.5); /* 青色边框 */
+    background-color: rgba(19, 194, 194, 0.1);
+  }
+
+  .doc-image-content .doc-text-span:hover {
+    background-color: rgba(19, 194, 194, 0.2);
+    border-color: rgba(19, 194, 194, 0.8);
+    box-shadow: 0 1px 3px rgba(19, 194, 194, 0.3);
+  }
+
+  /* 公式内容的文字span样式 */
+  .doc-equation-content .doc-text-span {
+    border: 1px solid rgba(47, 84, 235, 0.5); /* 蓝色边框 */
+    background-color: rgba(47, 84, 235, 0.1);
+    font-family: 'Courier New', monospace;
+  }
+
+  .doc-equation-content .doc-text-span:hover {
+    background-color: rgba(47, 84, 235, 0.2);
+    border-color: rgba(47, 84, 235, 0.8);
+    box-shadow: 0 1px 3px rgba(47, 84, 235, 0.3);
+  }
+
+  /* 表格详细内容样式 */
+  .doc-detailed-table {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .doc-table-sub-block {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .doc-table-span {
+    position: absolute;
+    display: inline-block;
+    color: inherit;
+    font-family: inherit;
+    text-align: center;
+    vertical-align: top;
+    user-select: text;
+    cursor: pointer;
+    border: 2px solid rgba(250, 140, 22, 0.8);
+    border-radius: 4px;
+    background-color: rgba(250, 140, 22, 0.2);
+    font-weight: bold;
+  }
+
+  .doc-table-span:hover {
+    background-color: rgba(250, 140, 22, 0.4);
+    border-color: rgba(250, 140, 22, 1);
+    box-shadow: 0 2px 6px rgba(250, 140, 22, 0.4);
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .document-renderer {
+      padding: 10px;
+    }
+
+    .doc-info {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .doc-page-header {
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+    }
+
+    .doc-page-content {
+      padding: 15px;
+    }
+
+    .doc-page-stats {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  }
+
+  /* 动画效果 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .doc-page {
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  .doc-block {
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  /* 打印样式 */
+  @media print {
+    .document-renderer {
+      max-width: none;
+      padding: 0;
+    }
+
+    .doc-page {
+      break-after: page;
+      border: none;
+      box-shadow: none;
+    }
+
+    .doc-page-header,
+    .doc-page-stats {
+      display: none;
+    }
+  }
+}
