@@ -1,33 +1,40 @@
-import Assets from '@/Assets';
-import TestTemp from '@/pages/index/component/TestTemp';
-import TestUser from '@/pages/index/component/TestUser';
-import IconFont from '@/preset/component/IconFont';
-import { Card, DatePicker } from 'antd';
 import classNames from 'classnames';
+import { useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import styles from './IndexPage.module.less';
 
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 /**
  * IndexPage
  */
 function IndexPage() {
+  const [total, setTotal] = useState<number>();
   return (
     <div className={classNames(styles.IndexPage)}>
-      <Card title="图片">
-        <img src={Assets.react} />
-      </Card>
-      <Card title="字体图标">
-        <div className="HGroup">
-          <span>多彩图标：</span>
-          <IconFont type="icon-dianpu_" />
-          <span>单色图标：</span>
-          <IconFont type="e646" useCss />
-        </div>
-      </Card>
-      <Card title="数据仓库">
-        <TestUser />
-        <TestTemp />
-        <DatePicker />
-      </Card>
+      <Document
+        file='a.pdf'
+        onLoadSuccess={(document) => {
+          setTotal(document.numPages);
+        }}
+      >
+        {total &&
+          Array.from({ length: total }, (_, index) => (
+            <Page
+              customTextRenderer={(props) => {
+                console.log(props);
+                return `<span id="量之_${props.itemIndex}"  >${props.str}</span>`;
+              }}
+              key={index + 1}
+              pageNumber={index + 1}
+              width={800}
+            ></Page>
+          ))}
+      </Document>
     </div>
   );
 }
