@@ -23,11 +23,13 @@ import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import styles from './TaskDetail.module.less';
 
+import Code from '@/component/Code';
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
 import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
 import ITaskResultTableData from '../../interface/ITaskResultTableData';
+import { ISlateNode } from '../resultEditor/IResultNode';
 import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
 import DataInsert from './DataInsert';
 import DataInsertRecord from './DataInsertRecord';
@@ -54,7 +56,12 @@ function TaskDetail(props: ITaskDetailProps) {
   const [taskResultData, setTaskResultData] = useState<ITaskResultTableData>();
   const [loadingTaskResultData, setLoadingTaskResultData] = useState(false);
 
-  const editorRef = useRef<IResultEditorRef>();
+  const editorRef = useRef<IResultEditorRef>(undefined);
+
+  const [activingEditerRef, setActivingEditerRef] =
+    useState<IResultEditorRef>();
+
+  const [tempCode, setTempCode] = useState<ISlateNode[]>();
 
   // 单元格的ref列表
   const cellRefs = useRef<(IResultEditorRef | null)[][]>([]);
@@ -108,24 +115,36 @@ function TaskDetail(props: ITaskDetailProps) {
         <tbody>
           {dataSource.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>
-                  <ResultEditor
-                    className={styles.ResultEditor}
-                    initValue={cell}
-                    ref={(ref) => {
-                      if (!cellRefs.current[rowIndex]) {
-                        cellRefs.current[rowIndex] = [];
-                      }
-                      cellRefs.current[rowIndex][cellIndex] = ref;
-                    }}
-                    onClick={() => {
-                      editorRef.current =
-                        cellRefs.current[rowIndex][cellIndex] || undefined;
-                    }}
-                  />
-                </td>
-              ))}
+              {row.map((cell, cellIndex) => {
+                const selected =
+                  editorRef.current &&
+                  editorRef.current === cellRefs.current[rowIndex]?.[cellIndex];
+
+                console.log('selected', selected, rowIndex, cellIndex);
+
+                return (
+                  <td key={cellIndex}>
+                    <ResultEditor
+                      className={styles.ResultEditor}
+                      initValue={cell}
+                      ref={(ref) => {
+                        if (!cellRefs.current[rowIndex]) {
+                          cellRefs.current[rowIndex] = [];
+                        }
+                        cellRefs.current[rowIndex][cellIndex] = ref;
+                      }}
+                      onDoubleClick={() => {
+                        const targetEditor =
+                          cellRefs.current[rowIndex][cellIndex];
+
+                        editorRef.current = targetEditor || undefined;
+
+                        setTempCode(targetEditor?.value);
+                      }}
+                    />
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
@@ -142,6 +161,7 @@ function TaskDetail(props: ITaskDetailProps) {
         </div>
         <Alert message='a*****' showIcon />
         {renderResultTable()}
+        <Code language='JSON' code={JSON.stringify(tempCode, undefined, 2)} />
       </div>
     );
   };

@@ -5,6 +5,7 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { createEditor, Descendant } from 'slate';
 import { withHistory } from 'slate-history';
@@ -16,10 +17,12 @@ interface IResultEditorProps {
   className?: string;
   style?: CSSProperties;
 
-  initValue?: ISlateNode[] | null; // 初始值
+  initValue?: ISlateNode[] | null;
 
   readOnly?: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
+  onChange?: (value: ISlateNode[]) => void;
 }
 
 export interface IResultEditorRef {
@@ -28,6 +31,11 @@ export interface IResultEditorRef {
    * @param nodes 要插入的节点数组
    */
   insertNodes: (nodes: ISlateNode[]) => void;
+
+  /**
+   * 当前编辑器的值
+   */
+  value?: ISlateNode[];
 }
 
 /**
@@ -35,7 +43,15 @@ export interface IResultEditorRef {
  */
 const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
   (props, ref) => {
-    const { className, style, initValue, readOnly, onClick } = props;
+    const {
+      className,
+      style,
+      initValue,
+      readOnly,
+      onClick,
+      onChange,
+      onDoubleClick,
+    } = props;
 
     const editorRef = useRef<HTMLDivElement>(null);
 
@@ -60,11 +76,14 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
       ];
     }, [initValue]);
 
+    const [value, setValue] = useState<ISlateNode[]>(initialValue);
+
     useImperativeHandle(ref, () => ({
       insertNodes: (nodes: ISlateNode[]) => {
         editor.insertNodes(nodes);
         editorRef.current?.focus();
       },
+      value,
     }));
 
     const renderElement = useMemo(() => {
@@ -89,7 +108,14 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
     }, []);
 
     return (
-      <Slate editor={editor} initialValue={initialValue}>
+      <Slate
+        editor={editor}
+        initialValue={initialValue}
+        onChange={(value) => {
+          onChange?.(value as ISlateNode[]);
+          setValue(value as ISlateNode[]);
+        }}
+      >
         <Editable
           className={classNames(styles.ResultEditor, className)}
           style={style}
@@ -98,6 +124,7 @@ const ResultEditor = forwardRef<IResultEditorRef, IResultEditorProps>(
           placeholder='请输入内容...'
           renderElement={renderElement}
           onClick={onClick}
+          onDoubleClick={onDoubleClick}
         />
       </Slate>
     );
