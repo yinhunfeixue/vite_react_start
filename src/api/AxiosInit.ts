@@ -1,3 +1,4 @@
+import { SERVER_ROOT } from '@/Config';
 import PageUtil from '@/utils/PageUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { notification } from 'antd';
@@ -11,12 +12,12 @@ class AxiosInit {
    * 初始化 Axios 全局配置
    */
   static init() {
-    axios.defaults.baseURL = './';
+    axios.defaults.baseURL = SERVER_ROOT;
     axios.defaults.withCredentials = true;
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.interceptors.response.use(
       AxiosInit.successHandler,
-      AxiosInit.errorHandler
+      AxiosInit.errorHandler,
     );
     axios.interceptors.request.use((config) => {
       // 如需添加全局请求头，在这里配置
@@ -36,9 +37,9 @@ class AxiosInit {
    */
   static successHandler(response: AxiosResponse) {
     //当出错时，执行全局响应处理，并不再向后执行
-    const { code, message } = response.data;
-    if (code !== 200) {
-      AxiosInit.showErrorMessage(message);
+    const { code, msg } = response.data;
+    if (code !== '0') {
+      AxiosInit.showErrorMessage(msg);
       return Promise.reject();
     }
 

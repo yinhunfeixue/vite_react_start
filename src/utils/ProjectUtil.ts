@@ -1,3 +1,4 @@
+import cryptojs from 'crypto-js';
 import path from 'path-browserify';
 
 /**
@@ -5,6 +6,9 @@ import path from 'path-browserify';
  * 提供项目中常用的工具方法，包括异步延迟、路径解析等功能
  */
 class ProjectUtil {
+  static md5(input: string): string {
+    return cryptojs.MD5(input).toString(cryptojs.enc.Hex);
+  }
   /**
    * 异步延迟函数
    * @param time - 延迟时间，单位毫秒，默认 1000ms

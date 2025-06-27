@@ -1,7 +1,8 @@
-import IUser from '@/model/interface/IUser';
+import LoginApi, { ILoginValue } from '@/api/LoginApi';
 import useProjectStore from '@/model/ProjectStore';
+import ProjectUtil from '@/utils/ProjectUtil';
 import UrlUtil from '@/utils/UrlUtil';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -19,17 +20,23 @@ function Login() {
   const [searchParam] = useSearchParams();
   const query = Object.fromEntries(searchParam.entries());
 
-  const requestLogin = () => {
+  const requestLogin = (value: ILoginValue) => {
     setLoading(true);
-    assignStore({ token: 'login_test_token' });
-    message.success('登录成功').then(() => {
-      setLoading(false);
-      if (query?.back) {
-        window.location.href = decodeURIComponent(query.back as string);
-      } else {
-        UrlUtil.toUrl('/');
-      }
-    });
+    LoginApi.login({
+      ...value,
+      password: ProjectUtil.md5(value.password),
+    })
+      .then(() => {
+        setLoading(false);
+        if (query?.back) {
+          window.location.href = decodeURIComponent(query.back as string);
+        } else {
+          UrlUtil.toUrl('/');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -47,15 +54,15 @@ function Login() {
           >
             账号登录
           </h3>
-          <Form<IUser>
+          <Form<ILoginValue>
             layout='vertical'
             autoComplete='off'
-            onFinish={() => {
-              requestLogin();
+            onFinish={(value) => {
+              requestLogin(value);
             }}
           >
             <FormItem
-              name='account'
+              name='username'
               rules={[
                 {
                   required: true,
@@ -66,7 +73,6 @@ function Login() {
               <Input size='large' placeholder='请输入账号' />
             </FormItem>
             <FormItem
-              // label='密码'
               name='password'
               rules={[
                 {

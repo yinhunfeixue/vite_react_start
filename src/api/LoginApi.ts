@@ -1,4 +1,5 @@
 import StoreUtil from '@/utils/StoreUtil';
+import axios from 'axios';
 
 /**
  * 登录相关 API 工具类
@@ -12,5 +13,14 @@ class LoginApi {
   static logout() {
     StoreUtil.assignStore({ token: undefined });
   }
+
+  static login(data: ILoginValue): Promise<void> {
+    return axios.post(`/api/auth/login`, data);
+  }
+}
+
+export interface ILoginValue {
+  username: string;
+  password: string;
 }
 export default LoginApi;
