@@ -17,7 +17,7 @@ function IndexPage() {
   return (
     <div className={classNames(styles.IndexPage)}>
       <Document
-        file='a.pdf'
+        file='sg_annual_report_2023_zh.pdf'
         onLoadSuccess={(document) => {
           setTotal(document.numPages);
         }}
@@ -31,7 +31,7 @@ function IndexPage() {
               }}
               key={index + 1}
               pageNumber={index + 1}
-              width={800}
+              width={1400}
             ></Page>
           ))}
       </Document>
