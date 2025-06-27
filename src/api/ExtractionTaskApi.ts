@@ -54,13 +54,20 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 更新任务
+   */
+  static async updateExtractionTask(
+    data: Partial<IExtractionTask>,
+  ): Promise<boolean> {
+    const res = await axios.post(`/api/task/update`, data);
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
-  static async getTargetTables(
-    data: IPageRequest,
-  ): Promise<IPageResponse<ITargetTable>> {
-    const res = await axios.post(`/api/task/list`, data);
-    return res.data;
+  static async getTargetTables(data: IPageRequest): Promise<ITargetTable> {
+    return [];
   }
 
   /**

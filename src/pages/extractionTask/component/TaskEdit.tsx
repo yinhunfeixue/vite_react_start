@@ -13,22 +13,33 @@ interface ITaskEditProps {
   style?: CSSProperties;
   trigger: React.ReactElement;
   onSuccess?: () => void;
+
+  /**
+   * 目标任务
+   * 如果传入了目标任务，则表示编辑任务
+   *
+   * @default undefined
+   */
+  target?: IExtractionTask;
 }
 /**
  * TaskEdit
  */
 function TaskEdit(props: ITaskEditProps) {
-  const { className, style, trigger, onSuccess } = props;
+  const { className, style, trigger, onSuccess, target } = props;
   const formRef = useRef<ProFormInstance>();
+
+  // 是否编辑模式
+  const isEditMode = Boolean(target);
 
   return (
     <ModalForm<IExtractionTask>
       formRef={formRef}
-      title='新增任务'
+      title={isEditMode ? '编辑任务' : '新增任务'}
       width={480}
       submitter={{
         searchConfig: {
-          submitText: '创建任务',
+          submitText: isEditMode ? '保存任务' : '创建任务',
         },
       }}
       className={className}
@@ -36,10 +47,21 @@ function TaskEdit(props: ITaskEditProps) {
       trigger={trigger}
       layout='vertical'
       autoFocusFirstInput
+      initialValues={target}
+      onOpenChange={(open) => {
+        if (open) {
+          formRef.current?.resetFields();
+        }
+      }}
       onFinish={async (values) => {
-        return ExtractionTaskApi.createExtractionTask(values).then((data) => {
+        const promise = isEditMode
+          ? ExtractionTaskApi.updateExtractionTask({
+              ...values,
+              taskId: target?.taskId,
+            })
+          : ExtractionTaskApi.createExtractionTask(values);
+        return promise.then((data) => {
           if (data) {
-            formRef.current?.resetFields();
             onSuccess?.();
           }
           return data;

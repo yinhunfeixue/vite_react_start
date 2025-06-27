@@ -1,12 +1,14 @@
 import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
 import LinkButton from '@/component/linkButton/LinkButton';
+import XEmpty from '@/component/normal/XEmpty';
 import useUrlParam from '@/hooks/UseUrlParam';
 import { EditOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import styles from './ExtractionFilePage.module.less';
+import TaskEdit from './component/TaskEdit';
 import FileManage from './component/file/FileManage';
 import IExtractionTask from './interface/IExtractionTask';
 interface IExtractionFilePageProps {
@@ -23,23 +25,29 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
 
   //#region 任务详情
   const [taskDetail, setTaskDetail] = useState<IExtractionTask>();
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   const requestTaskDetail = async (taskId: string) => {
-    return await ExtractionTaskApi.getExtractionTaskDetail(taskId).then(
-      (data) => {
+    setLoadingDetail(true);
+    await ExtractionTaskApi.getExtractionTaskDetail(taskId)
+      .then((data) => {
         setTaskDetail(data);
         return data;
-      },
-    );
+      })
+      .finally(() => {
+        setLoadingDetail(false);
+      });
   };
-
-  console.log('taskId', taskId);
 
   //#endregion
 
   useEffect(() => {
     requestTaskDetail(taskId);
   }, [taskId]);
+
+  if (!taskDetail) {
+    return <XEmpty loading={loadingDetail} />;
+  }
 
   return (
     <div
@@ -49,10 +57,16 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
       <PageSmallHeader
         title={
           <Space>
-            <span>*****演习</span>
-            <LinkButton type='text'>
-              <EditOutlined />
-            </LinkButton>
+            <span>{taskDetail.taskName}</span>
+            <TaskEdit
+              target={taskDetail}
+              onSuccess={() => requestTaskDetail(taskId)}
+              trigger={
+                <LinkButton type='text'>
+                  <EditOutlined />
+                </LinkButton>
+              }
+            />
           </Space>
         }
         extra={<Button type='primary'>开始抽取</Button>}
