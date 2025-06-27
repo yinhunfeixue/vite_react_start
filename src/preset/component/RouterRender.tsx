@@ -22,18 +22,17 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
       }
       return 0;
     });
-    let result: ReactElement[] = data.map((item, index) => {
+    const result: ReactElement[] = data.map((item, index) => {
       const createElement = (props: any) => {
         if (item.redirect) {
           return <Navigate key={index} to={item.redirect} />;
         }
-        let ClassType = item.component;
+        const ClassType = item.component;
         if (ClassType) {
           return <ClassType {...props} />;
         }
         return null;
       };
-      console.log('item', item);
 
       return (
         <Route

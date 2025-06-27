@@ -3,8 +3,10 @@ import ContentLayout from '@/component/layout/ContentLayout';
 import ItemL1 from '@/component/listItem/itemL1/ItemL1';
 import ListItemWrap from '@/component/listItem/ListItemWrap';
 import AutoColumnGrid from '@/component/normal/autoColumnGrid/AutoColumnGrid';
+import XInputSearch from '@/component/normal/XInputSearch';
 import XPagination from '@/component/normal/XPagination';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
+import useUrlParam from '@/hooks/UseUrlParam';
 import { Button, Spin } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -17,17 +19,28 @@ interface IExtractionListPageProps {
   className?: string;
   style?: CSSProperties;
 }
+
+interface ISearchParams {
+  keyword?: string;
+}
 /**
  * ExtractionListPage
  */
 function ExtractionListPage(props: IExtractionListPageProps) {
   const { className, style } = props;
 
+  const [urlParam, setUrlParam] = useUrlParam<ISearchParams>();
+
+  const { keyword } = urlParam;
+
   const requestPageList = useCallback<PaginationFetcher<IExtractionTask>>(
     async (params) => {
-      return await ExtractionTaskApi.getExtractionTaskList(params);
+      return await ExtractionTaskApi.getExtractionTaskList({
+        ...params,
+        ...urlParam,
+      });
     },
-    [],
+    [urlParam],
   );
 
   const pageData = usePagination<IExtractionTask>(requestPageList);
@@ -57,6 +70,13 @@ function ExtractionListPage(props: IExtractionListPageProps) {
           />
         }
       >
+        <XInputSearch
+          placeholder='任务搜索'
+          defaultValue={keyword}
+          onSearch={(value) => {
+            setUrlParam({ keyword: value });
+          }}
+        />
         <Spin spinning={loading}>
           <AutoColumnGrid maxColumn={4}>
             {dataSource.map((item, index) => {
