@@ -6,7 +6,6 @@ import XInputSearch from '@/component/normal/XInputSearch';
 import XSelect from '@/component/normal/XSelect';
 import UploadDragger from '@/component/uploadDragger/UploadDragger';
 import AntdUtil from '@/utils/AntdUtil';
-import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, Divider, Space } from 'antd';
 import classNames from 'classnames';
@@ -137,7 +136,7 @@ function FileManage(props: IFileManageProps) {
         toolBarRender={
           hasData
             ? () => [
-                <Button ghost type='primary'>
+                <Button key='upload' ghost type='primary'>
                   上传文件
                 </Button>,
               ]
@@ -145,11 +144,10 @@ function FileManage(props: IFileManageProps) {
         }
         params={searchParams}
         request={async (params) => {
-          await ProjectUtil.sleep();
-          const data = await ExtractionTaskApi.getFileList(params);
-
-          setHasData(Boolean(data.total));
-          return data;
+          return {
+            total: 0,
+            data: [],
+          };
         }}
         rowKey={(...args) => {
           return args[1] || '';

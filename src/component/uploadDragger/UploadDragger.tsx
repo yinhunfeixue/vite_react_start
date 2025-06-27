@@ -1,3 +1,4 @@
+import FileApi from '@/api/FileApi';
 import { InboxOutlined } from '@ant-design/icons';
 import { DraggerProps, Upload } from 'antd';
 import classNames from 'classnames';
@@ -15,19 +16,22 @@ interface IUploadDraggerProps extends DraggerProps {
 function UploadDragger(props: IUploadDraggerProps) {
   const {
     className,
-    icon,
+    icon = <InboxOutlined />,
     desc = '点击或拖入文件',
     extra,
     ...otherProps
   } = props;
+
+  const defaultAction = (file: File) => {
+    return FileApi.uploadFile(file);
+  };
   return (
     <Upload.Dragger
+      action={defaultAction}
       {...otherProps}
       className={classNames(styles.UploadDragger, className)}
     >
-      <div className={styles.Icon}>
-        <InboxOutlined />
-      </div>
+      <div className={styles.Icon}>{icon}</div>
       <p className='ant-upload-hint'>{desc}</p>
       {extra}
     </Upload.Dragger>

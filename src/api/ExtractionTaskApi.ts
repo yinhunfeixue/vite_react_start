@@ -2,9 +2,6 @@ import IPageRequest from '@/interface/IPageRequest';
 import IPageResponse from '@/interface/IPageResponse';
 import IExtractionTask from '@/pages/extractionTask/interface/IExtractionTask';
 import ITargetTable from '@/pages/extractionTask/interface/ITargetTable';
-import ITaskFile from '@/pages/extractionTask/interface/ITaskFile';
-import ProjectUtil from '@/utils/ProjectUtil';
-import { RequestData } from '@ant-design/pro-components';
 import axios from 'axios';
 
 /**
@@ -64,29 +61,27 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 上传任务文件
+   */
+  static async uploadTaskFile(data: {
+    /**
+     * 任务文件ID
+     */
+    taskFileId: number;
+    /**
+     * 任务ID
+     */
+    taskId: number;
+  }): Promise<boolean> {
+    const res = await axios.post(`/api/task/addFile`, data);
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
   static async getTargetTables(data: IPageRequest): Promise<ITargetTable> {
     return [];
-  }
-
-  /**
-   * 分页获取文件列表
-   */
-  static async getFileList(params: any): Promise<RequestData<ITaskFile>> {
-    await ProjectUtil.sleep();
-    return {
-      total: 1,
-      data: [
-        {
-          id: 'file-1',
-          fileName: '文件1',
-          uploadTime: '2023-10-01 12:00:00',
-          tableList: ['table-1', 'table-2'],
-        },
-      ],
-      success: true,
-    };
   }
 }
 export default ExtractionTaskApi;
