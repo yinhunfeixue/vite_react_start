@@ -72,6 +72,7 @@ export default tseslint.config(
       'react/jsx-key': 'error',
       'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-namespace': 'off',
     },
   },
 );

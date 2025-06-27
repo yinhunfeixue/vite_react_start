@@ -1,11 +1,11 @@
+import ExtractionTaskApi from '@/api/ExtractionTaskApi';
+import ContentLayout from '@/component/layout/ContentLayout';
 import ItemL1 from '@/component/listItem/itemL1/ItemL1';
 import ListItemWrap from '@/component/listItem/ListItemWrap';
 import AutoColumnGrid from '@/component/normal/autoColumnGrid/AutoColumnGrid';
 import XPagination from '@/component/normal/XPagination';
-import ContentLayout from '@/component/layout/ContentLayout';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
-import ProjectUtil from '@/utils/ProjectUtil';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import classNames from 'classnames';
 import React, { CSSProperties, useCallback } from 'react';
 import TaskEdit from './component/TaskEdit';
@@ -21,26 +21,16 @@ interface IExtractionListPageProps {
 function ExtractionListPage(props: IExtractionListPageProps) {
   const { className, style } = props;
 
-  const requestPageList = useCallback<
-    PaginationFetcher<IExtractionTask>
-  >(async () => {
-    console.log('request');
-    await ProjectUtil.sleep();
-
-    return {
-      total: 123,
-      list: new Array(20).fill(0).map((_, index) => ({
-        id: index,
-        name: `任务 ${index + 1}`,
-      })),
-    };
-  }, []);
+  const requestPageList = useCallback<PaginationFetcher<IExtractionTask>>(
+    async (params) => {
+      return await ExtractionTaskApi.getExtractionTaskList(params);
+    },
+    [],
+  );
 
   const pageData = usePagination<IExtractionTask>(requestPageList);
   const { dataSource, total, currentPage, pageSize, loading, goToPage } =
     pageData;
-
-  console.log('loading', loading);
 
   return (
     <div
@@ -65,40 +55,43 @@ function ExtractionListPage(props: IExtractionListPageProps) {
           />
         }
       >
-        <AutoColumnGrid maxColumn={4}>
-          {dataSource.map((item, index) => {
-            return (
-              <ListItemWrap key={index} onClick={() => {}}>
-                <ItemL1
-                  key={item.id}
-                  title={{ text: item.name }}
-                  contents={[
-                    {
-                      icon: '',
-                      text: <>创建人: {item.createrName}</>,
-                    },
-                    {
-                      icon: '',
-                      text: (
-                        <>
-                          目标: {item.extractedCount}/{item.extractedCount}
-                        </>
-                      ),
-                    },
-                    {
-                      icon: '',
-                      text: (
-                        <>
-                          文件: {item.extractedFileCount}/{item.fileCount}
-                        </>
-                      ),
-                    },
-                  ]}
-                />
-              </ListItemWrap>
-            );
-          })}
-        </AutoColumnGrid>
+        <Spin spinning={loading}>
+          <AutoColumnGrid maxColumn={4}>
+            {dataSource.map((item, index) => {
+              return (
+                <ListItemWrap key={index} onClick={() => {}}>
+                  <ItemL1
+                    title={{ text: item.taskName }}
+                    contents={[
+                      {
+                        icon: '',
+                        text: <>创建人: {item.createUser}</>,
+                      },
+                      {
+                        icon: '',
+                        text: (
+                          <>
+                            目标: {item.completedTargetCount}/
+                            {item.totalTargetCount}
+                          </>
+                        ),
+                      },
+                      {
+                        icon: '',
+                        text: (
+                          <>
+                            文件: {item.completedFileCount}/
+                            {item.totalFileCount}
+                          </>
+                        ),
+                      },
+                    ]}
+                  />
+                </ListItemWrap>
+              );
+            })}
+          </AutoColumnGrid>
+        </Spin>
       </ContentLayout>
     </div>
   );

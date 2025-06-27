@@ -43,7 +43,7 @@ class AxiosInit {
       return Promise.reject();
     }
 
-    return response;
+    return response.data;
   }
 
   /**

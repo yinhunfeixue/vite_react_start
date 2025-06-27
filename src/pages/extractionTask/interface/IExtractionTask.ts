@@ -1,32 +1,55 @@
-import { Key } from 'react';
+import TaskStatus from '../enum/TaskStatus';
 
 /**
  * IExtractionTask
  */
 export default interface IExtractionTask {
-  id: Key;
-  name: string;
-  desc?: string;
-  createrName?: string;
-  updateTime?: string;
-
   /**
-   * 目标总数
+   * 已完成文件数量
    */
-  targetCount?: number;
-
+  completedFileCount?: number;
   /**
-   * 已提取目标数量
+   * 已入库目标数量
    */
-  extractedCount?: number;
-
+  completedTargetCount?: number;
   /**
-   * 文件总数
+   * 创建时间
    */
-  fileCount?: number;
-
+  createTime?: Date;
   /**
-   * 已提取文件数量
+   * 创建人
    */
-  extractedFileCount?: number;
+  createUser?: string;
+  /**
+   * 任务描述
+   */
+  taskDescription?: string;
+  /**
+   * 任务id
+   */
+  taskId?: number;
+  /**
+   * 任务名称
+   */
+  taskName?: string;
+  /**
+   * 任务状态
+   */
+  taskStatus?: TaskStatus;
+  /**
+   * 总文件数量
+   */
+  totalFileCount?: number;
+  /**
+   * 总目标数量
+   */
+  totalTargetCount?: number;
+  /**
+   * 更新时间
+   */
+  updateTime?: Date;
+  /**
+   * 更新人
+   */
+  updateUser?: string;
 }

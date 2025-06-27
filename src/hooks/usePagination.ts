@@ -24,7 +24,7 @@ export type PaginationFetcher<T = any> = (
  */
 interface PaginationResponse<T = any> {
   /** 数据列表 */
-  list: T[];
+  list?: T[];
   /** 总条数 */
   total: number;
 }

@@ -47,7 +47,6 @@ function FileManage(props: IFileManageProps) {
   const requestTargetTables = async () => {
     ExtractionTaskApi.getTargetTables().then((data) => {
       console.log('data', data);
-
       setTargetTables(data || []);
     });
   };

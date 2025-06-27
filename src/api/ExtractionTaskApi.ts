@@ -1,23 +1,33 @@
+import IPageRequest from '@/interface/IPageRequest';
+import IPageResponse from '@/interface/IPageResponse';
 import ITargetTable from '@/pages/extractionTask/interface/ITargetTable';
 import ITaskFile from '@/pages/extractionTask/interface/ITaskFile';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { RequestData } from '@ant-design/pro-components';
+import axios from 'axios';
 
 /**
  * ExtractionTaskApi
  */
 class ExtractionTaskApi {
   /**
+   * 获取抽取任务列表
+   */
+  static async getExtractionTaskList(
+    data: IPageRequest,
+  ): Promise<IPageResponse<ITargetTable>> {
+    const res = await axios.post(`/api/task/list`, data);
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
-  static async getTargetTables(): Promise<ITargetTable[]> {
-    await ProjectUtil.sleep();
-    return new Array(20).fill(0).map((_, index) => {
-      return {
-        id: `table-${index + 1}`,
-        name: `目标表 ${index + 1}`,
-      };
-    });
+  static async getTargetTables(
+    data: IPageRequest,
+  ): Promise<IPageResponse<ITargetTable>> {
+    const res = await axios.post(`/api/task/list`, data);
+    return res.data;
   }
 
   /**
