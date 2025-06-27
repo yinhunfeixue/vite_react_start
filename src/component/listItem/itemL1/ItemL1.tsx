@@ -93,6 +93,8 @@ const ItemL1: React.FC<IItemL1Props> = (props) => {
     return menus?.filter((item) => !item.flatToOut);
   }, [menus]);
 
+  console.log('outMenus', innerMenus);
+
   const renderTagFunc = () => {
     if (renderTag) {
       return renderTag();

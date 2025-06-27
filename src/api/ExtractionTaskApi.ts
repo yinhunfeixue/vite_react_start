@@ -22,6 +22,26 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 创建任务
+   */
+  static async createExtractionTask(
+    data: Partial<IExtractionTask>,
+  ): Promise<boolean> {
+    const res = await axios.post(`/api/task/create`, data);
+    return res.data;
+  }
+
+  /**
+   * 删除任务
+   */
+  static async deleteExtractionTask(taskId: string): Promise<boolean> {
+    const res = await axios.get(`/api/task/delete`, {
+      params: { taskId },
+    });
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
   static async getTargetTables(

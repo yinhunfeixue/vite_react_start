@@ -57,7 +57,12 @@ function ExtractionListPage(props: IExtractionListPageProps) {
         header={{
           title: '任务列表',
           extra: (
-            <TaskEdit trigger={<Button type='primary'>新增任务</Button>} />
+            <TaskEdit
+              trigger={<Button type='primary'>新增任务</Button>}
+              onSuccess={() => {
+                pageData.refresh();
+              }}
+            />
           ),
         }}
         footer={
@@ -113,6 +118,22 @@ function ExtractionListPage(props: IExtractionListPageProps) {
                             {item.totalFileCount}
                           </>
                         ),
+                      },
+                    ]}
+                    menus={[
+                      {
+                        key: 'delete',
+                        label: '删除',
+                        danger: true,
+                        onClick: () => {
+                          ExtractionTaskApi.deleteExtractionTask(
+                            item.taskId,
+                          ).then((res) => {
+                            if (res) {
+                              pageData.refresh();
+                            }
+                          });
+                        },
                       },
                     ]}
                   />

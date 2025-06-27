@@ -68,7 +68,7 @@ function usePagination<T = any>(
     page?: number;
     /**
      * 初始每页条数
-     * @default 10
+     * @default 12
      */
     pageSize?: number;
     /**
@@ -78,7 +78,7 @@ function usePagination<T = any>(
     autoLoad?: boolean;
   } = {},
 ): PaginationResult<T> {
-  const { page: defaultPage = 1, pageSize = 10, autoLoad = true } = options;
+  const { page: defaultPage = 1, pageSize = 12, autoLoad = true } = options;
   // 分页状态
   const [currentPage, setCurrentPage] = useState(defaultPage);
   const [data, setData] = useState<T[]>([]);

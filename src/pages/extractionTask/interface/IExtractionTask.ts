@@ -27,7 +27,7 @@ export default interface IExtractionTask {
   /**
    * 任务id
    */
-  taskId?: number;
+  taskId: string;
   /**
    * 任务名称
    */

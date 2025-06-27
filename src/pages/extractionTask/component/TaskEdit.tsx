@@ -1,24 +1,29 @@
-import ProjectUtil from '@/utils/ProjectUtil';
+import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import {
   ModalForm,
+  ProFormInstance,
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 import IExtractionTask from '../interface/IExtractionTask';
 
 interface ITaskEditProps {
   className?: string;
   style?: CSSProperties;
-  trigger: React.ReactNode;
+  trigger: React.ReactElement;
+  onSuccess?: () => void;
 }
 /**
  * TaskEdit
  */
 function TaskEdit(props: ITaskEditProps) {
-  const { className, style, trigger } = props;
+  const { className, style, trigger, onSuccess } = props;
+  const formRef = useRef<ProFormInstance>();
+
   return (
     <ModalForm<IExtractionTask>
+      formRef={formRef}
       title='新增任务'
       width={480}
       submitter={{
@@ -32,13 +37,21 @@ function TaskEdit(props: ITaskEditProps) {
       layout='vertical'
       autoFocusFirstInput
       onFinish={async (values) => {
-        await ProjectUtil.sleep();
-        console.log('vlaues', values);
-        return true;
+        return ExtractionTaskApi.createExtractionTask(values).then((data) => {
+          if (data) {
+            formRef.current?.resetFields();
+            onSuccess?.();
+          }
+          return data;
+        });
       }}
     >
-      <ProFormText label='任务名称' name='name' rules={[{ required: true }]} />
-      <ProFormTextArea label='任务描述' name='desc' />
+      <ProFormText
+        label='任务名称'
+        name='taskName'
+        rules={[{ required: true }]}
+      />
+      <ProFormTextArea label='任务描述' name='taskDescription' />
     </ModalForm>
   );
 }
