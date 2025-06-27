@@ -25,6 +25,10 @@ interface IItemL1Props extends IListItemProps {
     extra?: ReactNode;
     tipProps?: TooltipProps;
   };
+  /**
+   * 副标题
+   */
+  subTitle?: ReactNode;
   contents?: { icon?: ReactNode; text: ReactNode }[];
   tags?: { children: ReactNode; color?: string; style?: CSSProperties }[];
 
@@ -66,6 +70,7 @@ const ItemL1: React.FC<IItemL1Props> = (props) => {
     className,
     style,
     title,
+    subTitle,
     contents,
     tags,
     menus,
@@ -105,23 +110,31 @@ const ItemL1: React.FC<IItemL1Props> = (props) => {
   };
   return (
     <div className={classNames('ItemL1', className)} style={style}>
-      {title && (
-        <header
-          style={{
-            marginBottom: (contents?.length || 0) > 1 ? 16 : 4,
-            ...headerStyle,
-          }}
-        >
-          {title.icon}
-          <AutoTip
-            toolTipProps={title.tipProps}
-            content={title.text}
-            maxLine={title.maxLine}
-            title={title.tooltip}
-          />
-          {title.extra}
-        </header>
-      )}
+      <header
+        style={{
+          marginBottom: (contents?.length || 0) > 1 ? 16 : 4,
+          ...headerStyle,
+        }}
+      >
+        {title && (
+          <div className='ItemL1_Title'>
+            {title.icon}
+            <AutoTip
+              toolTipProps={title.tipProps}
+              content={title.text}
+              maxLine={title.maxLine}
+              title={title.tooltip}
+            />
+            {title.extra}
+          </div>
+        )}
+        {subTitle && (
+          <div className='ItemL1_SubTitle'>
+            <AutoTip content={subTitle} />
+          </div>
+        )}
+      </header>
+      {/* 内容区 */}
       {contents && (
         <main>
           {contents.map((item, index) => {

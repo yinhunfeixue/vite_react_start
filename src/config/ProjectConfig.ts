@@ -8,6 +8,8 @@ export const APP_NAME = '数据抽取系统';
  */
 export const APP_DESC = '数据抽取系统';
 
+export const SERVER_ROOT = '/';
+
 /**
  * 应用 LOGO URL
  */

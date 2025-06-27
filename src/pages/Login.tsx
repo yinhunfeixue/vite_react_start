@@ -1,4 +1,6 @@
 import LoginApi, { ILoginValue } from '@/api/LoginApi';
+import Assets from '@/Assets';
+import { APP_NAME } from '@/config/ProjectConfig';
 import useProjectStore from '@/model/ProjectStore';
 import ProjectUtil from '@/utils/ProjectUtil';
 import UrlUtil from '@/utils/UrlUtil';
@@ -42,7 +44,11 @@ function Login() {
   return (
     <div className={styles.Login}>
       <main className='VGroup'>
-        <h2>数据抽取系统</h2>
+        <header className='HGroup'>
+          <img src={Assets.logo} />
+          <h2>{APP_NAME}</h2>
+        </header>
+
         <div className={classNames(styles.LoginForm)}>
           <h3
             style={{

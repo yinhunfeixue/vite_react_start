@@ -1,4 +1,4 @@
-import { SERVER_ROOT } from '@/Config';
+import { SERVER_ROOT } from '@/config/ProjectConfig';
 import PageUtil from '@/utils/PageUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { notification } from 'antd';
@@ -13,7 +13,7 @@ class AxiosInit {
    */
   static init() {
     axios.defaults.baseURL = SERVER_ROOT;
-    axios.defaults.withCredentials = true;
+    axios.defaults.withCredentials = false;
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.interceptors.response.use(
       AxiosInit.successHandler,
@@ -22,8 +22,9 @@ class AxiosInit {
     axios.interceptors.request.use((config) => {
       // 如需添加全局请求头，在这里配置
       const token = StoreUtil.getStore().token;
+
       if (token) {
-        config.headers.token = token;
+        config.headers['dea-token'] = token;
       }
       return config;
     });

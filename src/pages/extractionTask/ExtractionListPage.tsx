@@ -7,10 +7,12 @@ import XPagination from '@/component/normal/XPagination';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
 import { Button, Spin } from 'antd';
 import classNames from 'classnames';
+import dayjs from 'dayjs';
 import React, { CSSProperties, useCallback } from 'react';
 import TaskEdit from './component/TaskEdit';
 import styles from './ExtractionListPage.module.less';
 import IExtractionTask from './interface/IExtractionTask';
+
 interface IExtractionListPageProps {
   className?: string;
   style?: CSSProperties;
@@ -62,6 +64,13 @@ function ExtractionListPage(props: IExtractionListPageProps) {
                 <ListItemWrap key={index} onClick={() => {}}>
                   <ItemL1
                     title={{ text: item.taskName }}
+                    subTitle={
+                      item.updateUser
+                        ? `${item.updateUser}更新于${dayjs(
+                            item.updateTime,
+                          ).format('MM月DD日 HH:mm')}`
+                        : '-'
+                    }
                     contents={[
                       {
                         icon: '',

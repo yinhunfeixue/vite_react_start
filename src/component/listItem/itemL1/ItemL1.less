@@ -1,17 +1,21 @@
 .ItemL1 {
-  > header {
+  .ItemL1_Title {
     display: flex;
     align-items: center;
     font-size: 18px;
-    > *:not(:last-child) {
-      margin-right: 4px;
-    }
+    gap: 4px;
+    margin-bottom: 4px;
   }
+
+  .ItemL1_SubTitle {
+    color: #5e6266;
+  }
+
   > main {
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 10px;
     .ContentItem {
       display: flex;
       align-items: center;
@@ -25,6 +29,7 @@
   > footer {
     display: flex;
     align-items: center;
+    margin-top: 10px;
     .FooterContent {
       flex-grow: 1;
       flex-shrink: 1;

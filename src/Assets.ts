@@ -8,6 +8,8 @@ import fileIcon_unknow from './assets/fileIcon/unknow.svg';
 import fileIcon_video from './assets/fileIcon/video.svg';
 import fileIcon_word from './assets/fileIcon/word.svg';
 import fileIcon_zip from './assets/fileIcon/zip.svg';
+import login_bg from './assets/login/bg.png';
+import logo from './assets/logo.svg';
 
 const Assets = {
   fileIcon_excel,
@@ -17,7 +19,9 @@ fileIcon_txt,
 fileIcon_unknow,
 fileIcon_video,
 fileIcon_word,
-fileIcon_zip
+fileIcon_zip,
+login_bg,
+logo
 };
 
 type AssetsType = typeof Assets

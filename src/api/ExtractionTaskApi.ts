@@ -1,5 +1,6 @@
 import IPageRequest from '@/interface/IPageRequest';
 import IPageResponse from '@/interface/IPageResponse';
+import IExtractionTask from '@/pages/extractionTask/interface/IExtractionTask';
 import ITargetTable from '@/pages/extractionTask/interface/ITargetTable';
 import ITaskFile from '@/pages/extractionTask/interface/ITaskFile';
 import ProjectUtil from '@/utils/ProjectUtil';
@@ -15,7 +16,7 @@ class ExtractionTaskApi {
    */
   static async getExtractionTaskList(
     data: IPageRequest,
-  ): Promise<IPageResponse<ITargetTable>> {
+  ): Promise<IPageResponse<IExtractionTask>> {
     const res = await axios.post(`/api/task/list`, data);
     return res.data;
   }

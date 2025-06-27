@@ -14,8 +14,12 @@ class LoginApi {
     StoreUtil.assignStore({ token: undefined });
   }
 
-  static login(data: ILoginValue): Promise<void> {
-    return axios.post(`/api/auth/login`, data);
+  static async login(body: ILoginValue): Promise<void> {
+    const res = await axios.post(`/api/auth/login`, body);
+    const { data } = res;
+    StoreUtil.assignStore({
+      token: data,
+    });
   }
 }
 
