@@ -12,7 +12,7 @@ import axios from 'axios';
  */
 class ExtractionTaskApi {
   /**
-   * 获取抽取任务列表
+   * 获取任务列表
    */
   static async getExtractionTaskList(
     data: IPageRequest,
@@ -36,6 +36,18 @@ class ExtractionTaskApi {
    */
   static async deleteExtractionTask(taskId: string): Promise<boolean> {
     const res = await axios.get(`/api/task/delete`, {
+      params: { taskId },
+    });
+    return res.data;
+  }
+
+  /**
+   * 获取任务详情
+   */
+  static async getExtractionTaskDetail(
+    taskId: string,
+  ): Promise<IExtractionTask> {
+    const res = await axios.get(`/api/task/detail`, {
       params: { taskId },
     });
     return res.data;

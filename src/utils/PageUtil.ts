@@ -11,5 +11,12 @@ class PageUtil {
   static openLoginPage(back: string = window.location.href) {
     UrlUtil.toUrl('/Login', { query: { back: encodeURIComponent(back) } });
   }
+
+  /**
+   * 打开抽取任务文件管理页
+   */
+  static openExtractionTaskFileManagePage(taskId: string) {
+    UrlUtil.toUrl(`/extraction/fileManage`, { query: { taskId } });
+  }
 }
 export default PageUtil;

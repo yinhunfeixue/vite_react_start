@@ -7,6 +7,7 @@ import XInputSearch from '@/component/normal/XInputSearch';
 import XPagination from '@/component/normal/XPagination';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
 import useUrlParam from '@/hooks/UseUrlParam';
+import PageUtil from '@/utils/PageUtil';
 import { Button, Spin } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -86,7 +87,12 @@ function ExtractionListPage(props: IExtractionListPageProps) {
           <AutoColumnGrid maxColumn={4}>
             {dataSource.map((item, index) => {
               return (
-                <ListItemWrap key={index} onClick={() => {}}>
+                <ListItemWrap
+                  key={index}
+                  onClick={() => {
+                    PageUtil.openExtractionTaskFileManagePage(item.taskId);
+                  }}
+                >
                   <ItemL1
                     title={{ text: item.taskName }}
                     subTitle={

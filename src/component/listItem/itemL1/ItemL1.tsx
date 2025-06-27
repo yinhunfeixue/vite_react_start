@@ -93,8 +93,6 @@ const ItemL1: React.FC<IItemL1Props> = (props) => {
     return menus?.filter((item) => !item.flatToOut);
   }, [menus]);
 
-  console.log('outMenus', innerMenus);
-
   const renderTagFunc = () => {
     if (renderTag) {
       return renderTag();
@@ -189,17 +187,19 @@ const ItemL1: React.FC<IItemL1Props> = (props) => {
                   style: { minWidth: 120 },
                 }}
               >
-                <Spin spinning={loading}>
-                  <IconFont
-                    onClick={(event) => event.stopPropagation()}
-                    type='icon-more'
-                    className={classNames(
-                      'IconButton',
-                      'ItemL1_MenuIcon',
-                      showMenuWhenHover && 'ItemL1_MenuIcon_WhenHover',
-                    )}
-                  />
-                </Spin>
+                <span>
+                  <Spin spinning={loading}>
+                    <IconFont
+                      onClick={(event) => event.stopPropagation()}
+                      type='icon-more'
+                      className={classNames(
+                        'IconButton',
+                        'ItemL1_MenuIcon',
+                        showMenuWhenHover && 'ItemL1_MenuIcon_WhenHover',
+                      )}
+                    />
+                  </Spin>
+                </span>
               </Dropdown>
             )}
           </div>
