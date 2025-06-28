@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Key } from 'react';
 
 /**
  * FileApi
@@ -30,11 +31,11 @@ class FileApi {
   /**
    * 下载文件
    */
-  static async downloadFile(fileId: string): Promise<Blob> {
-    const response = await axios.get(`/api/file/download`, {
-      params: { fileId },
-    });
-    return response.data;
+  static getDownloadUrl(fileId?: Key): string | null {
+    if (fileId) {
+      return `/api/file/download?id=${fileId}`;
+    }
+    return null;
   }
 }
 export default FileApi;

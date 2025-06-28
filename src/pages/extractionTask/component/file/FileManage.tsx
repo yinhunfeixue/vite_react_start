@@ -10,7 +10,7 @@ import FileType from '@/interface/FileType';
 import AntdUtil from '@/utils/AntdUtil';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Divider, Popconfirm, Space } from 'antd';
+import { Button, Divider, Image, Popconfirm, Space } from 'antd';
 import { UploadChangeParam, UploadFile } from 'antd/es/upload';
 import classNames from 'classnames';
 import React, {
@@ -164,9 +164,9 @@ function FileManage(props: IFileManageProps) {
           return (
             <IconLabel
               icon={
-                <img
-                  src={FileType.toIcon(record.taskFileFormat)}
-                  style={{ width: 16 }}
+                <Image
+                  src={FileType.toIcon(record.taskFileFormat, record.fileId)}
+                  style={{ width: 20 }}
                 />
               }
               label={record.taskFileName}

@@ -1,4 +1,6 @@
+import FileApi from '@/api/FileApi';
 import Assets from '@/Assets';
+import { Key } from 'react';
 
 /**
  * 文件扩展名枚举
@@ -29,7 +31,7 @@ namespace FileType {
   /**
    * 枚举值转换为字符串
    */
-  export function toIcon(value?: string) {
+  export function toIcon(value?: string, fileId?: Key) {
     const dic: Partial<Record<FileType, string>> = {
       [FileType.PDF]: Assets.fileIcon_pdf,
       [FileType.DOC]: Assets.fileIcon_word,
@@ -41,7 +43,12 @@ namespace FileType {
       [FileType.RAR]: Assets.fileIcon_zip,
       [FileType.ZIP7]: Assets.fileIcon_zip,
     };
-    return dic[value as FileType] || Assets.fileIcon_unknow;
+
+    return (
+      dic[value as FileType] ||
+      FileApi.getDownloadUrl(fileId) ||
+      Assets.fileIcon_unknow
+    );
   }
 }
 export default FileType;

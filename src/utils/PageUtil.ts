@@ -18,5 +18,13 @@ class PageUtil {
   static openExtractionTaskFileManagePage(taskId: string) {
     UrlUtil.toUrl(`/extraction/fileManage`, { query: { taskId } });
   }
+
+  /**
+   * 打开任务详情页
+   * @param taskId 任务ID
+   */
+  static openExtractionTaskDetailPage(taskId: string) {
+    UrlUtil.toUrl(`/extraction/detail`, { query: { taskId } });
+  }
 }
 export default PageUtil;

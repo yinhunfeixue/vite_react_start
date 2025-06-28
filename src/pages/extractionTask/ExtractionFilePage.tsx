@@ -3,6 +3,7 @@ import PageSmallHeader from '@/component/layout/PageSmallHeader';
 import LinkButton from '@/component/linkButton/LinkButton';
 import XEmpty from '@/component/normal/XEmpty';
 import useUrlParam from '@/hooks/UseUrlParam';
+import PageUtil from '@/utils/PageUtil';
 import { EditOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import classNames from 'classnames';
@@ -69,7 +70,16 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
             />
           </Space>
         }
-        extra={<Button type='primary'>开始抽取</Button>}
+        extra={
+          <Button
+            type='primary'
+            onClick={() => {
+              PageUtil.openExtractionTaskDetailPage(taskId);
+            }}
+          >
+            开始抽取
+          </Button>
+        }
       />
 
       <main>
