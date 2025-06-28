@@ -31,6 +31,13 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
     setLoadingDetail(true);
     await ExtractionTaskApi.getExtractionTaskDetail(taskId)
       .then((data) => {
+        data.taskFiles = new Array(123).fill(0).map((_, index) => ({
+          id: index.toString(),
+          taskFileName: `文件${index + 1}`,
+          taskFileFormat: 'txt',
+          uploadTime: new Date(),
+          tableList: [],
+        }));
         setTaskDetail(data);
         return data;
       })
@@ -73,7 +80,7 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
       />
 
       <main>
-        <FileManage className={styles.FileManage} />
+        <FileManage className={styles.FileManage} task={taskDetail} />
       </main>
     </div>
   );

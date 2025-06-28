@@ -1,4 +1,5 @@
 import cryptojs from 'crypto-js';
+import dayjs from 'dayjs';
 import path from 'path-browserify';
 
 /**
@@ -52,6 +53,22 @@ class ProjectUtil {
       return `${name1}[${name2}]`;
     }
     return name1 || name2 || '';
+  }
+
+  static DATE_FORMAT = 'YYYY-MM-DD';
+
+  static TIME_FORMAT = 'HH:mm:ss';
+
+  static DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+  static formatDate(
+    date?: Date | string,
+    format = ProjectUtil.DATETIME_FORMAT,
+  ): string {
+    if (!date) {
+      return '';
+    }
+    return dayjs(date).format(format);
   }
 }
 export default ProjectUtil;

@@ -1,21 +1,34 @@
 import ExtractionTaskApi from '@/api/ExtractionTaskApi';
-import Assets from '@/Assets';
 import IconLabel from '@/component/iconLabel/IconLabel';
 import LinkButton from '@/component/linkButton/LinkButton';
 import XInputSearch from '@/component/normal/XInputSearch';
 import XSelect from '@/component/normal/XSelect';
 import UploadDragger from '@/component/uploadDragger/UploadDragger';
+import useUrlParam from '@/hooks/UseUrlParam';
+import FileType from '@/interface/FileType';
 import AntdUtil from '@/utils/AntdUtil';
+import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, Divider, Space } from 'antd';
 import classNames from 'classnames';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import IExtractionTask from '../../interface/IExtractionTask';
 import ITargetTable from '../../interface/ITargetTable';
 import ITaskFile from '../../interface/ITaskFile';
 import styles from './FileManage.module.less';
 interface IFileManageProps {
   className?: string;
   style?: CSSProperties;
+
+  onFileChange?: () => void;
+
+  task: IExtractionTask;
 }
 
 interface ISearchParams {
@@ -26,17 +39,35 @@ interface ISearchParams {
  * FileManage
  */
 function FileManage(props: IFileManageProps) {
-  const { className, style } = props;
+  const { className, style, onFileChange, task } = props;
 
-  const [searchParams, setSearchParams] = useState<ISearchParams>();
+  //#region 文件列表
+  const [urlParams, setUrlParams] = useUrlParam<ISearchParams>();
+  const { taskFiles } = task;
+
+  const displayTaskFiles = useMemo(() => {
+    if (!taskFiles) {
+      return [];
+    }
+
+    const keyword = urlParams?.keyword;
+    if (!keyword) {
+      return taskFiles;
+    }
+    return taskFiles.filter((file) => {
+      return file.taskFileName?.includes(keyword);
+    });
+  }, [taskFiles, urlParams]);
+
+  //#endregion
 
   const [forceUpdate, setForceUpdate] = useState(1);
-  const forceUpdateTable = () => {
+  const forceUpdateTable = useCallback(() => {
     setForceUpdate(forceUpdate + 1);
-  };
+  }, [forceUpdate]);
 
   //#region 是否有数据
-  const [hasData, setHasData] = useState(false);
+  const hasData = Boolean(taskFiles?.length);
 
   //#region
 
@@ -44,17 +75,19 @@ function FileManage(props: IFileManageProps) {
   const [targetTables, setTargetTables] = useState<ITargetTable[]>([]);
 
   const requestTargetTables = async () => {
-    ExtractionTaskApi.getTargetTables().then((data) => {
-      console.log('data', data);
-      setTargetTables(data || []);
-    });
+    const tables = await ExtractionTaskApi.getTargetTables();
+    setTargetTables(tables);
   };
+
+  useEffect(() => {
+    requestTargetTables();
+  }, []);
 
   //#endregion
 
   const updateSearchParams = (params: ISearchParams) => {
-    setSearchParams({
-      ...searchParams,
+    setUrlParams({
+      ...urlParams,
       ...params,
     });
   };
@@ -63,11 +96,17 @@ function FileManage(props: IFileManageProps) {
     return [
       {
         title: '文件',
+        width: '30%',
         render: (_, record) => {
           return (
             <IconLabel
-              icon={<img src={Assets.fileIcon_excel} style={{ width: 16 }} />}
-              label={record.fileName}
+              icon={
+                <img
+                  src={FileType.toIcon(record.taskFileFormat)}
+                  style={{ width: 16 }}
+                />
+              }
+              label={record.taskFileName}
             />
           );
         },
@@ -76,12 +115,11 @@ function FileManage(props: IFileManageProps) {
         title: '上传时间',
         width: 200,
         render: (_, record) => {
-          return <span>{record.uploadTime}</span>;
+          return <span>{ProjectUtil.formatDate(record.uploadTime)}</span>;
         },
       },
       {
         title: '映射目标表',
-        width: 400,
         render: (_, record) => {
           return (
             <XSelect
@@ -90,7 +128,7 @@ function FileManage(props: IFileManageProps) {
               value={record.tableList}
               maxTagCount={3}
               options={targetTables}
-              fieldNames={{ label: 'name', value: 'id' }}
+              fieldNames={{ label: 'targetName', value: 'targetId' }}
               onChange={(value) => {
                 record.tableList = value as string[];
                 forceUpdateTable();
@@ -101,7 +139,7 @@ function FileManage(props: IFileManageProps) {
       },
       {
         title: '操作',
-        width: 200,
+        width: 180,
         render: (_, record) => {
           return (
             <Space
@@ -115,11 +153,14 @@ function FileManage(props: IFileManageProps) {
         },
       },
     ];
-  }, [targetTables]);
+  }, [targetTables, forceUpdateTable]);
 
-  useEffect(() => {
-    requestTargetTables();
-  }, []);
+  const addTaskFile = async (fileId: string) => {
+    return ExtractionTaskApi.addTaskFile({
+      taskId: task.taskId,
+      taskFileId: fileId,
+    });
+  };
 
   return (
     <div className={classNames(styles.FileManage, className)} style={style}>
@@ -133,6 +174,7 @@ function FileManage(props: IFileManageProps) {
             onSearch={(value) => updateSearchParams({ keyword: value })}
           />
         }
+        dataSource={displayTaskFiles}
         toolBarRender={
           hasData
             ? () => [
@@ -142,13 +184,6 @@ function FileManage(props: IFileManageProps) {
               ]
             : false
         }
-        params={searchParams}
-        request={async (params) => {
-          return {
-            total: 0,
-            data: [],
-          };
-        }}
         rowKey={(...args) => {
           return args[1] || '';
         }}
@@ -160,7 +195,18 @@ function FileManage(props: IFileManageProps) {
         options={false}
         columns={columns}
         locale={{
-          emptyText: <UploadDragger />,
+          emptyText: (
+            <UploadDragger
+              onChange={(info) => {
+                if (info.file.status === 'done') {
+                  const id = info.file.response.data;
+                  addTaskFile(id).then(() => {
+                    onFileChange?.();
+                  });
+                }
+              }}
+            />
+          ),
         }}
       />
     </div>

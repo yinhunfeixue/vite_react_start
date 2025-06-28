@@ -22,12 +22,10 @@ function UploadDragger(props: IUploadDraggerProps) {
     ...otherProps
   } = props;
 
-  const defaultAction = (file: File) => {
-    return FileApi.uploadFile(file);
-  };
   return (
     <Upload.Dragger
-      action={defaultAction}
+      action={FileApi.uploadUrl}
+      data={{ fileModuleName: 'EXTRACTION' }}
       {...otherProps}
       className={classNames(styles.UploadDragger, className)}
     >

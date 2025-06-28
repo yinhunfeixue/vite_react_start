@@ -1,4 +1,5 @@
 import TaskStatus from '../enum/TaskStatus';
+import ITaskFile from './ITaskFile';
 
 /**
  * IExtractionTask
@@ -52,4 +53,9 @@ export default interface IExtractionTask {
    * 更新人
    */
   updateUser?: string;
+
+  /**
+   * 任务文件列表
+   */
+  taskFiles?: ITaskFile[];
 }

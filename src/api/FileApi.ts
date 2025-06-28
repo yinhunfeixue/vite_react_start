@@ -5,6 +5,13 @@ import axios from 'axios';
  */
 class FileApi {
   /**
+   * 获取文件上传url
+   */
+  static get uploadUrl(): string {
+    return `/api/file/upload`;
+  }
+
+  /**
    * 上传文件
    */
   static async uploadFile(

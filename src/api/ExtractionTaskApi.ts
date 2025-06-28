@@ -3,6 +3,7 @@ import IPageResponse from '@/interface/IPageResponse';
 import IExtractionTask from '@/pages/extractionTask/interface/IExtractionTask';
 import ITargetTable from '@/pages/extractionTask/interface/ITargetTable';
 import axios from 'axios';
+import { Key } from 'react';
 
 /**
  * ExtractionTaskApi
@@ -61,17 +62,17 @@ class ExtractionTaskApi {
   }
 
   /**
-   * 上传任务文件
+   * 保存任务文件
    */
-  static async uploadTaskFile(data: {
+  static async addTaskFile(data: {
     /**
      * 任务文件ID
      */
-    taskFileId: number;
+    taskFileId: Key;
     /**
      * 任务ID
      */
-    taskId: number;
+    taskId: Key;
   }): Promise<boolean> {
     const res = await axios.post(`/api/task/addFile`, data);
     return res.data;
@@ -80,8 +81,9 @@ class ExtractionTaskApi {
   /**
    * 获取目标表列表
    */
-  static async getTargetTables(data: IPageRequest): Promise<ITargetTable> {
-    return [];
+  static async getTargetTables(): Promise<ITargetTable[]> {
+    const res = await axios.get(`/api/target/list`);
+    return res.data;
   }
 }
 export default ExtractionTaskApi;
