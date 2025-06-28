@@ -73,6 +73,7 @@ export default tseslint.config(
       'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-namespace': 'off',
+      'no-case-declarations': 'off',
     },
   },
 );

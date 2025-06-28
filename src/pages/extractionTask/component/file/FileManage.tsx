@@ -48,6 +48,8 @@ function FileManage(props: IFileManageProps) {
   const [urlParams, setUrlParams] = useUrlParam<ISearchParams>();
   const { taskFiles } = task;
 
+  const [uploadingFile, setUploadingFile] = useState(false);
+
   const displayTaskFiles = useMemo(() => {
     if (!taskFiles) {
       return [];
@@ -67,7 +69,7 @@ function FileManage(props: IFileManageProps) {
    */
   const deleteFile = useCallback(
     (file: ITaskFile) => {
-      ExtractionTaskApi.deleteTaskFile(file.taskFileId).then((res) => {
+      ExtractionTaskApi.deleteTaskFile(file.taskFileId).then(() => {
         onFileChange?.();
       });
     },
@@ -88,6 +90,37 @@ function FileManage(props: IFileManageProps) {
     },
     [onFileChange],
   );
+
+  /**
+   * 文件上传后，添加文件到任务
+   */
+  const handleFileUpload = (info: UploadChangeParam<UploadFile<any>>) => {
+    switch (info.file.status) {
+      case 'uploading':
+        setUploadingFile(true);
+        break;
+      case 'error':
+        setUploadingFile(false);
+        break;
+      case 'removed':
+        setUploadingFile(false);
+        break;
+      case 'done':
+        setUploadingFile(false);
+        const id = info.file.response.data;
+        addTaskFile(id).then(() => {
+          onFileChange?.();
+        });
+        break;
+    }
+  };
+
+  const addTaskFile = async (fileId: string) => {
+    return ExtractionTaskApi.addTaskFile({
+      taskId: task.taskId,
+      taskFileId: fileId,
+    });
+  };
 
   //#endregion
 
@@ -222,26 +255,7 @@ function FileManage(props: IFileManageProps) {
         },
       },
     ];
-  }, [targetTables, forceUpdateTable, deleteFile]);
-
-  const addTaskFile = async (fileId: string) => {
-    return ExtractionTaskApi.addTaskFile({
-      taskId: task.taskId,
-      taskFileId: fileId,
-    });
-  };
-
-  /**
-   * 文件上传后，添加文件到任务
-   */
-  const handleFileUpload = (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'done') {
-      const id = info.file.response.data;
-      addTaskFile(id).then(() => {
-        onFileChange?.();
-      });
-    }
-  };
+  }, [targetTables, forceUpdateTable, deleteFile, updateFile]);
 
   return (
     <div className={classNames(styles.FileManage, className)} style={style}>
@@ -259,8 +273,12 @@ function FileManage(props: IFileManageProps) {
         toolBarRender={
           hasData
             ? () => [
-                <XUpload key='upload' onChange={handleFileUpload}>
-                  <Button ghost type='primary'>
+                <XUpload
+                  key='upload'
+                  onChange={handleFileUpload}
+                  showUploadList={false}
+                >
+                  <Button ghost type='primary' loading={uploadingFile}>
                     上传文件
                   </Button>
                 </XUpload>,
@@ -278,7 +296,13 @@ function FileManage(props: IFileManageProps) {
         options={false}
         columns={columns}
         locale={{
-          emptyText: <UploadDragger onChange={handleFileUpload} />,
+          emptyText: (
+            <UploadDragger
+              onChange={handleFileUpload}
+              loading={uploadingFile}
+              showUploadList={false}
+            />
+          ),
         }}
       />
     </div>
