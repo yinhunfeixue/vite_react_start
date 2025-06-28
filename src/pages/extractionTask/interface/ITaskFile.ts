@@ -33,5 +33,5 @@ export default interface ITaskFile {
    */
   uploadTime?: Date;
 
-  tableList?: string[];
+  targetId?: string[];
 }

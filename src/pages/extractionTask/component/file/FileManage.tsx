@@ -13,7 +13,6 @@ import { Button, Divider, Popconfirm, Space } from 'antd';
 import classNames from 'classnames';
 import React, {
   CSSProperties,
-  Key,
   useCallback,
   useEffect,
   useMemo,
@@ -61,12 +60,28 @@ function FileManage(props: IFileManageProps) {
     });
   }, [taskFiles, urlParams]);
 
+  /**
+   * 删除文件
+   */
   const deleteFile = useCallback(
-    (fileId: Key) => {
-      ExtractionTaskApi.deleteTaskFile(fileId).then((res) => {
-        if (res) {
-          onFileChange?.();
-        }
+    (file: ITaskFile) => {
+      ExtractionTaskApi.deleteTaskFile(file.taskFileId).then((res) => {
+        onFileChange?.();
+      });
+    },
+    [onFileChange],
+  );
+
+  /**
+   * 更新文件
+   */
+  const updateFile = useCallback(
+    (file: ITaskFile) => {
+      ExtractionTaskApi.updateTaskFile({
+        taskFileId: file.taskFileId,
+        targetId: file.targetId,
+      }).then(() => {
+        onFileChange?.();
       });
     },
     [onFileChange],
@@ -138,12 +153,12 @@ function FileManage(props: IFileManageProps) {
             <XSelect
               style={{ width: '100%' }}
               mode='tags'
-              value={record.tableList}
+              value={record.targetId}
               maxTagCount={3}
               options={targetTables}
               fieldNames={{ label: 'targetName', value: 'targetId' }}
               onChange={(value) => {
-                record.tableList = value as string[];
+                record.targetId = value as string[];
                 forceUpdateTable();
               }}
             />
@@ -175,14 +190,14 @@ function FileManage(props: IFileManageProps) {
                 okText='更新文件'
                 disabled={!needConfirmUpdate}
                 onConfirm={() => {
-                  console.log('update');
+                  updateFile(record);
                 }}
               >
                 <span>
                   <LinkButton
                     onClick={() => {
                       if (!needConfirmUpdate) {
-                        console.log('update2');
+                        updateFile(record);
                       }
                     }}
                   >
@@ -194,7 +209,7 @@ function FileManage(props: IFileManageProps) {
               <LinkButton>查看</LinkButton>
               <Popconfirm
                 title='确定删除该文件吗？'
-                onConfirm={() => deleteFile(record.taskFileId)}
+                onConfirm={() => deleteFile(record)}
               >
                 <span>
                   <LinkButton disabled={disabledDelete}>删除</LinkButton>

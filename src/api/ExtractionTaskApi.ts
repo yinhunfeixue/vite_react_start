@@ -89,6 +89,23 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 更新文件
+   */
+  static async updateTaskFile(data: {
+    /**
+     * 目标ID列表
+     */
+    targetId?: Key[];
+    /**
+     * 任务文件ID
+     */
+    taskFileId: Key;
+  }): Promise<boolean> {
+    const res = await axios.post(`/api/task/updateTaskFileTarget`, data);
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
   static async getTargetTables(): Promise<ITargetTable[]> {
