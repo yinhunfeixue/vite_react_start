@@ -1,4 +1,4 @@
-import FileApi from '@/api/FileApi';
+import AntdUtil from '@/utils/AntdUtil';
 import { InboxOutlined } from '@ant-design/icons';
 import { DraggerProps, Upload } from 'antd';
 import classNames from 'classnames';
@@ -24,8 +24,7 @@ function UploadDragger(props: IUploadDraggerProps) {
 
   return (
     <Upload.Dragger
-      action={FileApi.uploadUrl}
-      data={{ fileModuleName: 'EXTRACTION' }}
+      {...AntdUtil.uploadDefaultProps}
       {...otherProps}
       className={classNames(styles.UploadDragger, className)}
     >

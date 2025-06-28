@@ -3,6 +3,7 @@ import IconLabel from '@/component/iconLabel/IconLabel';
 import LinkButton from '@/component/linkButton/LinkButton';
 import XInputSearch from '@/component/normal/XInputSearch';
 import XSelect from '@/component/normal/XSelect';
+import XUpload from '@/component/normal/XUpload';
 import UploadDragger from '@/component/uploadDragger/UploadDragger';
 import useUrlParam from '@/hooks/UseUrlParam';
 import FileType from '@/interface/FileType';
@@ -10,6 +11,7 @@ import AntdUtil from '@/utils/AntdUtil';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Space } from 'antd';
+import { UploadChangeParam, UploadFile } from 'antd/es/upload';
 import classNames from 'classnames';
 import React, {
   CSSProperties,
@@ -229,6 +231,18 @@ function FileManage(props: IFileManageProps) {
     });
   };
 
+  /**
+   * 文件上传后，添加文件到任务
+   */
+  const handleFileUpload = (info: UploadChangeParam<UploadFile<any>>) => {
+    if (info.file.status === 'done') {
+      const id = info.file.response.data;
+      addTaskFile(id).then(() => {
+        onFileChange?.();
+      });
+    }
+  };
+
   return (
     <div className={classNames(styles.FileManage, className)} style={style}>
       <h5>文件管理</h5>
@@ -245,9 +259,11 @@ function FileManage(props: IFileManageProps) {
         toolBarRender={
           hasData
             ? () => [
-                <Button key='upload' ghost type='primary'>
-                  上传文件
-                </Button>,
+                <XUpload key='upload' onChange={handleFileUpload}>
+                  <Button ghost type='primary'>
+                    上传文件
+                  </Button>
+                </XUpload>,
               ]
             : false
         }
@@ -262,18 +278,7 @@ function FileManage(props: IFileManageProps) {
         options={false}
         columns={columns}
         locale={{
-          emptyText: (
-            <UploadDragger
-              onChange={(info) => {
-                if (info.file.status === 'done') {
-                  const id = info.file.response.data;
-                  addTaskFile(id).then(() => {
-                    onFileChange?.();
-                  });
-                }
-              }}
-            />
-          ),
+          emptyText: <UploadDragger onChange={handleFileUpload} />,
         }}
       />
     </div>

@@ -1,10 +1,14 @@
-import { PaginationProps } from 'antd';
+import FileApi from '@/api/FileApi';
+import { PaginationProps, UploadProps } from 'antd';
 import { BaseOptionType } from 'antd/es/select';
 
 /**
  * AntdUtil
  */
 class AntdUtil {
+  /**
+   * 分页组件的默认配置
+   */
   static paginationDefaultProps: PaginationProps = {
     showTotal: (value) => (
       <>
@@ -28,5 +32,13 @@ class AntdUtil {
       (item) => item && item.toLowerCase().includes(input.toLowerCase()),
     );
   }
+
+  /**
+   * 上传组件的默认配置
+   */
+  static uploadDefaultProps: UploadProps = {
+    action: FileApi.uploadUrl,
+    data: { fileModuleName: 'EXTRACTION' },
+  };
 }
 export default AntdUtil;
