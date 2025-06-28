@@ -11,7 +11,7 @@ export default interface ITaskFile {
   /**
    * 文件抽取状态
    */
-  extractorStatus?: ExtractorStatus;
+  extractorStatus: ExtractorStatus;
   /**
    * 文件ID(下载文件用)
    */
@@ -23,7 +23,7 @@ export default interface ITaskFile {
   /**
    * 任务文件ID(业务ID)
    */
-  taskFileId?: number;
+  taskFileId: number;
   /**
    * 任务文件名称
    */

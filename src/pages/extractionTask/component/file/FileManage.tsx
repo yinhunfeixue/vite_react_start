@@ -9,15 +9,17 @@ import FileType from '@/interface/FileType';
 import AntdUtil from '@/utils/AntdUtil';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Divider, Space } from 'antd';
+import { Button, Divider, Popconfirm, Space } from 'antd';
 import classNames from 'classnames';
 import React, {
   CSSProperties,
+  Key,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
+import ExtractorStatus from '../../enum/ExtractorStatus';
 import IExtractionTask from '../../interface/IExtractionTask';
 import ITargetTable from '../../interface/ITargetTable';
 import ITaskFile from '../../interface/ITaskFile';
@@ -58,6 +60,17 @@ function FileManage(props: IFileManageProps) {
       return file.taskFileName?.includes(keyword);
     });
   }, [taskFiles, urlParams]);
+
+  const deleteFile = useCallback(
+    (fileId: Key) => {
+      ExtractionTaskApi.deleteTaskFile(fileId).then((res) => {
+        if (res) {
+          onFileChange?.();
+        }
+      });
+    },
+    [onFileChange],
+  );
 
   //#endregion
 
@@ -141,19 +154,58 @@ function FileManage(props: IFileManageProps) {
         title: '操作',
         width: 180,
         render: (_, record) => {
+          const { extractorStatus } = record;
+
+          const disabledDelete = [ExtractorStatus.Completed].includes(
+            extractorStatus,
+          );
+
+          // 更新是否需要二次确认
+          const needConfirmUpdate = [ExtractorStatus.Completed].includes(
+            extractorStatus,
+          );
+
           return (
             <Space
               split={<Divider type='vertical' style={{ margin: '0 4px' }} />}
             >
-              <LinkButton>更新</LinkButton>
+              <Popconfirm
+                title='文件更新'
+                description='文件已抽取完成，是否更新文件？'
+                okText='更新文件'
+                disabled={!needConfirmUpdate}
+                onConfirm={() => {
+                  console.log('update');
+                }}
+              >
+                <span>
+                  <LinkButton
+                    onClick={() => {
+                      if (!needConfirmUpdate) {
+                        console.log('update2');
+                      }
+                    }}
+                  >
+                    更新
+                  </LinkButton>
+                </span>
+              </Popconfirm>
+
               <LinkButton>查看</LinkButton>
-              <LinkButton>删除</LinkButton>
+              <Popconfirm
+                title='确定删除该文件吗？'
+                onConfirm={() => deleteFile(record.taskFileId)}
+              >
+                <span>
+                  <LinkButton disabled={disabledDelete}>删除</LinkButton>
+                </span>
+              </Popconfirm>
             </Space>
           );
         },
       },
     ];
-  }, [targetTables, forceUpdateTable]);
+  }, [targetTables, forceUpdateTable, deleteFile]);
 
   const addTaskFile = async (fileId: string) => {
     return ExtractionTaskApi.addTaskFile({

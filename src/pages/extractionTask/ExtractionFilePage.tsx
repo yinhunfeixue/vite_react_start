@@ -10,6 +10,7 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import styles from './ExtractionFilePage.module.less';
 import TaskEdit from './component/TaskEdit';
 import FileManage from './component/file/FileManage';
+import ExtractorStatus from './enum/ExtractorStatus';
 import IExtractionTask from './interface/IExtractionTask';
 interface IExtractionFilePageProps {
   className?: string;
@@ -32,10 +33,11 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
     await ExtractionTaskApi.getExtractionTaskDetail(taskId)
       .then((data) => {
         data.taskFiles = new Array(123).fill(0).map((_, index) => ({
-          id: index.toString(),
+          taskFileId: index,
           taskFileName: `文件${index + 1}`,
           taskFileFormat: 'txt',
           uploadTime: new Date(),
+          extractorStatus: ExtractorStatus.Extracting,
           tableList: [],
         }));
         setTaskDetail(data);

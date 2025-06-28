@@ -79,6 +79,16 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 删除任务文件
+   */
+  static async deleteTaskFile(taskFileId: Key): Promise<boolean> {
+    const res = await axios.get(`/api/task/deleteFile`, {
+      params: { taskFileId },
+    });
+    return res.data;
+  }
+
+  /**
    * 获取目标表列表
    */
   static async getTargetTables(): Promise<ITargetTable[]> {
