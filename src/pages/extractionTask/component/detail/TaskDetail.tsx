@@ -20,126 +20,126 @@ import {
   Tabs,
 } from 'antd';
 import classNames from 'classnames';
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import React, {
+  CSSProperties,
+  Key,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import styles from './TaskDetail.module.less';
 
-import Code from '@/component/Code';
+import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
 import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
-import ITaskResultTableData from '../../interface/ITaskResultTableData';
-import { ISlateNode } from '../resultEditor/IResultNode';
-import ResultEditor, { IResultEditorRef } from '../resultEditor/ResultEditor';
+import { TextAreaRef } from 'antd/es/input/TextArea';
+import IExtractionTask from '../../interface/IExtractionTask';
+import { ITaskExtractResult } from '../../interface/ITaskExtractResult';
 import DataInsert from './DataInsert';
 import DataInsertRecord from './DataInsertRecord';
 import DocumentItem from './DocumentItem';
 interface ITaskDetailProps {
   className?: string;
   style?: CSSProperties;
+
+  /**
+   * 任务ID
+   */
+  taskId?: string;
 }
 /**
  * TaskDetail
  */
 function TaskDetail(props: ITaskDetailProps) {
-  const { className, style } = props;
+  const { className, style, taskId } = props;
 
-  const [selectedTabKey, setSelectedTabKey] = useState<string>();
+  const [taskDetail, setTaskDetail] = useState<IExtractionTask>();
+  const [loadingTaskDetail, setLoadingTaskDetail] = useState(false);
+
+  const requestTaskDetail = async (taskId?: string) => {
+    if (!taskId) {
+      setTaskDetail(undefined);
+      return;
+    }
+    setLoadingTaskDetail(true);
+    ExtractionTaskApi.getExtractionTaskDetail(taskId)
+      .then((data) => {
+        setTaskDetail(data);
+      })
+      .finally(() => {
+        setLoadingTaskDetail(false);
+      });
+  };
+
+  useEffect(() => {
+    requestTaskDetail(taskId);
+  }, [taskId]);
 
   //#region 页面状态
+  type tabType = 'targetTable' | 'extractionRule';
   const [openList, setopenList] = useState(true);
+  const [selectedTabKey, setSelectedTabKey] = useState<tabType>();
 
+  // 选择的目标id
+  const [selectedTargetKey, setSelectedTargetKey] = useState<Key>();
   //#endregion
 
   //#region 抽取结果
 
-  const [taskResultData, setTaskResultData] = useState<ITaskResultTableData>();
+  const [taskResultData, setTaskResultData] = useState<ITaskExtractResult>();
   const [loadingTaskResultData, setLoadingTaskResultData] = useState(false);
 
-  const editorRef = useRef<IResultEditorRef>(undefined);
-
-  const [activingEditerRef, setActivingEditerRef] =
-    useState<IResultEditorRef>();
-
-  const [tempCode, setTempCode] = useState<ISlateNode[]>();
-
   // 单元格的ref列表
-  const cellRefs = useRef<(IResultEditorRef | null)[][]>([]);
+  const cellRefs = useRef<(TextAreaRef | null)[][]>([]);
 
-  const requestTaskResultData = async () => {
+  const requestTaskResultData = useCallback(async () => {
+    if (!selectedTabKey || !selectedTargetKey) {
+      setTaskResultData(undefined);
+      return;
+    }
     setLoadingTaskResultData(true);
-    await ProjectUtil.sleep();
-    const res: ITaskResultTableData = {
-      columns: [{ title: '列1' }, { title: '列2' }],
-      dataSource: [
-        [
-          [
-            {
-              type: 'p',
-              children: [
-                { text: '普通文本' },
-                {
-                  type: 'docNode',
-                  children: [{ text: '文档内容1' }],
-                  docOption: { from: 'doc', sourceNodeId: '123' },
-                },
-                {
-                  text: ' ',
-                },
-              ],
-            },
-          ],
-          null,
-        ],
-      ],
-    };
-    setTaskResultData(res);
+    ExtractionTaskApi.getTaskResultTableByFile({
+      taskFileId: selectedTargetKey,
+    }).then((data) => {
+      setTaskResultData(data);
+      // 清空单元格的ref
+      cellRefs.current = [];
+    });
     setLoadingTaskResultData(false);
-  };
+  }, [selectedTabKey, selectedTargetKey]);
 
   const renderResultTable = () => {
     if (!taskResultData) {
       return <XEmpty loading={loadingTaskResultData} />;
     }
 
-    const { columns, dataSource } = taskResultData;
+    const { header, dataCell } = taskResultData;
     return (
       <table className={styles.ResultTable}>
         <thead>
           <tr>
-            {columns.map((col) => (
-              <th key={col.title}>{col.title}</th>
+            {header?.map((item) => (
+              <th key={item}>{item}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {dataSource.map((row, rowIndex) => (
+          {dataCell?.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {row.map((cell, cellIndex) => {
-                const selected =
-                  editorRef.current &&
-                  editorRef.current === cellRefs.current[rowIndex]?.[cellIndex];
-
-                console.log('selected', selected, rowIndex, cellIndex);
-
                 return (
                   <td key={cellIndex}>
-                    <ResultEditor
+                    <Input.TextArea
                       className={styles.ResultEditor}
-                      initValue={cell}
+                      defaultValue={cell.fieldValue}
                       ref={(ref) => {
                         if (!cellRefs.current[rowIndex]) {
                           cellRefs.current[rowIndex] = [];
                         }
                         cellRefs.current[rowIndex][cellIndex] = ref;
-                      }}
-                      onDoubleClick={() => {
-                        const targetEditor =
-                          cellRefs.current[rowIndex][cellIndex];
-
-                        editorRef.current = targetEditor || undefined;
-
-                        setTempCode(targetEditor?.value);
                       }}
                     />
                   </td>
@@ -161,7 +161,6 @@ function TaskDetail(props: ITaskDetailProps) {
         </div>
         <Alert message='a*****' showIcon />
         {renderResultTable()}
-        <Code language='JSON' code={JSON.stringify(tempCode, undefined, 2)} />
       </div>
     );
   };
@@ -177,7 +176,7 @@ function TaskDetail(props: ITaskDetailProps) {
         <PageSmallHeader
           title={
             <Space>
-              <span>****任务名称</span>
+              <span>{taskDetail?.taskName}</span>
               <LinkButton type='text'>
                 <EditOutlined />
               </LinkButton>
@@ -212,23 +211,13 @@ function TaskDetail(props: ITaskDetailProps) {
   //#endregion
 
   //#region 目标表
-  const [targetTableList, settargetTableList] = useState<any[]>();
-  const [loadingTargetTableList, setLoadingTargetTableList] = useState(false);
-
-  const requestTargetTableList = async () => {
-    setLoadingTargetTableList(true);
-    await ProjectUtil.sleep();
-    const res = [{}, {}];
-    settargetTableList(res);
-    setLoadingTargetTableList(false);
-  };
 
   const renderTargetTableList = () => {
+    const taskTargets = taskDetail?.taskTargets;
     return (
       <List
         header={<Input prefix={<SearchOutlined />} placeholder='目标搜索' />}
-        loading={loadingTargetTableList}
-        dataSource={targetTableList}
+        dataSource={taskTargets}
         split={false}
         style={{ padding: '4px' }}
         renderItem={() => {
@@ -244,31 +233,24 @@ function TaskDetail(props: ITaskDetailProps) {
     );
   };
 
-  const [documentList, setDocumentList] = useState<any[]>();
-  const [loadingDocumentList, setLoadingDocumentList] = useState(false);
-
-  const requestDocumentList = async () => {
-    setLoadingDocumentList(true);
-    await ProjectUtil.sleep();
-    const res = [{}, {}];
-    setDocumentList(res);
-    setLoadingDocumentList(false);
-  };
-
-  const renderDocumentItem = () => {
-    return <DocumentItem />;
-  };
-
   const renderDocumentList = () => {
+    const taskFiles = taskDetail?.taskFiles;
     return (
       <List
         header={<Input prefix={<SearchOutlined />} placeholder='文档搜索' />}
-        loading={loadingDocumentList}
-        dataSource={documentList}
+        dataSource={taskFiles}
         split={false}
         style={{ padding: '4px' }}
-        renderItem={() => {
-          return <ListItemWrap2>{renderDocumentItem()}</ListItemWrap2>;
+        renderItem={(item) => {
+          const selected = selectedTargetKey === item.taskFileId;
+          return (
+            <ListItemWrap2
+              selected={selected}
+              onClick={() => setSelectedTargetKey(item.taskFileId)}
+            >
+              {<DocumentItem data={item} />}
+            </ListItemWrap2>
+          );
         }}
       />
     );
@@ -292,7 +274,7 @@ function TaskDetail(props: ITaskDetailProps) {
       <div className={styles.TabWrap}>
         <Tabs
           activeKey={selectedTabKey}
-          onChange={(key) => setSelectedTabKey(key)}
+          onChange={(key) => setSelectedTabKey(key as tabType)}
           items={tabItems.map((item) => ({ ...item, children: null }))}
           tabBarExtraContent={
             <LinkButton type='text' onClick={() => setopenList(false)}>
@@ -312,10 +294,8 @@ function TaskDetail(props: ITaskDetailProps) {
   //#endregion
 
   useEffect(() => {
-    requestTargetTableList();
-    requestDocumentList();
     requestTaskResultData();
-  }, []);
+  }, [requestTaskResultData]);
 
   //#region 文档
 
@@ -358,19 +338,19 @@ function TaskDetail(props: ITaskDetailProps) {
                   onClick={(info) => {
                     close();
                     if (info.key === 'copy') {
-                      editorRef.current?.insertNodes([
-                        {
-                          type: 'docNode',
-                          children: [{ text }],
-                          docOption: {
-                            from: 'doc',
-                            sourceNodeId: '123',
-                          },
-                        },
-                        {
-                          text: ' ',
-                        },
-                      ]);
+                      // editorRef.current?.insertNodes([
+                      //   {
+                      //     type: 'docNode',
+                      //     children: [{ text }],
+                      //     docOption: {
+                      //       from: 'doc',
+                      //       sourceNodeId: '123',
+                      //     },
+                      //   },
+                      //   {
+                      //     text: ' ',
+                      //   },
+                      // ]);
                     }
                   }}
                   items={[
@@ -412,6 +392,7 @@ function TaskDetail(props: ITaskDetailProps) {
   const renderDataInsert = () => {
     return (
       <DataInsert
+        taskId={taskId}
         open={openDataInsert}
         onCancel={() => setOpenDataInsert(false)}
         onSuccess={() => {
@@ -425,6 +406,7 @@ function TaskDetail(props: ITaskDetailProps) {
   const renderDataInsertRecord = () => {
     return (
       <DataInsertRecord
+        taskId={taskId}
         open={openDataInsertRecord}
         onCancel={() => setOpenDataInsertRecord(false)}
       />
@@ -432,6 +414,10 @@ function TaskDetail(props: ITaskDetailProps) {
   };
 
   //#endregion
+
+  if (!taskDetail) {
+    return <XEmpty loading={loadingTaskDetail} />;
+  }
 
   return (
     <div className={classNames(styles.TaskDetail, className)} style={style}>

@@ -265,6 +265,7 @@ function FileManage(props: IFileManageProps) {
         search={false}
         headerTitle={
           <XInputSearch
+            defaultValue={urlParams?.keyword}
             placeholder='文件搜索'
             onSearch={(value) => updateSearchParams({ keyword: value })}
           />

@@ -1,4 +1,5 @@
 import TaskStatus from '../enum/TaskStatus';
+import ITargetTable from './ITargetTable';
 import ITaskFile from './ITaskFile';
 
 /**
@@ -58,4 +59,9 @@ export default interface IExtractionTask {
    * 任务文件列表
    */
   taskFiles?: ITaskFile[];
+
+  /**
+   * 任务目标列表
+   */
+  taskTargets?: ITargetTable[];
 }

@@ -1,7 +1,9 @@
 import IPageRequest from '@/interface/IPageRequest';
 import IPageResponse from '@/interface/IPageResponse';
 import IExtractionTask from '@/pages/extractionTask/interface/IExtractionTask';
+import { IStoragePreview } from '@/pages/extractionTask/interface/IStoragePreview';
 import ITargetTable from '@/pages/extractionTask/interface/ITargetTable';
+import { ITaskExtractResult } from '@/pages/extractionTask/interface/ITaskExtractResult';
 import axios from 'axios';
 import { Key } from 'react';
 
@@ -110,6 +112,40 @@ class ExtractionTaskApi {
    */
   static async getTargetTables(): Promise<ITargetTable[]> {
     const res = await axios.get(`/api/target/list`);
+    return res.data;
+  }
+
+  /**
+   * 文件视角获取任务结果表格
+   */
+  static async getTaskResultTableByFile(params: {
+    taskFileId: Key;
+  }): Promise<ITaskExtractResult> {
+    const res = await axios.get(`/api/task/taskFileView`, { params });
+    return res.data;
+  }
+
+  /**
+   * 获取入库记录
+   */
+  static async getTaskResultStorageRecord(params: {
+    taskId: Key;
+  }): Promise<any> {
+    const res = await axios.get(`/api/task/getInDbLog`, {
+      params,
+    });
+    return res.data;
+  }
+
+  /**
+   * 获取入库预览
+   */
+  static async getTaskResultStoragePreview(params: {
+    taskId: Key;
+  }): Promise<IStoragePreview> {
+    const res = await axios.get(`/api/task/getTaskAllTargetResult`, {
+      params,
+    });
     return res.data;
   }
 }

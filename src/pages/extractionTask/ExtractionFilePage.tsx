@@ -16,19 +16,27 @@ interface IExtractionFilePageProps {
   className?: string;
   style?: CSSProperties;
 }
+
+interface IUrlParams {
+  taskId?: string;
+}
 /**
  * ExtractionFilePage
  */
 function ExtractionFilePage(props: IExtractionFilePageProps) {
   const { className, style } = props;
-  const [urlParam] = useUrlParam();
+  const [urlParam] = useUrlParam<IUrlParams>();
   const { taskId } = urlParam;
 
   //#region 任务详情
   const [taskDetail, setTaskDetail] = useState<IExtractionTask>();
   const [loadingDetail, setLoadingDetail] = useState(false);
 
-  const requestTaskDetail = async (taskId: string) => {
+  const requestTaskDetail = async (taskId?: string) => {
+    if (!taskId) {
+      setTaskDetail(undefined);
+      return;
+    }
     setLoadingDetail(true);
     await ExtractionTaskApi.getExtractionTaskDetail(taskId)
       .then((data) => {
@@ -74,7 +82,9 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
           <Button
             type='primary'
             onClick={() => {
-              PageUtil.openExtractionTaskDetailPage(taskId);
+              if (taskId) {
+                PageUtil.openExtractionTaskDetailPage(taskId);
+              }
             }}
           >
             开始抽取

@@ -1,31 +1,37 @@
+import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import XEmpty from '@/component/normal/XEmpty';
 import IModalProps from '@/interface/IModalProps';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { Alert, Button, Checkbox, Modal, Table, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { IStoragePreview } from '../../interface/IStoragePreview';
 import styles from './DataInsert.module.less';
 interface IDataInsertProps extends IModalProps {
   className?: string;
   style?: CSSProperties;
+
+  /**
+   * 任务id
+   */
+  taskId?: string;
 }
 /**
  * 数据入库
  */
 function DataInsert(props: IDataInsertProps) {
-  const { className, style, open, onCancel, onSuccess } = props;
+  const { className, style, open, taskId, onCancel, onSuccess } = props;
 
   const [loadingSubmit, setloadingSubmit] = useState(false);
 
   const [confirm, setConfirm] = useState(false);
   const [enableConfirm, setEnableConfirm] = useState(false);
-
-  const reset = useCallback(() => {
-    setConfirm(false);
-    setEnableConfirm(false);
-    setConfirmData(undefined);
-    requestConfirmData();
-  }, []);
 
   const submit = async () => {
     setloadingSubmit(true);
@@ -36,26 +42,55 @@ function DataInsert(props: IDataInsertProps) {
 
   //#region 待确认内容
 
-  const [confirmData, setConfirmData] = useState<any[]>();
+  const [confirmData, setConfirmData] = useState<IStoragePreview>();
   const [loadingConfirmData, setloadingConfirmData] = useState(false);
 
-  const requestConfirmData = async () => {
+  const requestConfirmData = useCallback(async () => {
+    if (!taskId) {
+      setConfirmData(undefined);
+      return;
+    }
     setloadingConfirmData(true);
-    await ProjectUtil.sleep();
-    setConfirmData([
-      { id: 1, name: '数据1' },
-      { id: 2, name: '数据2' },
-      { id: 3, name: '数据3' },
-    ]);
-    setloadingConfirmData(false);
+    ExtractionTaskApi.getTaskResultStoragePreview({ taskId })
+      .then((data) => {
+        setConfirmData(data);
+      })
+      .finally(() => {
+        setloadingConfirmData(false);
+      });
+  }, [taskId]);
+
+  const reset = useCallback(() => {
+    setConfirm(false);
+    setEnableConfirm(false);
+    setConfirmData(undefined);
+    requestConfirmData();
+  }, [requestConfirmData]);
+
+  const renderMessage = () => {
+    if (!confirmData) {
+      return null;
+    }
+    const { tableCount, infoCount } = confirmData;
+    return (
+      <Alert
+        message={`此次入库包含：${tableCount}张表，${infoCount}项信息。请您核对并确认无误后再提交，提交后信息将无法修改。`}
+        showIcon
+      />
+    );
   };
+
+  const scollerRef = useRef<HTMLDivElement>(null);
 
   const renderContent = () => {
     if (!confirmData) {
       return <XEmpty loading={loadingConfirmData} />;
     }
+
+    const { targetResultList } = confirmData;
     return (
       <div
+        ref={scollerRef}
         className={styles.Content}
         onScroll={(event) => {
           if (enableConfirm) {
@@ -70,21 +105,46 @@ function DataInsert(props: IDataInsertProps) {
           }
         }}
       >
-        {confirmData.map((item, index) => {
-          return (
-            <div className={styles.ConfirmDataList} key={index}>
-              <div className={styles.ConfirmDataItem}>
-                <h6>{item.name}</h6>
-                <Table />
+        {targetResultList?.length ? (
+          targetResultList.map((item, index) => {
+            return (
+              <div className={styles.ConfirmDataList} key={index}>
+                <div className={styles.ConfirmDataItem}>
+                  <h6>{item.targetId}</h6>
+                  <Table
+                    columns={item.header?.map((item, columnIndex) => {
+                      return {
+                        title: item,
+                        render(_, record) {
+                          return (record as Array<any>)[columnIndex];
+                        },
+                      };
+                    })}
+                    dataSource={item.dataCell as any}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <XEmpty />
+        )}
       </div>
     );
   };
 
   //#endregion
+
+  useEffect(() => {
+    if (scollerRef.current) {
+      // 如果无需滚动，直接启用同意的选择框
+      if (scollerRef.current.scrollHeight <= scollerRef.current.clientHeight) {
+        setEnableConfirm(true);
+      } else {
+        setEnableConfirm(false);
+      }
+    }
+  }, [confirmData]);
 
   useEffect(() => {
     if (open) {
@@ -93,6 +153,7 @@ function DataInsert(props: IDataInsertProps) {
   }, [reset, open]);
 
   const openTip = open && !enableConfirm;
+
   return (
     <Modal
       title='数据入库'
@@ -130,7 +191,7 @@ function DataInsert(props: IDataInsertProps) {
         </div>
       }
     >
-      <Alert message='****' showIcon />
+      {renderMessage()}
       {renderContent()}
     </Modal>
   );
