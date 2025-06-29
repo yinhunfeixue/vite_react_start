@@ -38,6 +38,7 @@ import AutoTip from '@/component/normal/autoTip/AutoTip';
 import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
+import PageUtil from '@/utils/PageUtil';
 import { TextAreaRef } from 'antd/es/input/TextArea';
 import TaskStatus from '../../enum/TaskStatus';
 import IExtractionTask from '../../interface/IExtractionTask';
@@ -273,7 +274,15 @@ function TaskDetail(props: ITaskDetailProps) {
               <LinkButton onClick={() => setOpenDataInsertRecord(true)}>
                 入库记录
               </LinkButton>
-              <LinkButton>文件管理</LinkButton>
+              <LinkButton
+                onClick={() => {
+                  if (taskId) {
+                    PageUtil.openExtractionTaskFileManagePage(taskId);
+                  }
+                }}
+              >
+                文件管理
+              </LinkButton>
               <Button type='primary' onClick={() => setOpenDataInsert(true)}>
                 数据入库
               </Button>

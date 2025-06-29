@@ -48,7 +48,6 @@ class FileApi {
     const url = this.getDownloadUrl(fileId);
     if (url) {
       const res = await axios.get(url, { responseType: 'blob' });
-      console.log('res', res.data);
 
       const blob = new Blob([res.data]);
       const link = document.createElement('a');
