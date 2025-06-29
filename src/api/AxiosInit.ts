@@ -37,6 +37,12 @@ class AxiosInit {
    * @returns 处理后的响应或被拒绝的 Promise
    */
   static successHandler(response: AxiosResponse) {
+    // blob 不处理
+    console.log('response', response);
+
+    if (response.config.responseType === 'blob') {
+      return response;
+    }
     //当出错时，执行全局响应处理，并不再向后执行
     const { code, msg } = response.data;
     if (code !== '0') {

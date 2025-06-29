@@ -1,4 +1,5 @@
 import ExtractionTaskApi from '@/api/ExtractionTaskApi';
+import FileApi from '@/api/FileApi';
 import IconLabel from '@/component/iconLabel/IconLabel';
 import LinkButton from '@/component/linkButton/LinkButton';
 import XInputSearch from '@/component/normal/XInputSearch';
@@ -51,6 +52,10 @@ function FileManage(props: IFileManageProps) {
 
   const [uploadingFile, setUploadingFile] = useState(false);
 
+  const [updatingFileKey, setUpdatingFileKey] = useState<Key>();
+  const [downloadingFileKey, setDownloadingFileKey] = useState<Key>();
+  const [deletingFileKey, setDeletingFileKey] = useState<Key>();
+
   // 映射的目标表id列表
   const [mappingTargetIds, setMappingTargetIds] = useState<
     Record<Key, Key[] | undefined>
@@ -75,9 +80,14 @@ function FileManage(props: IFileManageProps) {
    */
   const deleteFile = useCallback(
     (file: ITaskFile) => {
-      ExtractionTaskApi.deleteTaskFile(file.taskFileId).then(() => {
-        onFileChange?.();
-      });
+      setDeletingFileKey(file.taskFileId);
+      ExtractionTaskApi.deleteTaskFile(file.taskFileId)
+        .then(() => {
+          onFileChange?.();
+        })
+        .finally(() => {
+          setDeletingFileKey(undefined);
+        });
     },
     [onFileChange],
   );
@@ -87,12 +97,17 @@ function FileManage(props: IFileManageProps) {
    */
   const updateFile = useCallback(
     (file: ITaskFile) => {
+      setUpdatingFileKey(file.taskFileId);
       ExtractionTaskApi.updateTaskFile({
         taskFileId: file.taskFileId,
         targetId: mappingTargetIds?.[file.taskFileId],
-      }).then(() => {
-        onFileChange?.();
-      });
+      })
+        .then(() => {
+          onFileChange?.();
+        })
+        .finally(() => {
+          setUpdatingFileKey(undefined);
+        });
     },
     [onFileChange, mappingTargetIds],
   );
@@ -219,7 +234,7 @@ function FileManage(props: IFileManageProps) {
         title: '操作',
         width: 180,
         render: (_, record) => {
-          const { extractorStatus } = record;
+          const { extractorStatus, taskFileId } = record;
 
           const disabledDelete = [ExtractorStatus.Completed].includes(
             extractorStatus,
@@ -245,6 +260,7 @@ function FileManage(props: IFileManageProps) {
               >
                 <span>
                   <LinkButton
+                    loading={updatingFileKey === taskFileId}
                     onClick={() => {
                       if (!needConfirmUpdate) {
                         updateFile(record);
@@ -256,13 +272,30 @@ function FileManage(props: IFileManageProps) {
                 </span>
               </Popconfirm>
 
-              <LinkButton>查看</LinkButton>
+              <LinkButton
+                loading={downloadingFileKey === taskFileId}
+                onClick={() => {
+                  setDownloadingFileKey(taskFileId);
+                  FileApi.download(record.fileId, record.taskFileName).finally(
+                    () => {
+                      setDownloadingFileKey(undefined);
+                    },
+                  );
+                }}
+              >
+                查看
+              </LinkButton>
               <Popconfirm
                 title='确定删除该文件吗？'
                 onConfirm={() => deleteFile(record)}
               >
                 <span>
-                  <LinkButton disabled={disabledDelete}>删除</LinkButton>
+                  <LinkButton
+                    loading={deletingFileKey === taskFileId}
+                    disabled={disabledDelete}
+                  >
+                    删除
+                  </LinkButton>
                 </span>
               </Popconfirm>
             </Space>
@@ -270,7 +303,15 @@ function FileManage(props: IFileManageProps) {
         },
       },
     ];
-  }, [targetTables, deleteFile, updateFile, mappingTargetIds]);
+  }, [
+    targetTables,
+    deleteFile,
+    updateFile,
+    mappingTargetIds,
+    deletingFileKey,
+    updatingFileKey,
+    downloadingFileKey,
+  ]);
 
   return (
     <div className={classNames(styles.FileManage, className)} style={style}>

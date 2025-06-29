@@ -8,7 +8,7 @@ import XPagination from '@/component/normal/XPagination';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
 import useUrlParam from '@/hooks/useUrlParam';
 import PageUtil from '@/utils/PageUtil';
-import { Button, Spin } from 'antd';
+import { Button, Modal, Spin } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React, { CSSProperties, useCallback } from 'react';
@@ -132,12 +132,20 @@ function ExtractionListPage(props: IExtractionListPageProps) {
                         label: '删除',
                         danger: true,
                         onClick: () => {
-                          ExtractionTaskApi.deleteExtractionTask(
-                            item.taskId,
-                          ).then((res) => {
-                            if (res) {
-                              pageData.refresh();
-                            }
+                          Modal.confirm({
+                            title: '确认删除任务',
+                            content: `是否确认删除任务 "${item.taskName}"?`,
+                            okText: '删除',
+                            cancelText: '取消',
+                            onOk: () => {
+                              return ExtractionTaskApi.deleteExtractionTask(
+                                item.taskId,
+                              ).then((res) => {
+                                if (res) {
+                                  pageData.refresh();
+                                }
+                              });
+                            },
                           });
                         },
                       },
