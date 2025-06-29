@@ -32,6 +32,7 @@ import styles from './TaskDetail.module.less';
 
 import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
+import AutoTip from '@/component/normal/autoTip/AutoTip';
 import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
@@ -220,12 +221,15 @@ function TaskDetail(props: ITaskDetailProps) {
         dataSource={taskTargets}
         split={false}
         style={{ padding: '4px' }}
-        renderItem={() => {
+        renderItem={(item) => {
           return (
-            <ListItemWrap2>
-              <div className='bold' style={{ padding: '8px 12px' }}>
-                {ProjectUtil.renderName('aa', 'bb')}
-              </div>
+            <ListItemWrap2 style={{ padding: '8px 12px' }}>
+              <AutoTip
+                content={ProjectUtil.renderName(
+                  item.targetName,
+                  item.targetEnName,
+                )}
+              />
             </ListItemWrap2>
           );
         }}
@@ -338,6 +342,8 @@ function TaskDetail(props: ITaskDetailProps) {
                   onClick={(info) => {
                     close();
                     if (info.key === 'copy') {
+                      console.log('text', text);
+
                       // editorRef.current?.insertNodes([
                       //   {
                       //     type: 'docNode',

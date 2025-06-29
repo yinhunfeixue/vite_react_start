@@ -5,8 +5,9 @@ import XInputSearch from '@/component/normal/XInputSearch';
 import XSelect from '@/component/normal/XSelect';
 import XUpload from '@/component/normal/XUpload';
 import UploadDragger from '@/component/uploadDragger/UploadDragger';
-import useUrlParam from '@/hooks/UseUrlParam';
+import useUrlParam from '@/hooks/useUrlParam';
 import FileType from '@/interface/FileType';
+import { Key } from '@/preset/Types';
 import AntdUtil from '@/utils/AntdUtil';
 import ProjectUtil from '@/utils/ProjectUtil';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
@@ -50,6 +51,11 @@ function FileManage(props: IFileManageProps) {
 
   const [uploadingFile, setUploadingFile] = useState(false);
 
+  // 映射的目标表id列表
+  const [mappingTargetIds, setMappingTargetIds] = useState<
+    Record<Key, Key[] | undefined>
+  >({});
+
   const displayTaskFiles = useMemo(() => {
     if (!taskFiles) {
       return [];
@@ -83,12 +89,12 @@ function FileManage(props: IFileManageProps) {
     (file: ITaskFile) => {
       ExtractionTaskApi.updateTaskFile({
         taskFileId: file.taskFileId,
-        targetId: file.targetId,
+        targetId: mappingTargetIds?.[file.taskFileId],
       }).then(() => {
         onFileChange?.();
       });
     },
-    [onFileChange],
+    [onFileChange, mappingTargetIds],
   );
 
   /**
@@ -124,11 +130,6 @@ function FileManage(props: IFileManageProps) {
 
   //#endregion
 
-  const [forceUpdate, setForceUpdate] = useState(1);
-  const forceUpdateTable = useCallback(() => {
-    setForceUpdate(forceUpdate + 1);
-  }, [forceUpdate]);
-
   //#region 是否有数据
   const hasData = Boolean(taskFiles?.length);
 
@@ -145,6 +146,20 @@ function FileManage(props: IFileManageProps) {
   useEffect(() => {
     requestTargetTables();
   }, []);
+
+  useEffect(() => {
+    if (task.taskFiles) {
+      const mapping = Object.fromEntries(
+        task.taskFiles.map((item) => {
+          return [
+            item.taskFileId,
+            item.taskTargets?.map((target) => target.targetId),
+          ];
+        }),
+      );
+      setMappingTargetIds(mapping);
+    }
+  }, [task]);
 
   //#endregion
 
@@ -188,13 +203,13 @@ function FileManage(props: IFileManageProps) {
             <XSelect
               style={{ width: '100%' }}
               mode='tags'
-              value={record.targetId}
+              value={mappingTargetIds?.[record.taskFileId]}
               maxTagCount={3}
               options={targetTables}
               fieldNames={{ label: 'targetName', value: 'targetId' }}
               onChange={(value) => {
-                record.targetId = value as string[];
-                forceUpdateTable();
+                mappingTargetIds[record.taskFileId] = value as string[];
+                setMappingTargetIds({ ...mappingTargetIds });
               }}
             />
           );
@@ -255,7 +270,7 @@ function FileManage(props: IFileManageProps) {
         },
       },
     ];
-  }, [targetTables, forceUpdateTable, deleteFile, updateFile]);
+  }, [targetTables, deleteFile, updateFile, mappingTargetIds]);
 
   return (
     <div className={classNames(styles.FileManage, className)} style={style}>

@@ -1,4 +1,4 @@
-import useUrlParam from '@/hooks/UseUrlParam';
+import useUrlParam from '@/hooks/useUrlParam';
 import React, { CSSProperties } from 'react';
 import TaskDetail from './component/detail/TaskDetail';
 interface IExtractionDetailPageProps {

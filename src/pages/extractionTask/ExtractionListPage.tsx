@@ -6,7 +6,7 @@ import AutoColumnGrid from '@/component/normal/autoColumnGrid/AutoColumnGrid';
 import XInputSearch from '@/component/normal/XInputSearch';
 import XPagination from '@/component/normal/XPagination';
 import usePagination, { PaginationFetcher } from '@/hooks/usePagination';
-import useUrlParam from '@/hooks/UseUrlParam';
+import useUrlParam from '@/hooks/useUrlParam';
 import PageUtil from '@/utils/PageUtil';
 import { Button, Spin } from 'antd';
 import classNames from 'classnames';

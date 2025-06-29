@@ -2,7 +2,7 @@ import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import PageSmallHeader from '@/component/layout/PageSmallHeader';
 import LinkButton from '@/component/linkButton/LinkButton';
 import XEmpty from '@/component/normal/XEmpty';
-import useUrlParam from '@/hooks/UseUrlParam';
+import useUrlParam from '@/hooks/useUrlParam';
 import PageUtil from '@/utils/PageUtil';
 import { EditOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';

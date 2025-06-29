@@ -1,5 +1,6 @@
 import { Key } from 'react';
 import ExtractorStatus from '../enum/ExtractorStatus';
+import ITargetTable from './ITargetTable';
 
 /**
  * ITaskFile
@@ -24,7 +25,7 @@ export default interface ITaskFile {
   /**
    * 任务文件ID(业务ID)
    */
-  taskFileId: Key;
+  taskFileId: string | number;
   /**
    * 任务文件名称
    */
@@ -34,5 +35,5 @@ export default interface ITaskFile {
    */
   uploadTime?: Date;
 
-  targetId?: string[];
+  taskTargets?: ITargetTable[];
 }

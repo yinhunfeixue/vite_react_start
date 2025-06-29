@@ -1,7 +1,6 @@
 import LoginApi, { ILoginValue } from '@/api/LoginApi';
 import Assets from '@/Assets';
 import { APP_NAME } from '@/config/ProjectConfig';
-import useProjectStore from '@/model/ProjectStore';
 import ProjectUtil from '@/utils/ProjectUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { Button, Form, Input } from 'antd';
@@ -16,8 +15,6 @@ const FormItem = Form.Item;
  * 登录页
  */
 function Login() {
-  const { assignStore } = useProjectStore();
-
   const [loading, setLoading] = useState(false);
   const [searchParam] = useSearchParams();
   const query = Object.fromEntries(searchParam.entries());

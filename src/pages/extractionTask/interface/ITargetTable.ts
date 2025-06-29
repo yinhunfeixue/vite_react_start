@@ -9,7 +9,7 @@ export default interface ITargetTable {
   /**
    * 目标ID
    */
-  targetId?: number;
+  targetId: number;
   /**
    * 目标名称
    */
