@@ -98,6 +98,11 @@ function TaskDetail(props: ITaskDetailProps) {
 
   // 单元格的ref列表
   const cellRefs = useRef<(TextAreaRef | null)[][]>([]);
+  const [editingRef, setEditingRef] = useState<{
+    rowIndex: number;
+    cellIndex: number;
+    textAreaRef: TextAreaRef | null;
+  }>();
 
   const requestTaskResultData = useCallback(async () => {
     if (!selectedTabKey || !selectedTargetKey) {
@@ -108,8 +113,20 @@ function TaskDetail(props: ITaskDetailProps) {
     ExtractionTaskApi.getTaskResultTableByFile({
       taskFileId: selectedTargetKey,
     }).then((data) => {
+      data = {
+        header: ['a', 'b'],
+        dataCell: [
+          [
+            {
+              fieldValue: '这是一个测试数据',
+            },
+            {
+              fieldValue: '这是另一个测试数据',
+            },
+          ],
+        ],
+      };
       setTaskResultData(data);
-      // 清空单元格的ref
       cellRefs.current = [];
     });
     setLoadingTaskResultData(false);
@@ -137,13 +154,29 @@ function TaskDetail(props: ITaskDetailProps) {
                 return (
                   <td key={cellIndex}>
                     <Input.TextArea
+                      onFocus={() => {
+                        const currentCellRefs =
+                          cellRefs.current[rowIndex][cellIndex];
+                        if (currentCellRefs) {
+                          setEditingRef({
+                            rowIndex,
+                            cellIndex,
+                            textAreaRef: currentCellRefs,
+                          });
+                        }
+                      }}
                       className={styles.ResultEditor}
-                      defaultValue={cell.fieldValue}
+                      value={cell.fieldValue}
                       ref={(ref) => {
                         if (!cellRefs.current[rowIndex]) {
                           cellRefs.current[rowIndex] = [];
                         }
                         cellRefs.current[rowIndex][cellIndex] = ref;
+                      }}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        cell.fieldValue = value;
+                        setTaskResultData({ ...taskResultData });
                       }}
                     />
                   </td>
@@ -169,7 +202,9 @@ function TaskDetail(props: ITaskDetailProps) {
           <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
           <div>最新抽取时间: ****</div>
         </div>
-        {[TaskStatus.Completed, TaskStatus.InDB].includes(taskStatus) ? (
+        {[TaskStatus.Completed, TaskStatus.InDB, TaskStatus.Executing].includes(
+          taskStatus,
+        ) ? (
           <>
             <Alert message='a*****' showIcon />
             {renderResultTable()}
@@ -350,6 +385,35 @@ function TaskDetail(props: ITaskDetailProps) {
     );
   };
   const renderDocument = () => {
+    const updateFieldValue = (text: string, type: 'replace' | 'insert') => {
+      if (!editingRef || !taskResultData) {
+        return;
+      }
+
+      const { rowIndex, cellIndex, textAreaRef } = editingRef;
+      const textarea = textAreaRef?.resizableTextArea?.textArea;
+      const { dataCell } = taskResultData;
+      if (!dataCell || !textarea) {
+        return;
+      }
+
+      let newValue = '';
+      if (type === 'replace') {
+        newValue = text;
+      } else {
+        // 获取当前光标位置
+        const cursorPosition = textarea.selectionStart;
+        const currentValue = textarea.value;
+
+        // 在光标位置插入文字
+        newValue =
+          currentValue.substring(0, cursorPosition) +
+          text +
+          currentValue.substring(cursorPosition);
+      }
+      textarea.value = newValue;
+      dataCell[rowIndex][cellIndex].fieldValue = newValue;
+    };
     return (
       <div
         className={classNames(
@@ -378,21 +442,9 @@ function TaskDetail(props: ITaskDetailProps) {
                   onClick={(info) => {
                     close();
                     if (info.key === 'copy') {
-                      console.log('text', text);
-
-                      // editorRef.current?.insertNodes([
-                      //   {
-                      //     type: 'docNode',
-                      //     children: [{ text }],
-                      //     docOption: {
-                      //       from: 'doc',
-                      //       sourceNodeId: '123',
-                      //     },
-                      //   },
-                      //   {
-                      //     text: ' ',
-                      //   },
-                      // ]);
+                      updateFieldValue(text, 'insert');
+                    } else if (info.key === 'replace') {
+                      updateFieldValue(text, 'replace');
                     }
                   }}
                   items={[
