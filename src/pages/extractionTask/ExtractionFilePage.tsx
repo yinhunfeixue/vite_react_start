@@ -48,6 +48,18 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
       });
   };
 
+  const [loadingExtraction, setLoadingExtraction] = useState(false);
+
+  /**
+   * 请求抽取
+   */
+  const requestStartExtraction = async (taskId: string) => {
+    setLoadingExtraction(true);
+    return ExtractionTaskApi.startExtractionTask(taskId).finally(() => {
+      setLoadingExtraction(false);
+    });
+  };
+
   //#endregion
 
   useEffect(() => {
@@ -81,9 +93,12 @@ function ExtractionFilePage(props: IExtractionFilePageProps) {
         extra={
           <Button
             type='primary'
+            loading={loadingExtraction}
             onClick={() => {
               if (taskId) {
-                PageUtil.openExtractionTaskDetailPage(taskId);
+                requestStartExtraction(taskId).then(() => {
+                  PageUtil.openExtractionTaskDetailPage(taskId);
+                });
               }
             }}
           >
