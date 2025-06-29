@@ -156,5 +156,15 @@ class ExtractionTaskApi {
     const res = await axios.post(`/api/task/startExtraction`, { taskId });
     return res.data;
   }
+
+  /**
+   * 获取抽取状态
+   */
+  static async getExtractionTaskStatus(taskId: Key): Promise<number> {
+    const res = await axios.get(`/api/task/getTaskProgress`, {
+      params: { taskId },
+    });
+    return res.data;
+  }
 }
 export default ExtractionTaskApi;

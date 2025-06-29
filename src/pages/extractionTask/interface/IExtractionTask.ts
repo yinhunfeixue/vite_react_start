@@ -37,7 +37,7 @@ export default interface IExtractionTask {
   /**
    * 任务状态
    */
-  taskStatus?: TaskStatus;
+  taskStatus: TaskStatus;
   /**
    * 总文件数量
    */

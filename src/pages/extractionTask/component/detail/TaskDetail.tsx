@@ -16,6 +16,7 @@ import {
   List,
   Menu,
   message,
+  Progress,
   Space,
   Tabs,
 } from 'antd';
@@ -23,6 +24,7 @@ import classNames from 'classnames';
 import React, {
   CSSProperties,
   Key,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -37,6 +39,7 @@ import XEmpty from '@/component/normal/XEmpty';
 import XInputSearch from '@/component/normal/XInputSearch';
 import SelectionControl from '@/component/selectionControl/SelectionControl';
 import { TextAreaRef } from 'antd/es/input/TextArea';
+import TaskStatus from '../../enum/TaskStatus';
 import IExtractionTask from '../../interface/IExtractionTask';
 import { ITaskExtractResult } from '../../interface/ITaskExtractResult';
 import DataInsert from './DataInsert';
@@ -154,14 +157,51 @@ function TaskDetail(props: ITaskDetailProps) {
   };
 
   const renderTaskResult = () => {
+    if (!taskDetail) {
+      return null;
+    }
+
+    const { taskStatus } = taskDetail;
+
     return (
       <div className={styles.TaskResult}>
         <div>
           <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
           <div>最新抽取时间: ****</div>
         </div>
-        <Alert message='a*****' showIcon />
-        {renderResultTable()}
+        {[TaskStatus.Completed, TaskStatus.InDB].includes(taskStatus) ? (
+          <>
+            <Alert message='a*****' showIcon />
+            {renderResultTable()}
+          </>
+        ) : (
+          renderProgress()
+        )}
+      </div>
+    );
+  };
+
+  const renderProgress = () => {
+    if (!taskDetail) {
+      return null;
+    }
+    const { taskStatus } = taskDetail;
+    let label: ReactNode;
+
+    if (taskStatus === TaskStatus.Failed) {
+      label = (
+        <>
+          数据抽取失败, 请<a>重新抽取</a>
+        </>
+      );
+    } else {
+      label = '文件越大，数据抽取所需时间可能越长...';
+    }
+
+    return (
+      <div className='VGroup' style={{ marginTop: 100, gap: 20 }}>
+        <Progress type='circle' percent={taskProgress} size={128} />
+        <div>{label}</div>
       </div>
     );
   };
@@ -211,7 +251,7 @@ function TaskDetail(props: ITaskDetailProps) {
 
   //#endregion
 
-  //#region 目标表
+  //#region 目标tab
 
   const renderTargetTableList = () => {
     const taskTargets = taskDetail?.taskTargets;
@@ -296,10 +336,6 @@ function TaskDetail(props: ITaskDetailProps) {
     );
   };
   //#endregion
-
-  useEffect(() => {
-    requestTaskResultData();
-  }, [requestTaskResultData]);
 
   //#region 文档
 
@@ -420,6 +456,38 @@ function TaskDetail(props: ITaskDetailProps) {
   };
 
   //#endregion
+
+  //#region 任务状态
+
+  const [taskProgress, setTaskProgress] = useState<number>();
+
+  const requestTaskStatus = async (taskId: string) => {
+    ExtractionTaskApi.getExtractionTaskStatus(taskId).then((data) => {
+      setTaskProgress(data);
+    });
+  };
+
+  useEffect(() => {
+    let timerId: any;
+    if (
+      taskId &&
+      taskDetail?.taskStatus &&
+      [TaskStatus.Executing, TaskStatus.Failed].includes(taskDetail.taskStatus)
+    ) {
+      timerId = setInterval(() => {
+        requestTaskStatus(taskId);
+      }, 5000);
+    }
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [taskId, taskDetail?.taskStatus]);
+
+  //#endregion
+
+  useEffect(() => {
+    requestTaskResultData();
+  }, [requestTaskResultData]);
 
   if (!taskDetail) {
     return <XEmpty loading={loadingTaskDetail} />;
