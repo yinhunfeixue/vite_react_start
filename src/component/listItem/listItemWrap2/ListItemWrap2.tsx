@@ -15,8 +15,8 @@ function ListItemWrap2(props: IListItemWrap2Props) {
   }
   return (
     <div
-      style={style}
       {...otherProps}
+      style={{ ...style, ...props.style }}
       onClick={onClick}
       className={classNames(
         styles.ListItemWrap2,

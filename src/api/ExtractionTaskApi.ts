@@ -126,6 +126,16 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 目标表视角获取任务解雇表格
+   */
+  static async getTaskResultTableByTarget(params: {
+    taskTargetId: Key;
+  }): Promise<ITaskExtractResult> {
+    const res = await axios.get(`/api/task/taskTargetView`, { params });
+    return res.data;
+  }
+
+  /**
    * 获取入库记录
    */
   static async getTaskResultStorageRecord(params: {

@@ -83,11 +83,12 @@ function TaskDetail(props: ITaskDetailProps) {
   }, [taskId]);
 
   //#region 页面状态
-  type tabType = 'targetTable' | 'extractionRule';
+  type tabType = 'targetTable' | 'document';
   const [openList, setopenList] = useState(true);
   const [selectedTabKey, setSelectedTabKey] = useState<tabType>();
 
   // 选择的目标id
+  const [selectedTargetType, setSelectedTargetType] = useState<tabType>();
   const [selectedTargetKey, setSelectedTargetKey] = useState<Key>();
   //#endregion
 
@@ -105,32 +106,43 @@ function TaskDetail(props: ITaskDetailProps) {
   }>();
 
   const requestTaskResultData = useCallback(async () => {
-    if (!selectedTabKey || !selectedTargetKey) {
-      setTaskResultData(undefined);
+    setTaskResultData(undefined);
+    if (!selectedTargetType || !selectedTargetKey) {
       return;
     }
     setLoadingTaskResultData(true);
-    ExtractionTaskApi.getTaskResultTableByFile({
-      taskFileId: selectedTargetKey,
-    }).then((data) => {
-      data = {
-        header: ['a', 'b'],
-        dataCell: [
-          [
-            {
-              fieldValue: '这是一个测试数据',
-            },
-            {
-              fieldValue: '这是另一个测试数据',
-            },
+
+    // 目标视角、文档视角使用不同的接口
+    const promise =
+      selectedTargetType === 'targetTable'
+        ? ExtractionTaskApi.getTaskResultTableByTarget({
+            taskTargetId: selectedTargetKey,
+          })
+        : ExtractionTaskApi.getTaskResultTableByFile({
+            taskFileId: selectedTargetKey,
+          });
+    promise
+      .then((data) => {
+        data = {
+          header: ['a', 'b'],
+          dataCell: [
+            [
+              {
+                fieldValue: '这是一个测试数据',
+              },
+              {
+                fieldValue: '这是另一个测试数据',
+              },
+            ],
           ],
-        ],
-      };
-      setTaskResultData(data);
-      cellRefs.current = [];
-    });
-    setLoadingTaskResultData(false);
-  }, [selectedTabKey, selectedTargetKey]);
+        };
+        setTaskResultData(data);
+        cellRefs.current = [];
+      })
+      .finally(() => {
+        setLoadingTaskResultData(false);
+      });
+  }, [selectedTargetType, selectedTargetKey]);
 
   const renderResultTable = () => {
     if (!taskResultData) {
@@ -202,9 +214,7 @@ function TaskDetail(props: ITaskDetailProps) {
           <h5 onClick={() => setOpenDocument(true)}>抽取结果</h5>
           <div>最新抽取时间: ****</div>
         </div>
-        {[TaskStatus.Completed, TaskStatus.InDB, TaskStatus.Executing].includes(
-          taskStatus,
-        ) ? (
+        {[TaskStatus.Completed, TaskStatus.InDB].includes(taskStatus) ? (
           <>
             <Alert message='a*****' showIcon />
             {renderResultTable()}
@@ -297,8 +307,16 @@ function TaskDetail(props: ITaskDetailProps) {
         split={false}
         style={{ padding: '4px' }}
         renderItem={(item) => {
+          const selected = selectedTargetKey === item.targetId;
           return (
-            <ListItemWrap2 style={{ padding: '8px 12px' }}>
+            <ListItemWrap2
+              style={{ padding: '8px 12px' }}
+              selected={selected}
+              onClick={() => {
+                setSelectedTargetType('targetTable');
+                setSelectedTargetKey(item.targetId);
+              }}
+            >
               <AutoTip
                 content={ProjectUtil.renderName(
                   item.targetName,
@@ -325,7 +343,10 @@ function TaskDetail(props: ITaskDetailProps) {
           return (
             <ListItemWrap2
               selected={selected}
-              onClick={() => setSelectedTargetKey(item.taskFileId)}
+              onClick={() => {
+                setSelectedTargetKey(item.taskFileId);
+                setSelectedTargetType('document');
+              }}
             >
               {<DocumentItem data={item} />}
             </ListItemWrap2>
@@ -353,7 +374,9 @@ function TaskDetail(props: ITaskDetailProps) {
       <div className={styles.TabWrap}>
         <Tabs
           activeKey={selectedTabKey}
-          onChange={(key) => setSelectedTabKey(key as tabType)}
+          onChange={(key) => {
+            setSelectedTabKey(key as tabType);
+          }}
           items={tabItems.map((item) => ({ ...item, children: null }))}
           tabBarExtraContent={
             <LinkButton type='text' onClick={() => setopenList(false)}>

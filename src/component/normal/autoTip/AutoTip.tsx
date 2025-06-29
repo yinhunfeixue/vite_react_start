@@ -107,7 +107,7 @@ class AutoTip extends Component<IAutoTipProps, IAutoTipState> {
       <Tooltip
         {...toolTipProps}
         style={toolTipStyle}
-        overlayClassName={toolTipClassName}
+        className={toolTipClassName}
         title={title || contentNode}
       >
         {contentElement}
