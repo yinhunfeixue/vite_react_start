@@ -160,6 +160,14 @@ class ExtractionTaskApi {
   }
 
   /**
+   * 确认入库
+   */
+  static async confirmStorage(data: { taskId: Key }): Promise<boolean> {
+    const res = await axios.post(`/api/task/confirmInStorage`, data);
+    return res.data;
+  }
+
+  /**
    * 开始抽取任务
    */
   static async startExtractionTask(taskId: Key): Promise<boolean> {

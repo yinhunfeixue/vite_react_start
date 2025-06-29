@@ -86,7 +86,7 @@ function TaskDetail(props: ITaskDetailProps) {
   //#region 页面状态
   type tabType = 'targetTable' | 'document';
   const [openList, setopenList] = useState(true);
-  const [selectedTabKey, setSelectedTabKey] = useState<tabType>();
+  const [selectedTabKey, setSelectedTabKey] = useState<tabType>('targetTable');
 
   // 选择的目标id
   const [selectedTargetType, setSelectedTargetType] = useState<tabType>();
@@ -124,19 +124,6 @@ function TaskDetail(props: ITaskDetailProps) {
           });
     promise
       .then((data) => {
-        data = {
-          header: ['a', 'b'],
-          dataCell: [
-            [
-              {
-                fieldValue: '这是一个测试数据',
-              },
-              {
-                fieldValue: '这是另一个测试数据',
-              },
-            ],
-          ],
-        };
         setTaskResultData(data);
         cellRefs.current = [];
       })
@@ -323,7 +310,7 @@ function TaskDetail(props: ITaskDetailProps) {
               selected={selected}
               onClick={() => {
                 setSelectedTargetType('targetTable');
-                setSelectedTargetKey(item.targetId);
+                setSelectedTargetKey(item.taskTargetId);
               }}
             >
               <AutoTip
@@ -524,6 +511,7 @@ function TaskDetail(props: ITaskDetailProps) {
         onSuccess={() => {
           message.success('数据入库成功');
           setOpenDataInsert(false);
+          requestTaskDetail(taskId);
         }}
       />
     );

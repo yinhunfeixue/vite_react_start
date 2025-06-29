@@ -1,7 +1,6 @@
 import ExtractionTaskApi from '@/api/ExtractionTaskApi';
 import XEmpty from '@/component/normal/XEmpty';
 import IModalProps from '@/interface/IModalProps';
-import ProjectUtil from '@/utils/ProjectUtil';
 import { Alert, Button, Checkbox, Modal, Table, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, {
@@ -34,10 +33,17 @@ function DataInsert(props: IDataInsertProps) {
   const [enableConfirm, setEnableConfirm] = useState(false);
 
   const submit = async () => {
+    if (!taskId) {
+      return;
+    }
     setloadingSubmit(true);
-    await ProjectUtil.sleep();
-    setloadingSubmit(false);
-    onSuccess?.();
+    ExtractionTaskApi.confirmStorage({ taskId })
+      .then(() => {
+        onSuccess?.();
+      })
+      .finally(() => {
+        setloadingSubmit(false);
+      });
   };
 
   //#region 待确认内容
