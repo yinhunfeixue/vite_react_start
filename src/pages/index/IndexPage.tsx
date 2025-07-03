@@ -2,12 +2,18 @@ import {
   BranchesOutlined,
   CheckCircleFilled,
   CheckOutlined,
+  CloudDownloadOutlined,
+  CodeOutlined,
   CopyOutlined,
   EditOutlined,
   FolderOpenOutlined,
   FolderOutlined,
   LoadingOutlined,
   PlayCircleOutlined,
+  SafetyCertificateOutlined,
+  SettingOutlined,
+  ToolOutlined,
+  TrophyOutlined,
 } from '@ant-design/icons';
 import {
   Button,
@@ -46,6 +52,7 @@ interface MainStep {
   description: string;
   subSteps: SubStep[];
   status: 'wait' | 'process' | 'finish' | 'error';
+  icon?: React.ReactNode; // 添加图标字段
 }
 
 /**
@@ -68,6 +75,7 @@ function IndexPage() {
       title: '项目设置',
       description: '配置项目相关信息',
       status: 'wait',
+      icon: <SettingOutlined />,
       subSteps: [
         {
           title: '选择分支',
@@ -93,6 +101,7 @@ function IndexPage() {
       title: '环境检查',
       description: '检查系统环境是否符合要求',
       status: 'wait',
+      icon: <SafetyCertificateOutlined />,
       subSteps: [
         {
           title: 'x86 Ubuntu 22.04',
@@ -115,6 +124,7 @@ function IndexPage() {
       title: '准备开发环境',
       description: '安装必要的开发工具和依赖',
       status: 'wait',
+      icon: <ToolOutlined />,
       subSteps: [
         {
           title: '安装 Repo',
@@ -142,6 +152,7 @@ function IndexPage() {
       title: '下载 openvela 源码',
       description: '获取项目源代码',
       status: 'wait',
+      icon: <CloudDownloadOutlined />,
       subSteps: [
         {
           title: '初始化 Repo 客户端',
@@ -159,6 +170,7 @@ function IndexPage() {
       title: '编译 openvela 源码',
       description: '构建项目代码',
       status: 'wait',
+      icon: <CodeOutlined />,
       subSteps: [
         {
           title: '构建系统',
@@ -171,6 +183,7 @@ function IndexPage() {
       title: '运行产物',
       description: '启动应用程序',
       status: 'wait',
+      icon: <PlayCircleOutlined />,
       subSteps: [
         {
           title: '运行 openvela Emulator',
@@ -188,6 +201,7 @@ function IndexPage() {
       title: '完成！开启旅程',
       description: '完成创建流程',
       status: 'wait',
+      icon: <TrophyOutlined />,
       subSteps: [
         {
           title: '打开项目',
@@ -201,15 +215,17 @@ function IndexPage() {
 
   const [stepsData, setStepsData] = useState(steps);
 
-  const getStepIcon = (status: string) => {
-    switch (status) {
-      case 'process':
-        return <LoadingOutlined />;
-      case 'finish':
-        return <CheckCircleFilled />;
-      default:
-        return null;
+  const getStepIcon = (step: MainStep) => {
+    // 如果步骤状态为 process，显示加载图标
+    if (step.status === 'process') {
+      return <LoadingOutlined />;
     }
+    // 如果步骤状态为 finish，显示完成图标
+    if (step.status === 'finish') {
+      return <CheckCircleFilled />;
+    }
+    // 否则显示步骤的自定义图标
+    return step.icon || null;
   };
 
   const getProgress = () => {
@@ -578,7 +594,7 @@ function IndexPage() {
                 }
                 description={step.description}
                 status={step.status}
-                icon={getStepIcon(step.status)}
+                icon={getStepIcon(step)}
               />
             ))}
           </Steps>
