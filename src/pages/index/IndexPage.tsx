@@ -10,6 +10,7 @@ import {
   FolderOutlined,
   LoadingOutlined,
   PlayCircleOutlined,
+  QuestionCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
   ToolOutlined,
@@ -547,7 +548,23 @@ function IndexPage() {
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <Title level={2}>OpenVela 应用创建</Title>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Title level={2}>OpenVela 应用创建</Title>
+              <Button
+                type='link'
+                icon={<QuestionCircleOutlined />}
+                onClick={() =>
+                  window.open(
+                    'https://github.com/open-vela/docs/blob/trunk/README_zh-cn.md',
+                    '_blank',
+                  )
+                }
+                title='查看帮助文档'
+                style={{ padding: '0' }}
+              >
+                帮助文档
+              </Button>
+            </div>
             <Text type='secondary'>按照以下步骤创建 OpenVela 应用</Text>
           </div>
           <div className={styles.headerRight}>
