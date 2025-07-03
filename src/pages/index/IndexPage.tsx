@@ -149,7 +149,7 @@ function IndexPage() {
       ],
     },
     {
-      title: '下载 openvela 源码',
+      title: '下载源码',
       description: '获取项目源代码',
       status: 'wait',
       icon: <CloudDownloadOutlined />,
@@ -167,7 +167,7 @@ function IndexPage() {
       ],
     },
     {
-      title: '编译 openvela 源码',
+      title: '编译',
       description: '构建项目代码',
       status: 'wait',
       icon: <CodeOutlined />,
@@ -180,7 +180,7 @@ function IndexPage() {
       ],
     },
     {
-      title: '运行产物',
+      title: '运行',
       description: '启动应用程序',
       status: 'wait',
       icon: <PlayCircleOutlined />,
