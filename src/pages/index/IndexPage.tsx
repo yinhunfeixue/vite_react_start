@@ -18,7 +18,6 @@ import {
   Steps,
   Tag,
   Typography,
-  Upload,
   message,
 } from 'antd';
 import classNames from 'classnames';
@@ -57,6 +56,8 @@ function IndexPage() {
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [selectedDirectory, setSelectedDirectory] = useState<string>('');
   const [projectName, setProjectName] = useState<string>('vela_opensource');
+  const [projectNameConfirmed, setProjectNameConfirmed] =
+    useState<boolean>(false);
   const [isWaitingForManualAction, setIsWaitingForManualAction] =
     useState(false);
 
@@ -258,6 +259,7 @@ function IndexPage() {
   // 处理项目名称输入
   const handleProjectNameConfirm = (name: string) => {
     setProjectName(name);
+    setProjectNameConfirmed(true);
     completeManualAction();
   };
 
@@ -345,17 +347,6 @@ function IndexPage() {
     ];
   };
 
-  // 获取工作目录选项
-  const getDirectoryOptions = () => {
-    return [
-      { label: '~/workspace', value: '~/workspace' },
-      { label: '~/Documents/projects', value: '~/Documents/projects' },
-      { label: '~/Code', value: '~/Code' },
-      { label: '/opt/workspace', value: '/opt/workspace' },
-      { label: '自定义路径', value: 'custom' },
-    ];
-  };
-
   // 渲染手动操作组件
   const renderManualAction = (subStep: SubStep) => {
     if (!subStep.requiresManualAction || !isWaitingForManualAction) {
@@ -383,36 +374,42 @@ function IndexPage() {
             <div className={styles.manualActionTitle}>
               <FolderOutlined /> 目录选择
             </div>
-            <Upload.Dragger
-              multiple={false}
-              showUploadList={false}
-              directory
-              beforeUpload={() => false} // 阻止文件上传
-              onChange={(info) => {
-                if (info.fileList.length > 0) {
-                  // 获取第一个文件的路径并提取目录
-                  const file = info.fileList[0];
-                  if (file.originFileObj) {
-                    // 从 webkitRelativePath 获取目录路径
-                    const relativePath = (file.originFileObj as any)
-                      .webkitRelativePath;
-                    if (relativePath) {
-                      const directory = relativePath.split('/')[0];
-                      handleDirectorySelect(directory);
-                    }
-                  }
-                }
-              }}
-              style={{ marginTop: 8 }}
-            >
-              <p className='ant-upload-drag-icon'>
+            <div className={styles.directorySelector}>
+              <div className={styles.directoryDisplay}>
                 <FolderOutlined />
-              </p>
-              <p className='ant-upload-text'>
-                {selectedDirectory || '点击或拖拽选择工作目录'}
-              </p>
-              <p className='ant-upload-hint'>选择一个文件夹作为工作目录</p>
-            </Upload.Dragger>
+                <span>{selectedDirectory || '点击选择工作目录'}</span>
+              </div>
+              <Select
+                placeholder='选择工作目录'
+                style={{ width: '100%', marginTop: 8 }}
+                value={selectedDirectory}
+                onChange={(value) => setSelectedDirectory(value)}
+                options={[
+                  { label: '~/workspace', value: '~/workspace' },
+                  {
+                    label: '~/Documents/projects',
+                    value: '~/Documents/projects',
+                  },
+                  { label: '~/Code', value: '~/Code' },
+                  { label: '~/Desktop/openvela', value: '~/Desktop/openvela' },
+                  { label: '/opt/workspace', value: '/opt/workspace' },
+                  {
+                    label: '/usr/local/projects',
+                    value: '/usr/local/projects',
+                  },
+                ]}
+              />
+              {selectedDirectory && (
+                <div style={{ marginTop: 8, textAlign: 'center' }}>
+                  <Button
+                    type='primary'
+                    onClick={() => handleDirectorySelect(selectedDirectory)}
+                  >
+                    确认选择: {selectedDirectory}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         );
       case 'project-name':
@@ -468,17 +465,30 @@ function IndexPage() {
   return (
     <div className={classNames(styles.IndexPage)}>
       <div className={styles.header}>
-        <Title level={2}>OpenVela 应用创建</Title>
-        <Text type='secondary'>按照以下步骤创建 OpenVela 应用</Text>
-      </div>
-
-      <div className={styles.progressSection}>
-        <Progress
-          percent={getProgress()}
-          status={isRunning ? 'active' : 'normal'}
-          strokeColor='#1890ff'
-        />
-        <Text className={styles.progressText}>总进度: {getProgress()}%</Text>
+        <div className={styles.headerContent}>
+          <div className={styles.headerLeft}>
+            <Title level={2}>OpenVela 应用创建</Title>
+            <Text type='secondary'>按照以下步骤创建 OpenVela 应用</Text>
+          </div>
+          <div className={styles.headerRight}>
+            <div className={styles.projectInfo}>
+              <div className={styles.projectInfoItem}>
+                <BranchesOutlined />
+                <span>分支: {selectedBranch || '未选择'}</span>
+              </div>
+              <div className={styles.projectInfoItem}>
+                <FolderOutlined />
+                <span>目录: {selectedDirectory || '未选择'}</span>
+              </div>
+              <div className={styles.projectInfoItem}>
+                <EditOutlined />
+                <span>
+                  项目名: {projectNameConfirmed ? projectName : '未设置'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className={styles.content}>
@@ -575,23 +585,37 @@ function IndexPage() {
       </div>
 
       <div className={styles.actions}>
-        <Space>
-          <Button
-            type='primary'
-            size='large'
-            icon={<PlayCircleOutlined />}
-            onClick={startProcess}
-            disabled={isRunning}
-            loading={isRunning}
-          >
-            {isRunning ? '创建中...' : '开始创建'}
-          </Button>
-          {getProgress() === 100 && (
-            <Button type='default' size='large' icon={<CheckOutlined />}>
-              完成
-            </Button>
-          )}
-        </Space>
+        <div className={styles.actionContent}>
+          <div className={styles.progressContainer}>
+            <Progress
+              percent={getProgress()}
+              status={isRunning ? 'active' : 'normal'}
+              strokeColor='#1890ff'
+            />
+            <Text className={styles.progressText}>
+              总进度: {getProgress()}%
+            </Text>
+          </div>
+          <div className={styles.actionButtons}>
+            <Space>
+              <Button
+                type='primary'
+                size='large'
+                icon={<PlayCircleOutlined />}
+                onClick={startProcess}
+                disabled={isRunning}
+                loading={isRunning}
+              >
+                {isRunning ? '创建中...' : '开始创建'}
+              </Button>
+              {getProgress() === 100 && (
+                <Button type='default' size='large' icon={<CheckOutlined />}>
+                  完成
+                </Button>
+              )}
+            </Space>
+          </div>
+        </div>
       </div>
     </div>
   );

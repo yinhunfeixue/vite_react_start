@@ -7,33 +7,50 @@
   box-sizing: border-box;
 
   .header {
-    text-align: center;
-    margin-bottom: 32px;
-    background: white;
-    padding: 32px 24px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-    h2 {
-      color: #1890ff;
-      margin-bottom: 8px;
-      font-size: clamp(20px, 4vw, 32px);
-    }
-  }
-
-  .progressSection {
-    margin-bottom: 24px;
     background: white;
     padding: 24px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
 
-    .progressText {
-      display: block;
-      text-align: center;
-      margin-top: 8px;
-      color: #666;
-      font-size: clamp(12px, 2vw, 14px);
+    .headerContent {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+
+      .headerLeft {
+        h2 {
+          color: #1890ff;
+          margin-bottom: 8px;
+          font-size: clamp(20px, 4vw, 32px);
+        }
+      }
+
+      .headerRight {
+        .projectInfo {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          align-items: flex-end;
+
+          .projectInfoItem {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #666;
+            font-size: 14px;
+
+            svg {
+              color: #1890ff;
+            }
+
+            span {
+              font-size: clamp(12px, 1.5vw, 14px);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -174,6 +191,28 @@
                 margin-right: 8px;
               }
             }
+
+            .directorySelector {
+              .directoryDisplay {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px;
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                border-radius: 4px;
+                margin-bottom: 8px;
+
+                svg {
+                  color: #1890ff;
+                }
+
+                span {
+                  color: #666;
+                  font-size: 14px;
+                }
+              }
+            }
           }
         }
       }
@@ -181,15 +220,38 @@
   }
 
   .actions {
-    text-align: center;
     background: white;
     padding: 24px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    button {
-      min-width: 120px;
-      font-size: clamp(12px, 2vw, 14px);
+    .actionContent {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+
+      .progressContainer {
+        flex: 1;
+        max-width: 400px;
+
+        .progressText {
+          display: block;
+          text-align: center;
+          margin-top: 8px;
+          color: #666;
+          font-size: clamp(12px, 2vw, 14px);
+        }
+      }
+
+      .actionButtons {
+        flex-shrink: 0;
+
+        button {
+          min-width: 120px;
+          font-size: clamp(12px, 2vw, 14px);
+        }
+      }
     }
   }
 }
@@ -224,13 +286,22 @@
     padding: 16px;
 
     .header {
-      padding: 24px 16px;
-      margin-bottom: 24px;
-    }
-
-    .progressSection {
-      padding: 20px;
+      padding: 20px 16px;
       margin-bottom: 20px;
+
+      .headerContent {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        .headerRight {
+          width: 100%;
+
+          .projectInfo {
+            align-items: flex-start;
+          }
+        }
+      }
     }
 
     .content {
@@ -274,8 +345,27 @@
     .actions {
       padding: 20px;
 
-      button {
-        min-width: 100px;
+      .actionContent {
+        flex-direction: column;
+        gap: 16px;
+
+        .progressContainer {
+          max-width: none;
+          width: 100%;
+        }
+
+        .actionButtons {
+          width: 100%;
+
+          :global(.ant-space) {
+            width: 100%;
+            justify-content: center;
+          }
+
+          button {
+            min-width: 100px;
+          }
+        }
       }
     }
   }
@@ -286,13 +376,26 @@
     padding: 12px;
 
     .header {
-      padding: 20px 12px;
-      margin-bottom: 20px;
-    }
-
-    .progressSection {
-      padding: 16px;
+      padding: 16px 12px;
       margin-bottom: 16px;
+
+      .headerContent {
+        gap: 12px;
+
+        .headerRight {
+          .projectInfo {
+            gap: 6px;
+
+            .projectInfoItem {
+              font-size: 12px;
+
+              span {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
     }
 
     .content {
@@ -341,12 +444,18 @@
     .actions {
       padding: 16px;
 
-      :global(.ant-space) {
-        width: 100%;
+      .actionContent {
+        gap: 12px;
 
-        button {
-          width: 100%;
-          min-width: auto;
+        .actionButtons {
+          :global(.ant-space) {
+            width: 100%;
+
+            button {
+              width: 100%;
+              min-width: auto;
+            }
+          }
         }
       }
     }
