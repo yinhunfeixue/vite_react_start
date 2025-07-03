@@ -2,6 +2,7 @@ import {
   BranchesOutlined,
   CheckCircleFilled,
   CheckOutlined,
+  CopyOutlined,
   EditOutlined,
   FolderOpenOutlined,
   FolderOutlined,
@@ -37,6 +38,7 @@ interface SubStep {
     | 'directory-select'
     | 'project-name'
     | 'open-project';
+  command?: string; // 添加命令字段
 }
 
 interface MainStep {
@@ -92,9 +94,21 @@ function IndexPage() {
       description: '检查系统环境是否符合要求',
       status: 'wait',
       subSteps: [
-        { title: 'x86 Ubuntu 22.04', status: 'wait' },
-        { title: '内存检查（不少于16G）', status: 'wait' },
-        { title: '硬盘检查（不少于80G）', status: 'wait' },
+        {
+          title: 'x86 Ubuntu 22.04',
+          status: 'wait',
+          command: 'check-system-version',
+        },
+        {
+          title: '内存检查（不少于16G）',
+          status: 'wait',
+          command: 'check-memory-size',
+        },
+        {
+          title: '硬盘检查（不少于80G）',
+          status: 'wait',
+          command: 'check-disk-space',
+        },
       ],
     },
     {
@@ -102,10 +116,26 @@ function IndexPage() {
       description: '安装必要的开发工具和依赖',
       status: 'wait',
       subSteps: [
-        { title: '安装 Repo', status: 'wait' },
-        { title: '安装 KConfig frontend', status: 'wait' },
-        { title: '安装 Python', status: 'wait' },
-        { title: '安装 Python 包', status: 'wait' },
+        {
+          title: '安装 Repo',
+          status: 'wait',
+          command: 'install-repo-tool',
+        },
+        {
+          title: '安装 KConfig frontend',
+          status: 'wait',
+          command: 'install-kconfig-frontend',
+        },
+        {
+          title: '安装 Python',
+          status: 'wait',
+          command: 'install-python-env',
+        },
+        {
+          title: '安装 Python 包',
+          status: 'wait',
+          command: 'install-python-packages',
+        },
       ],
     },
     {
@@ -113,23 +143,45 @@ function IndexPage() {
       description: '获取项目源代码',
       status: 'wait',
       subSteps: [
-        { title: '初始化 Repo 客户端', status: 'wait' },
-        { title: '下载源码', status: 'wait' },
+        {
+          title: '初始化 Repo 客户端',
+          status: 'wait',
+          command: 'repo-init --branch main',
+        },
+        {
+          title: '下载源码',
+          status: 'wait',
+          command: 'repo-sync --all',
+        },
       ],
     },
     {
       title: '编译 openvela 源码',
       description: '构建项目代码',
       status: 'wait',
-      subSteps: [{ title: '构建系统', status: 'wait' }],
+      subSteps: [
+        {
+          title: '构建系统',
+          status: 'wait',
+          command: 'openvela-build --target sim',
+        },
+      ],
     },
     {
       title: '运行产物',
       description: '启动应用程序',
       status: 'wait',
       subSteps: [
-        { title: '运行 openvela Emulator', status: 'wait' },
-        { title: '运行 lvgldemo', status: 'wait' },
+        {
+          title: '运行 openvela Emulator',
+          status: 'wait',
+          command: 'openvela-emulator --start',
+        },
+        {
+          title: '运行 lvgldemo',
+          status: 'wait',
+          command: 'openvela-demo --run lvgl',
+        },
       ],
     },
     {
@@ -267,6 +319,18 @@ function IndexPage() {
   const handleOpenProject = () => {
     message.success('项目已打开！');
     completeManualAction();
+  };
+
+  // 复制命令到剪贴板
+  const copyCommand = (command: string) => {
+    navigator.clipboard
+      .writeText(command)
+      .then(() => {
+        message.success('命令已复制到剪贴板');
+      })
+      .catch(() => {
+        message.error('复制失败，请手动复制命令');
+      });
   };
 
   // 完成手动操作
@@ -551,6 +615,23 @@ function IndexPage() {
                         <Text type='secondary' className={styles.subStepDesc}>
                           {subStep.description}
                         </Text>
+                      )}
+                      {subStep.command && (
+                        <div className={styles.commandContainer}>
+                          <div className={styles.commandBox}>
+                            <code className={styles.commandCode}>
+                              {subStep.command}
+                            </code>
+                            <Button
+                              type='text'
+                              size='small'
+                              icon={<CopyOutlined />}
+                              onClick={() => copyCommand(subStep.command!)}
+                              className={styles.copyButton}
+                              title='复制命令'
+                            />
+                          </div>
+                        </div>
                       )}
                     </div>
                     <div className={styles.subStepStatus}>
