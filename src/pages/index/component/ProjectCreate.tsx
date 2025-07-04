@@ -15,15 +15,16 @@ import {
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
+  TagOutlined,
   ToolOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
 import {
   Button,
   Card,
+  Cascader,
   Input,
   Progress,
-  Radio,
   Select,
   Space,
   Steps,
@@ -47,8 +48,7 @@ interface SubStep {
     | 'branch-select'
     | 'directory-select'
     | 'project-name'
-    | 'device-type-select'
-    | 'defconfig-select'
+    | 'device-defconfig-select'
     | 'open-project';
   command?: string; // 添加命令字段
 }
@@ -73,8 +73,9 @@ function ProjectCreate() {
   const [projectName, setProjectName] = useState<string>('vela_opensource');
   const [projectNameConfirmed, setProjectNameConfirmed] =
     useState<boolean>(false);
-  const [selectedDeviceType, setSelectedDeviceType] = useState<string>('');
-  const [selectedDefconfig, setSelectedDefconfig] = useState<string>('');
+  const [deviceTypeAndDefconfig, setDeviceTypeAndDefconfig] = useState<
+    string[]
+  >([]);
   const [isWaitingForManualAction, setIsWaitingForManualAction] =
     useState(false);
 
@@ -104,16 +105,10 @@ function ProjectCreate() {
           manualActionType: 'project-name',
         },
         {
-          title: '设置设备类型',
+          title: '设置产品品类、设备类型和defconfig',
           status: 'wait',
           requiresManualAction: true,
-          manualActionType: 'device-type-select',
-        },
-        {
-          title: '设置defconfig',
-          status: 'wait',
-          requiresManualAction: true,
-          manualActionType: 'defconfig-select',
+          manualActionType: 'device-defconfig-select',
         },
       ],
     },
@@ -351,22 +346,9 @@ function ProjectCreate() {
     completeManualAction();
   };
 
-  // 处理设备类型选择
-  const handleDeviceTypeSelect = (deviceType: string) => {
-    setSelectedDeviceType(deviceType);
-    // 不立即完成，等用户确认选择
-  };
-
-  // 确认设备类型选择
-  const confirmDeviceTypeSelect = () => {
-    if (selectedDeviceType) {
-      completeManualAction();
-    }
-  };
-
-  // 处理defconfig选择
-  const handleDefconfigSelect = (defconfig: string) => {
-    setSelectedDefconfig(defconfig);
+  // 处理设备类型和defconfig级联选择
+  const handleDeviceDefconfigSelect = (value: string[]) => {
+    setDeviceTypeAndDefconfig(value);
     completeManualAction();
   };
 
@@ -466,6 +448,81 @@ function ProjectCreate() {
     ];
   };
 
+  // 获取产品品类、设备类型和defconfig的级联选项
+  const getDeviceDefconfigOptions = () => {
+    return [
+      {
+        label: '物联网设备',
+        value: 'iot',
+        children: [
+          {
+            label: 'ESP32',
+            value: 'esp32',
+            children: [
+              { label: 'esp32_defconfig', value: 'esp32_defconfig' },
+              {
+                label: 'esp32_minimal_defconfig',
+                value: 'esp32_minimal_defconfig',
+              },
+              { label: 'esp32_lvgl_defconfig', value: 'esp32_lvgl_defconfig' },
+            ],
+          },
+        ],
+      },
+      {
+        label: '嵌入式MCU',
+        value: 'mcu',
+        children: [
+          {
+            label: 'STM32',
+            value: 'stm32',
+            children: [
+              { label: 'stm32_defconfig', value: 'stm32_defconfig' },
+              { label: 'stm32f4_defconfig', value: 'stm32f4_defconfig' },
+              { label: 'stm32f7_defconfig', value: 'stm32f7_defconfig' },
+            ],
+          },
+        ],
+      },
+      {
+        label: '开源处理器',
+        value: 'opensource',
+        children: [
+          {
+            label: 'RISC-V',
+            value: 'riscv',
+            children: [
+              { label: 'riscv_defconfig', value: 'riscv_defconfig' },
+              { label: 'riscv64_defconfig', value: 'riscv64_defconfig' },
+              {
+                label: 'riscv_minimal_defconfig',
+                value: 'riscv_minimal_defconfig',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        label: '仿真环境',
+        value: 'simulation',
+        children: [
+          {
+            label: 'Simulator',
+            value: 'sim',
+            children: [
+              { label: 'sim_defconfig', value: 'sim_defconfig' },
+              { label: 'sim_lvgl_defconfig', value: 'sim_lvgl_defconfig' },
+              {
+                label: 'sim_minimal_defconfig',
+                value: 'sim_minimal_defconfig',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  };
+
   // 渲染手动操作组件
   const renderManualAction = (subStep: SubStep) => {
     if (!subStep.requiresManualAction || !isWaitingForManualAction) {
@@ -560,50 +617,27 @@ function ProjectCreate() {
             />
           </div>
         );
-      case 'device-type-select':
+      case 'device-defconfig-select':
         return (
           <div className={styles.manualAction}>
             <div className={styles.manualActionTitle}>
-              <DesktopOutlined /> 请选择设备类型
+              <DesktopOutlined /> 请选择产品品类、设备类型和defconfig配置
             </div>
-            <Radio.Group
+            <Cascader
+              placeholder='选择产品品类、设备类型和defconfig'
               style={{ width: '100%', marginTop: 8 }}
-              onChange={(e) => handleDeviceTypeSelect(e.target.value)}
-              value={selectedDeviceType}
-            >
-              <Space direction='vertical' style={{ width: '100%' }}>
-                <Radio value='esp32'>ESP32</Radio>
-                <Radio value='stm32'>STM32</Radio>
-                <Radio value='riscv'>RISC-V</Radio>
-                <Radio value='sim'>Simulator</Radio>
-              </Space>
-            </Radio.Group>
-            {selectedDeviceType && (
-              <div style={{ marginTop: 12, textAlign: 'center' }}>
-                <Button type='primary' onClick={confirmDeviceTypeSelect}>
-                  确认选择: {selectedDeviceType.toUpperCase()}
-                </Button>
-              </div>
-            )}
-          </div>
-        );
-      case 'defconfig-select':
-        return (
-          <div className={styles.manualAction}>
-            <div className={styles.manualActionTitle}>
-              <FileOutlined /> 请选择defconfig配置
-            </div>
-            <Select
-              placeholder='选择defconfig文件'
-              style={{ width: '100%', marginTop: 8 }}
-              options={[
-                { label: 'sim_defconfig', value: 'sim_defconfig' },
-                { label: 'esp32_defconfig', value: 'esp32_defconfig' },
-                { label: 'stm32_defconfig', value: 'stm32_defconfig' },
-                { label: 'riscv_defconfig', value: 'riscv_defconfig' },
-                { label: 'custom_defconfig', value: 'custom_defconfig' },
-              ]}
-              onSelect={handleDefconfigSelect}
+              options={getDeviceDefconfigOptions()}
+              onChange={handleDeviceDefconfigSelect}
+              value={deviceTypeAndDefconfig}
+              expandTrigger='hover'
+              showSearch={{
+                filter: (inputValue, path) =>
+                  path.some((option) =>
+                    option.label
+                      ?.toLowerCase()
+                      .includes(inputValue.toLowerCase()),
+                  ),
+              }}
             />
           </div>
         );
@@ -669,12 +703,16 @@ function ProjectCreate() {
                 </span>
               </div>
               <div className={styles.projectInfoItem}>
+                <TagOutlined />
+                <span>产品品类: {deviceTypeAndDefconfig[0] || '未选择'}</span>
+              </div>
+              <div className={styles.projectInfoItem}>
                 <DesktopOutlined />
-                <span>设备类型: {selectedDeviceType || '未选择'}</span>
+                <span>设备类型: {deviceTypeAndDefconfig[1] || '未选择'}</span>
               </div>
               <div className={styles.projectInfoItem}>
                 <FileOutlined />
-                <span>defconfig: {selectedDefconfig || '未设置'}</span>
+                <span>defconfig: {deviceTypeAndDefconfig[2] || '未设置'}</span>
               </div>
             </div>
           </div>
