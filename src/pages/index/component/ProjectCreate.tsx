@@ -57,7 +57,7 @@ interface MainStep {
 }
 
 /**
- * ProjectCreate - OpenVela 应用创建界面
+ * ProjectCreate - openvela 应用创建界面
  */
 function ProjectCreate() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -549,7 +549,7 @@ function ProjectCreate() {
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Title level={2}>OpenVela 应用创建</Title>
+              <Title level={2}>openvela 应用创建</Title>
               <Button
                 type='link'
                 icon={<QuestionCircleOutlined />}
@@ -565,7 +565,7 @@ function ProjectCreate() {
                 帮助文档
               </Button>
             </div>
-            <Text type='secondary'>按照以下步骤创建 OpenVela 应用</Text>
+            <Text type='secondary'>按照以下步骤创建 openvela 应用</Text>
           </div>
           <div className={styles.headerRight}>
             <div className={styles.projectInfo}>

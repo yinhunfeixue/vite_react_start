@@ -4,6 +4,7 @@ import {
   DesktopOutlined,
   FileTextOutlined,
   FireOutlined,
+  PlusCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   TeamOutlined,
@@ -88,7 +89,20 @@ function SideMenu(props: ISideMenuProps) {
     },
     {
       key: 'devices',
-      label: '设备列表',
+      label: (
+        <div className={styles.deviceGroupTitle}>
+          <span>设备列表</span>
+          <PlusCircleOutlined
+            className={styles.addDeviceIcon}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedKey('connect-device');
+              onMenuClick?.('connect-device');
+            }}
+            title='连接设备'
+          />
+        </div>
+      ),
       type: 'group' as const,
       children: devices.map((device) => ({
         key: device.key,

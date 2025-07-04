@@ -36,6 +36,16 @@ function IndexPage(props: IIndexPageProps) {
             <p>这里是论坛内容...</p>
           </div>
         )}
+        {selectedMenuKey === 'connect-device' && (
+          <div className={styles.contentPage}>
+            <h2>连接设备</h2>
+            <p>请选择要连接的设备类型，或扫描可用设备...</p>
+            <div className={styles.deviceConnection}>
+              <p>设备连接状态：未连接</p>
+              <button>扫描设备</button>
+            </div>
+          </div>
+        )}
         {selectedMenuKey.startsWith('device-') && (
           <div className={styles.contentPage}>
             <h2>设备操作</h2>
