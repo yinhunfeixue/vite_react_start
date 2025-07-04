@@ -24,6 +24,78 @@ function IndexPage(props: IIndexPageProps) {
       <SideMenu onMenuClick={handleMenuClick} />
       <div className={styles.mainContent}>
         {selectedMenuKey === 'new-project' && <ProjectCreate />}
+        {selectedMenuKey === 'project-settings' && (
+          <div className={styles.contentPage}>
+            <h2>项目设置</h2>
+            <div className={styles.settingsContainer}>
+              <div className={styles.settingSection}>
+                <h3>设备类型</h3>
+                <div className={styles.deviceTypes}>
+                  <div className={styles.deviceOption}>
+                    <input
+                      type='radio'
+                      id='esp32'
+                      name='deviceType'
+                      value='esp32'
+                    />
+                    <label htmlFor='esp32'>ESP32</label>
+                  </div>
+                  <div className={styles.deviceOption}>
+                    <input
+                      type='radio'
+                      id='stm32'
+                      name='deviceType'
+                      value='stm32'
+                    />
+                    <label htmlFor='stm32'>STM32</label>
+                  </div>
+                  <div className={styles.deviceOption}>
+                    <input
+                      type='radio'
+                      id='riscv'
+                      name='deviceType'
+                      value='riscv'
+                    />
+                    <label htmlFor='riscv'>RISC-V</label>
+                  </div>
+                  <div className={styles.deviceOption}>
+                    <input
+                      type='radio'
+                      id='sim'
+                      name='deviceType'
+                      value='sim'
+                      defaultChecked
+                    />
+                    <label htmlFor='sim'>Simulator</label>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.settingSection}>
+                <h3>设置 defconfig</h3>
+                <div className={styles.defconfigContainer}>
+                  <select className={styles.defconfigSelect}>
+                    <option value=''>选择 defconfig 文件</option>
+                    <option value='sim_defconfig'>sim_defconfig</option>
+                    <option value='esp32_defconfig'>esp32_defconfig</option>
+                    <option value='stm32_defconfig'>stm32_defconfig</option>
+                    <option value='riscv_defconfig'>riscv_defconfig</option>
+                  </select>
+                  <button className={styles.browseButton}>浏览文件</button>
+                </div>
+                <p className={styles.settingDesc}>
+                  defconfig
+                  文件定义了项目的默认配置选项，选择合适的配置文件确保项目能够正确编译和运行。
+                </p>
+              </div>
+
+              <div className={styles.actionButtons}>
+                <button className={styles.saveButton}>保存设置</button>
+                <button className={styles.resetButton}>重置为默认</button>
+              </div>
+            </div>
+          </div>
+        )}
         {selectedMenuKey === 'help' && (
           <div className={styles.contentPage}>
             <h2>帮助</h2>

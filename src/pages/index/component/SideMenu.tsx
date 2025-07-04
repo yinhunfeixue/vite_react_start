@@ -7,6 +7,7 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
+  SettingOutlined,
   TeamOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
@@ -74,6 +75,11 @@ function SideMenu(props: ISideMenuProps) {
           key: 'new-project',
           label: '新建项目',
           icon: <PlusOutlined />,
+        },
+        {
+          key: 'project-settings',
+          label: '项目设置',
+          icon: <SettingOutlined />,
         },
         {
           key: 'help',

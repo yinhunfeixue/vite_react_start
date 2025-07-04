@@ -544,7 +544,7 @@ function ProjectCreate() {
   };
 
   return (
-    <div className={classNames(styles.ProjectCreate)}>
+    <div className={classNames(styles.projectCreate)}>
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
