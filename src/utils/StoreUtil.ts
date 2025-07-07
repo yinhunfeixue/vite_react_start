@@ -15,11 +15,20 @@ import { IStoreActions } from '@/preset/tools/StoreCreater';
  * ```
  */
 const StoreUtil: IStoreActions<IProjectStore> = {
-  assignStore: () => {},
-  mergeStore: () => {},
-  updateStore: () => {},
+  assignStore: () => {
+    throw new Error('Function not implemented.');
+  },
+  mergeStore: () => {
+    throw new Error('Function not implemented.');
+  },
+  updateStore: () => {
+    throw new Error('Function not implemented.');
+  },
   getStore: () => {
-    return {};
+    throw new Error('Function not implemented.');
+  },
+  resetStore: function (): void {
+    throw new Error('Function not implemented.');
   },
 };
 export default StoreUtil;

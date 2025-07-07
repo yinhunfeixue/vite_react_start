@@ -1,6 +1,6 @@
 import useProjectStore from '@/model/ProjectStore';
 import StoreUtil from '@/utils/StoreUtil';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 /**
@@ -9,27 +9,32 @@ import { useShallow } from 'zustand/shallow';
  * 使得可以在非 React 组件中使用 store 操作
  */
 const ProjectStoreInit: React.FC = () => {
-  const { assignStore, mergeStore, updateStore, getStore } = useProjectStore(
-    useShallow(({ assignStore, mergeStore, updateStore, getStore }) => {
-      return {
-        assignStore,
-        mergeStore,
-        updateStore,
-        getStore,
-      };
-    })
-  );
+  const { assignStore, mergeStore, updateStore, getStore, resetStore } =
+    useProjectStore(
+      useShallow(
+        ({ assignStore, mergeStore, updateStore, getStore, resetStore }) => {
+          return {
+            assignStore,
+            mergeStore,
+            updateStore,
+            getStore,
+            resetStore,
+          };
+        },
+      ),
+    );
 
-  const initUtil = () => {
+  const initUtil = useCallback(() => {
     StoreUtil.assignStore = assignStore;
     StoreUtil.mergeStore = mergeStore;
     StoreUtil.updateStore = updateStore;
     StoreUtil.getStore = getStore;
-  };
+    StoreUtil.resetStore = resetStore;
+  }, [assignStore, mergeStore, updateStore, getStore, resetStore]);
 
   useEffect(() => {
     initUtil();
-  }, [assignStore, mergeStore, updateStore, getStore]);
+  }, [initUtil]);
 
   return null;
 };

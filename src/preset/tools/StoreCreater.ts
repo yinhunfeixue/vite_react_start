@@ -29,6 +29,15 @@ export interface IStoreActions<DATA> {
    */
   updateStore: (action: (store: Partial<DATA>) => Partial<DATA>) => void;
 
+  /**
+   * 重置 store 到初始状态
+   */
+  resetStore: () => void;
+
+  /**
+   * 获取当前 store 的数据
+   * @returns 当前 store 的数据
+   */
   getStore: () => Partial<DATA>;
 }
 
@@ -40,12 +49,15 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
     public readonly option: {
       storageName: string;
       storageKeyList: (keyof DATA)[];
-    }
+    },
   ) {}
 
   create(initData?: Partial<DATA>) {
     const { storageName, storageKeyList } = this.option;
     type storeType = IStoreActions<DATA> & Partial<DATA>;
+
+    // 保存初始数据的引用
+    const initialData = { ...initData };
 
     // 创建 Zustand Store
     const useStore = create(
@@ -62,6 +74,18 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
               set((state) => lodash.merge({}, state, data)),
             updateStore: (action: (store: Partial<DATA>) => Partial<DATA>) =>
               set((state) => action(state)),
+            resetStore: () => {
+              set((state) => {
+                return {
+                  ...initialData,
+                  assignStore: state.assignStore,
+                  mergeStore: state.mergeStore,
+                  updateStore: state.updateStore,
+                  resetStore: state.resetStore,
+                  getStore: state.getStore,
+                } as storeType;
+              }, true);
+            },
             getStore: () => {
               const result = useStore.getState();
               return result as Partial<DATA>;
@@ -77,11 +101,11 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
             }
 
             return Object.fromEntries(
-              storageKeyList.map((key) => [key, state[key]])
+              storageKeyList.map((key) => [key, state[key]]),
             ) as unknown as storeType;
           },
-        }
-      )
+        },
+      ),
     );
 
     return useStore;
