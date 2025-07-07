@@ -23,7 +23,7 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
       return 0;
     });
     const result: ReactElement[] = data.map((item, index) => {
-      const createElement = (props: any) => {
+      const createElement = (props: Record<string, unknown>) => {
         if (item.redirect) {
           return <Navigate key={index} to={item.redirect} />;
         }

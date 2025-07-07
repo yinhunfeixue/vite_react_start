@@ -1,6 +1,5 @@
 import IProjectStore from '@/model/interface/IProjectStore';
 import { IStoreActions } from '@/preset/tools/StoreCreater';
-import { PartialDeep } from 'type-fest';
 
 /**
  * StoreUtil - 全局 Store 操作工具
@@ -16,17 +15,10 @@ import { PartialDeep } from 'type-fest';
  * ```
  */
 const StoreUtil: IStoreActions<IProjectStore> = {
-  assignStore: (_data: Partial<IProjectStore>) => {
-    console.warn('StoreUtil.assignStore not initialized');
-  },
-  mergeStore: (_data: PartialDeep<IProjectStore>) => {
-    console.warn('StoreUtil.mergeStore not initialized');
-  },
-  updateStore: (_action: (store: IProjectStore) => IProjectStore) => {
-    console.warn('StoreUtil.updateStore not initialized');
-  },
+  assignStore: () => {},
+  mergeStore: () => {},
+  updateStore: () => {},
   getStore: () => {
-    console.warn('StoreUtil.getStore not initialized');
     return {};
   },
 };
