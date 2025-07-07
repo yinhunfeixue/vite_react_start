@@ -27,7 +27,7 @@ export interface IStoreActions<DATA> {
    * @param action
    * @returns
    */
-  updateStore: (action: (store: Partial<DATA>) => Partial<DATA>) => void;
+  updateStore: (action: (store: Partial<DATA>) => Partial<DATA> | void) => void;
 
   /**
    * 重置 store 到初始状态
@@ -44,7 +44,7 @@ export interface IStoreActions<DATA> {
 /**
  * StoreCreater
  */
-class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
+class StoreCreater<DATA = Record<string, unknown>> {
   constructor(
     public readonly option: {
       storageName: string;
@@ -73,7 +73,10 @@ class StoreCreater<DATA extends Record<string, any> = Record<string, any>> {
             mergeStore: (data: PartialDeep<DATA>) =>
               set((state) => lodash.merge({}, state, data)),
             updateStore: (action: (store: Partial<DATA>) => Partial<DATA>) =>
-              set((state) => action(state)),
+              set((state) => {
+                const result = action(state);
+                return { ...state, ...result };
+              }),
             resetStore: () => {
               set((state) => {
                 return {
