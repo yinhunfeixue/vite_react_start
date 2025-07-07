@@ -5,27 +5,23 @@ import loadable from '@loadable/component';
 const routeConfig: IRouteItem[] = [
   {
     title: '登录',
-    path: '/Login',
+    path: 'login',
     component: loadable(() => import('@/pages/Login')),
     menuHidden: true,
   },
   {
     title: '主页',
-    path: '/',
+    path: '',
     component: loadable(() => import('@/component/BasicLayout')),
     children: [
       {
-        path: '/',
-        redirect: '/index',
-      },
-      {
-        path: '/index',
+        path: '',
         icon: <BookOutlined />,
         title: 'functionExample',
         component: loadable(() => import('@/pages/index/IndexPage')),
       },
       {
-        path: '/userList',
+        path: 'userList',
         title: 'userList',
         icon: <UserOutlined />,
         component: loadable(() => import('@/pages/user/UserListPage')),
@@ -39,6 +35,6 @@ const routeConfig: IRouteItem[] = [
 ];
 
 const MENU_LIST: IRouteItem[] =
-  routeConfig.find((item) => item.path === '/')?.children || [];
+  routeConfig.find((item) => item.path === '')?.children || [];
 
 export { MENU_LIST, routeConfig };

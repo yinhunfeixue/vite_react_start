@@ -52,11 +52,7 @@ function BasicLayout() {
 
   const [theme, setTheme] = useTheme(storeTheme);
 
-  useEffect(() => {
-    requestUser();
-  }, [token]);
-
-  const requestUser = async () => {
+  const requestUser = useCallback(async () => {
     if (token) {
       setLoadingUser(true);
       await ProjectUtil.sleep();
@@ -70,21 +66,11 @@ function BasicLayout() {
     } else {
       assignStore({ user: undefined });
     }
-  };
+  }, [token, assignStore]);
 
-  const updateSelectedKeys = useCallback(() => {
-    const keys = getSelectedKeys();
+  const getSelectedKeys = useCallback(() => {
+    const currentPath = location.pathname.substring(1);
 
-    setOpenMenuKeys(keys);
-    setSelectedMenuKeys(keys);
-  }, []);
-
-  useEffect(() => {
-    updateSelectedKeys();
-  }, [location.pathname, updateSelectedKeys]);
-
-  const getSelectedKeys = () => {
-    const currentPath = window.location.hash.substring(1);
     const chain = new TreeControl<IRouteItem>().searchChain(
       MENU_LIST,
       (node) => {
@@ -95,13 +81,26 @@ function BasicLayout() {
         return false;
       },
     );
-
     return chain ? chain.map((item) => item.path) : [];
-  };
+  }, [location.pathname]);
+
+  const updateSelectedKeys = useCallback(() => {
+    const keys = getSelectedKeys();
+    setOpenMenuKeys(keys);
+    setSelectedMenuKeys(keys);
+  }, [getSelectedKeys]);
 
   const createMenuItems = () => {
     return LayoutUtil.createMenuItems(MENU_LIST);
   };
+
+  useEffect(() => {
+    updateSelectedKeys();
+  }, [location.pathname, updateSelectedKeys]);
+
+  useEffect(() => {
+    requestUser();
+  }, [requestUser]);
 
   return (
     <div className={styles.BasicLayout}>

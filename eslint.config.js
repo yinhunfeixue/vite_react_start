@@ -70,7 +70,7 @@ export default tseslint.config(
       'padded-blocks': ['error', 'never'],
       'no-useless-concat': 'off',
       'react/jsx-key': 'error',
-      'react-hooks/exhaustive-deps': 0,
+      'react-hooks/exhaustive-deps': 'error',
     },
   },
 );
