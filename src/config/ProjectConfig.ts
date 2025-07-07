@@ -1,12 +1,24 @@
+const env = import.meta.env;
+
 /**
  * 应用名称
  */
-export const APP_NAME = 'APP名称';
+export const APP_NAME = env.APP_NAME;
 
 /**
  * 应用描述
  */
-export const APP_DESC = 'APP描述';
+export const APP_DESC = env.APP_DESC;
+
+/**
+ * 应用版本
+ */
+export const APP_VERSION = env.APP_VERSION;
+
+/**
+ * 后端服务根路径
+ */
+export const SERVER_ROOT = env.APP_SERVER_ROOT || '/';
 
 /**
  * 应用 LOGO URL
