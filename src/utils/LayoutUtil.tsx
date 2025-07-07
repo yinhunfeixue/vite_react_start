@@ -22,7 +22,7 @@ class LayoutUtil {
    */
   static createMenuItems(
     data: IRouteItem[],
-    renderTitle?: (item: IRouteItem) => ReactNode
+    renderTitle?: (item: IRouteItem) => ReactNode,
   ): ItemType[] {
     const renderMenuTitle = (item: IRouteItem): ReactNode => {
       if (renderTitle) {
@@ -41,20 +41,14 @@ class LayoutUtil {
         return !(item.menuHidden || item.redirect);
       })
       .map((item) => {
-        if (item.children?.length) {
-          return {
-            key: item.path,
-            label: item.title,
-            icon: item.icon,
-            children: this.createMenuItems(item.children, renderTitle),
-          };
-        } else {
-          return {
-            key: item.path,
-            icon: item.icon,
-            label: renderMenuTitle(item),
-          };
-        }
+        return {
+          key: item.path,
+          label: renderMenuTitle(item),
+          icon: item.icon,
+          children: item.children
+            ? this.createMenuItems(item.children, renderTitle)
+            : undefined,
+        };
       });
   }
 }

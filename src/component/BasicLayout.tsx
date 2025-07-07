@@ -1,14 +1,13 @@
 import LoginApi from '@/api/LoginApi';
+import UserApi from '@/api/UserApi';
 import { APP_NAME, LANGUAGE_LIST, THEME_LIST } from '@/config/ProjectConfig';
 import { MENU_LIST } from '@/config/RouteConfig';
 import useTheme from '@/hooks/useTheme';
-import IUser from '@/model/interface/IUser';
 import useProjectStore from '@/model/ProjectStore';
 import IRouteItem from '@/preset/config/IRouteItem';
 import LocaleUtil from '@/preset/tools/LocalUtil';
 import LayoutUtil from '@/utils/LayoutUtil';
 import PageUtil from '@/utils/PageUtil';
-import ProjectUtil from '@/utils/ProjectUtil';
 import { Button, Menu, Select } from 'antd';
 import TreeControl from 'fb-project-component/es/utils/TreeControl';
 import { pathToRegexp } from 'path-to-regexp';
@@ -55,14 +54,10 @@ function BasicLayout() {
   const requestUser = useCallback(async () => {
     if (token) {
       setLoadingUser(true);
-      await ProjectUtil.sleep();
-      const user: IUser = {
-        id: 1,
-        account: 'account',
-        nickName: '临时用户',
-      };
-      assignStore({ user });
-      setLoadingUser(false);
+      UserApi.getUserInfo().then((user) => {
+        assignStore({ user });
+        setLoadingUser(false);
+      });
     } else {
       assignStore({ user: undefined });
     }
@@ -90,21 +85,76 @@ function BasicLayout() {
     setSelectedMenuKeys(keys);
   }, [getSelectedKeys]);
 
-  const createMenuItems = () => {
+  const createMenuItems = useCallback(() => {
     return LayoutUtil.createMenuItems(MENU_LIST);
-  };
+  }, []);
 
   useEffect(() => {
     updateSelectedKeys();
-  }, [location.pathname, updateSelectedKeys]);
+  }, [updateSelectedKeys]);
 
   useEffect(() => {
     requestUser();
   }, [requestUser]);
 
-  return (
-    <div className={styles.BasicLayout}>
-      <div className={styles.Left}>
+  const renderHeader = () => {
+    return (
+      <header>
+        <span>{APP_NAME}</span>
+        <div className='HGroup'>
+          {user ? (
+            <>
+              <span>temp: {temp || '-'}</span>
+              <a>
+                <FormattedMessage id='username' />: {user?.nickName}
+              </a>
+              <Button type='primary'>aa</Button>
+              <Button
+                danger
+                onClick={() => {
+                  LoginApi.logout();
+                }}
+              >
+                <FormattedMessage id='logout' />
+              </Button>
+            </>
+          ) : (
+            <Button
+              loading={loadingUser}
+              type='link'
+              onClick={() => PageUtil.openLoginPage()}
+            >
+              登录
+            </Button>
+          )}
+          <Select
+            placeholder='主题'
+            value={theme}
+            style={{ width: 100 }}
+            allowClear
+            options={THEME_LIST}
+            onChange={(value) => {
+              assignStore({ theme: value });
+              setTheme(value);
+            }}
+          />
+          <Select
+            options={Array.from(LANGUAGE_LIST)}
+            style={{ width: 200 }}
+            value={language}
+            onChange={(value) => {
+              assignStore({ language: value });
+              LocaleUtil.setLocale(value);
+            }}
+          />
+        </div>
+      </header>
+    );
+  };
+
+  const renderSiderBar = () => {
+    return (
+      <>
         <div className={styles.Logo}>{APP_NAME}</div>
         <Menu
           theme='dark'
@@ -119,58 +169,15 @@ function BasicLayout() {
             setSelectedMenuKeys(option.selectedKeys);
           }}
         />
-      </div>
+      </>
+    );
+  };
+
+  return (
+    <div className={styles.BasicLayout}>
+      <div className={styles.Left}>{renderSiderBar()}</div>
       <div className={styles.Right}>
-        <header>
-          <span>标题</span>
-          <div className='HGroup'>
-            {user ? (
-              <>
-                <span>temp: {temp || '-'}</span>
-                <a>
-                  <FormattedMessage id='username' />: {user?.nickName}
-                </a>
-                <Button type='primary'>aa</Button>
-                <Button
-                  danger
-                  onClick={() => {
-                    LoginApi.logout();
-                  }}
-                >
-                  <FormattedMessage id='logout' />
-                </Button>
-              </>
-            ) : (
-              <Button
-                loading={loadingUser}
-                type='link'
-                onClick={() => PageUtil.openLoginPage()}
-              >
-                登录
-              </Button>
-            )}
-            <Select
-              placeholder='主题'
-              value={theme}
-              style={{ width: 100 }}
-              allowClear
-              options={THEME_LIST}
-              onChange={(value) => {
-                assignStore({ theme: value });
-                setTheme(value);
-              }}
-            />
-            <Select
-              options={Array.from(LANGUAGE_LIST)}
-              style={{ width: 200 }}
-              value={language}
-              onChange={(value) => {
-                assignStore({ language: value });
-                LocaleUtil.setLocale(value);
-              }}
-            />
-          </div>
-        </header>
+        {renderHeader()}
         <main>
           <Outlet />
         </main>
