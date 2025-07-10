@@ -71,6 +71,7 @@ export default tseslint.config(
       'no-useless-concat': 'off',
       'react/jsx-key': 'error',
       'react-hooks/exhaustive-deps': 'error',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
     },
   },
 );
