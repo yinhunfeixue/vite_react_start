@@ -52,7 +52,7 @@ class StoreCreater<DATA = Record<string, unknown>> {
     },
   ) {}
 
-  create(initData?: Partial<DATA>) {
+  create(initData: DATA) {
     const { storageName, storageKeyList } = this.option;
     type storeType = IStoreActions<DATA> & Partial<DATA>;
 
@@ -86,12 +86,12 @@ class StoreCreater<DATA = Record<string, unknown>> {
                   updateStore: state.updateStore,
                   resetStore: state.resetStore,
                   getStore: state.getStore,
-                } as storeType;
+                };
               }, true);
             },
             getStore: () => {
               const result = useStore.getState();
-              return result as Partial<DATA>;
+              return result;
             },
           } as storeType;
         },
