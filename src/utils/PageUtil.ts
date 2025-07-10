@@ -11,5 +11,13 @@ class PageUtil {
   static openLoginPage(back: string = window.location.href) {
     UrlUtil.toUrl('/Login', { query: { back: encodeURIComponent(back) } });
   }
+
+  /**
+   * 是否是登录页
+   */
+  static isLoginPage(): boolean {
+    const pathname = UrlUtil.location.pathname;
+    return pathname === '/Login';
+  }
 }
 export default PageUtil;

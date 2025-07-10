@@ -62,7 +62,9 @@ class AxiosInit {
       const { status } = response;
       switch (status) {
         case 401:
-          PageUtil.openLoginPage(window.location.href);
+          if (!PageUtil.isLoginPage()) {
+            PageUtil.openLoginPage(window.location.href);
+          }
           break;
         default:
           AxiosInit.showErrorMessage(message, status.toString());

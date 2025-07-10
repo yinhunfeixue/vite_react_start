@@ -36,14 +36,14 @@ function Login() {
     <div className={styles.Login}>
       <main>
         <Form<IUser>
-          layout="vertical"
+          layout='vertical'
           onFinish={() => {
             requestLogin();
           }}
         >
           <FormItem
-            label="帐号"
-            name="account"
+            label='帐号'
+            name='account'
             rules={[
               {
                 required: true,
@@ -53,23 +53,23 @@ function Login() {
             <Input placeholder={LocaleUtil.formatMessage({ id: 'username' })} />
           </FormItem>
           <FormItem
-            label="密码"
-            name="password"
+            label='密码'
+            name='password'
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Input.Password placeholder="密码" />
+            <Input.Password placeholder='密码' />
           </FormItem>
           <FormItem>
             <Button
               loading={loading}
-              htmlType="submit"
-              type="primary"
+              htmlType='submit'
+              type='primary'
               block
-              size="large"
+              size='large'
             >
               登录
             </Button>

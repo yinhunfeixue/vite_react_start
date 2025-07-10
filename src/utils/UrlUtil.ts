@@ -1,4 +1,4 @@
-import { NavigateFunction, NavigateOptions } from 'react-router-dom';
+import { Location, NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 /**
  * @class UrlUtil
@@ -12,6 +12,11 @@ class UrlUtil {
   static native: NavigateFunction;
 
   /**
+   * location 对象的引用，提供当前页面的 URL 信息。
+   */
+  static location: Location;
+
+  /**
    * 路由跳转并携带可选的查询参数和导航选项。
    * 推荐在需要统一管理路由行为时使用，如导航到某个页面并附加额外参数。
    * @param pathname 目标路径（支持相对或绝对路径）。
@@ -23,8 +28,8 @@ class UrlUtil {
   static toUrl(
     pathname: string,
     option?: NavigateOptions & {
-      query?: Record<string, any>;
-    }
+      query?: Record<string, string>;
+    },
   ) {
     const { query, ...otherOption } = option || {};
     UrlUtil.native(
@@ -32,7 +37,7 @@ class UrlUtil {
         pathname,
         search: new URLSearchParams(query).toString(),
       },
-      otherOption
+      otherOption,
     );
   }
 
@@ -43,7 +48,7 @@ class UrlUtil {
    * @param query 可选的查询参数，将自动序列化为查询字符串。
    * @example  UrlUtil.getUrl('/profile', { userId: 123 });
    */
-  static getUrl(pathname: string, query?: Record<string, any>) {
+  static getUrl(pathname: string, query?: Record<string, string>) {
     if (!query || Object.keys(query).length === 0) {
       return pathname;
     }
