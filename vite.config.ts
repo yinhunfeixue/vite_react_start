@@ -15,5 +15,18 @@ export default defineConfig({
   },
   build: {
     reportCompressedSize: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'react-router',
+          ],
+          'react-intl-vendor': ['react-intl'],
+        },
+      },
+    },
   },
 });
