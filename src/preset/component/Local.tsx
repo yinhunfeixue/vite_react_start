@@ -1,3 +1,4 @@
+import { LanguageData } from '@/i18n';
 import React, { useCallback, useMemo } from 'react';
 import { createIntl, IntlConfig, IntlProvider } from 'react-intl';
 import LocaleUtil from '../tools/LocaleUtil';
@@ -6,7 +7,7 @@ interface ILocalProps extends Omit<IntlConfig, 'locale'> {
   locale: string;
   children: React.ReactNode;
   onChange?: (local: string) => void;
-  i18nData: Record<string, any>;
+  i18nData: LanguageData;
 }
 /**
  * Local

@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 import react from './assets/react.svg';
 
 const Assets = {

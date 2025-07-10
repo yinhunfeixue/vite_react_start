@@ -8,13 +8,16 @@ import ProjectUtil from '@/utils/ProjectUtil';
 /**
  * 翻译数据类型定义
  */
-type TranslationData = Record<string, string | number>;
-type LanguageData = Record<string, TranslationData>;
+type TranslationData = Record<string, string>;
+export type LanguageData = Record<string, TranslationData>;
 
 // 使用 import.meta.glob 动态导入所有 JSON 文件
-const jsonModules: Record<string, any> = import.meta.glob('./**/*.json', {
-  eager: true,
-});
+const jsonModules: Record<string, Record<string, string>> = import.meta.glob(
+  './**/*.json',
+  {
+    eager: true,
+  },
+);
 
 // 存储合并后的翻译对象
 const i18nData: LanguageData = {};
