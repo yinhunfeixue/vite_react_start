@@ -1,5 +1,5 @@
 import useProjectStore from '@/model/ProjectStore';
-import LocaleUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocaleUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { Card, Input, message } from 'antd';
 import { useEffect } from 'react';
@@ -12,7 +12,7 @@ import { useShallow } from 'zustand/shallow';
  */
 function TestUser() {
   const { user } = useProjectStore(
-    useShallow((state) => ({ user: state.user }))
+    useShallow((state) => ({ user: state.user })),
   );
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function TestUser() {
   }, [user]);
 
   return (
-    <Card title="用户信息" size="small" extra="修改我，页面右上角信息也会变">
+    <Card title='用户信息' size='small' extra='修改我，页面右上角信息也会变'>
       <Input
         placeholder={LocaleUtil.formatMessage({ id: 'username' })}
         value={user?.nickName}

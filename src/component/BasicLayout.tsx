@@ -5,7 +5,7 @@ import { MENU_LIST } from '@/config/RouteConfig';
 import useTheme from '@/hooks/useTheme';
 import useProjectStore from '@/model/ProjectStore';
 import IRouteItem from '@/preset/config/IRouteItem';
-import LocaleUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocaleUtil';
 import LayoutUtil from '@/utils/LayoutUtil';
 import PageUtil from '@/utils/PageUtil';
 import { Button, Menu, Select } from 'antd';

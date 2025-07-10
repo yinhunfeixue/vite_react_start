@@ -1,6 +1,6 @@
 import IUser from '@/model/interface/IUser';
 import useProjectStore from '@/model/ProjectStore';
-import LocaleUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocaleUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { Button, Form, Input, message } from 'antd';
 import { useState } from 'react';

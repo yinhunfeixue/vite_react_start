@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { createIntl, IntlConfig, IntlProvider } from 'react-intl';
-import LocaleUtil from '../tools/LocalUtil';
+import LocaleUtil from '../tools/LocaleUtil';
 
 interface ILocalProps extends Omit<IntlConfig, 'locale'> {
   locale: string;
@@ -22,7 +22,7 @@ function Local(props: ILocalProps) {
     (locale) => {
       onChange?.(locale);
     },
-    [onChange]
+    [onChange],
   );
 
   return (

@@ -7,7 +7,7 @@ import { ComponentType, ReactNode } from 'react';
 export default interface IRouteItem {
   /**
    * 菜单名称/页面标题
-   * 支持国际化 key，会自动通过 LocalUtil 进行翻译
+   * 支持国际化 key，会自动通过 LocaleUtil 进行翻译
    * @example 'userList' | 'functionExample'
    */
   title?: string;

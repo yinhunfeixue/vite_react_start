@@ -1,5 +1,5 @@
 import IRouteItem from '@/preset/config/IRouteItem';
-import LocaleUtil from '@/preset/tools/LocalUtil';
+import LocaleUtil from '@/preset/tools/LocaleUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { ItemType } from 'antd/es/menu/interface';
 import { ReactNode } from 'react';
