@@ -2,24 +2,31 @@ import { SERVER_ROOT } from '@/config/ProjectConfig';
 import PageUtil from '@/utils/PageUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { notification } from 'antd';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 
 /**
- * AxiosInit - Axios 网络请求初始化配置类
+ * Axios 网络请求初始化配置类
  */
-class AxiosInit {
-  /**
+class HttpServer {
+  private _axios = new Axios();
+
+  public get axios() {
+    return this._axios;
+  }
+
+  constructor() {
+    this.init();
+  }
+
+  /*
    * 初始化 Axios 全局配置
    */
-  static init() {
+  init() {
     axios.defaults.baseURL = SERVER_ROOT;
     axios.defaults.withCredentials = true;
-    axios.defaults.headers.post['Content-Type'] = 'application/json';
-    axios.interceptors.response.use(
-      AxiosInit.successHandler,
-      AxiosInit.errorHandler,
-    );
+    axios.interceptors.response.use(this.successHandler, this.errorHandler);
     axios.interceptors.request.use((config) => {
+      config.headers['Content-Type'] = 'application/json';
       // 如需添加全局请求头，在这里配置
       const token = StoreUtil.getStore().token;
       if (token) {
@@ -35,7 +42,7 @@ class AxiosInit {
    * @param response Axios 响应对象
    * @returns 处理后的响应或被拒绝的 Promise
    */
-  static successHandler(response: AxiosResponse) {
+  successHandler = (response: AxiosResponse) => {
     // blob 不处理
     if (response.config.responseType === 'blob') {
       return response;
@@ -43,12 +50,12 @@ class AxiosInit {
     //当出错时，执行全局响应处理，并不再向后执行
     const { code, message } = response.data;
     if (code !== 200) {
-      AxiosInit.showErrorMessage(message);
+      this.showErrorMessage(message);
       return Promise.reject();
     }
 
     return response;
-  }
+  };
 
   /**
    * 全局错误拦截器
@@ -56,7 +63,7 @@ class AxiosInit {
    * @param error Axios 错误对象
    * @returns 被拒绝的 Promise
    */
-  static errorHandler(error: AxiosError) {
+  errorHandler = (error: AxiosError) => {
     const { message, response } = error;
     if (response) {
       const { status } = response;
@@ -67,21 +74,21 @@ class AxiosInit {
           }
           break;
         default:
-          AxiosInit.showErrorMessage(message, status.toString());
+          this.showErrorMessage(message, status.toString());
           break;
       }
     } else {
-      AxiosInit.showErrorMessage(message);
+      this.showErrorMessage(message);
     }
     return Promise.reject();
-  }
+  };
 
   /**
    * 显示错误提示消息
    * @param resMessage 响应错误消息
    * @param status HTTP状态码
    */
-  static showErrorMessage(resMessage?: string, status?: string) {
+  showErrorMessage(resMessage?: string, status?: string) {
     const message = resMessage || `未知错误： ${status || ''}`;
     notification.error({
       message,
@@ -89,4 +96,6 @@ class AxiosInit {
     });
   }
 }
-export default AxiosInit;
+
+const httpServer = new HttpServer().axios;
+export default httpServer;
