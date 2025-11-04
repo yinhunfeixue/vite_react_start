@@ -29,6 +29,7 @@ interface IInfiniteScrollerProps<T> {
     func: {
       mutate: (data: IInfiniteScrollerData) => void;
       reload: () => void;
+      remove: (index: number) => void;
     },
   ) => React.ReactNode;
 }
@@ -95,6 +96,14 @@ function InfiniteScroller<T>(props: IInfiniteScrollerProps<T>) {
       },
     );
 
+  const remove = (index: number) => {
+    if (!data) return;
+    const newData = { ...data };
+    newData.list.splice(index, 1);
+    newData.total -= 1;
+    mutate?.(newData);
+  };
+
   const renderFooter = () => {
     if (loading || loadingMore) {
       return <div className='InfiniteScrollerFooter'>加载中...</div>;
@@ -111,7 +120,7 @@ function InfiniteScroller<T>(props: IInfiniteScrollerProps<T>) {
       style={style}
       ref={rootRef}
     >
-      {render(data, { mutate, reload })}
+      {render(data, { mutate, reload, remove })}
       {renderFooter()}
     </div>
   );

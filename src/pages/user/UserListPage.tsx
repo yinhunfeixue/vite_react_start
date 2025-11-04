@@ -26,7 +26,7 @@ function UserListPage() {
           };
         }}
         render={(data, func) => {
-          const { mutate, reload } = func;
+          const { mutate, reload, remove } = func;
           return (
             <div>
               {data?.list.map((item, index) => {
@@ -38,10 +38,7 @@ function UserListPage() {
                     {item.name}
                     <Button
                       onClick={() => {
-                        const newData = { ...data };
-                        newData.list.splice(index, 1);
-                        newData.total -= 1;
-                        mutate?.(newData);
+                        remove(index);
                       }}
                     >
                       删除
