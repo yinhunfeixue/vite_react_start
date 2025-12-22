@@ -72,7 +72,7 @@ export default tseslint.config(
       'react/jsx-key': 'error',
       'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-unsafe-function-type': 'off',
-      'react-hooks/set-state-in-effect': 'off',
+      'react-refresh/only-export-components': 'off',
     },
   },
 );

@@ -11,7 +11,7 @@ import PageUtil from '@/utils/PageUtil';
 import { Button, Menu, Select } from 'antd';
 import TreeControl from 'fb-project-component/es/utils/TreeControl';
 import { match } from 'path-to-regexp';
-import { Key, useCallback, useEffect, useState } from 'react';
+import { Key, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useShallow } from 'zustand/shallow';
@@ -26,6 +26,9 @@ function BasicLayout() {
   const [openMenuKeys, setOpenMenuKeys] = useState<Key[]>([]);
   const [selectedMenuKeys, setSelectedMenuKeys] = useState<Key[]>([]);
   const location = useLocation();
+
+  const [prePathName, setPrePathName] = useState<string>();
+  const [preToken, setPreToken] = useState<string>();
 
   const {
     user,
@@ -48,10 +51,9 @@ function BasicLayout() {
   );
 
   const [loadingUser, setLoadingUser] = useState(false);
-
   const [theme, setTheme] = useTheme(storeTheme);
 
-  const requestUser = useCallback(async () => {
+  const requestUser = async (token?: string) => {
     if (token) {
       setLoadingUser(true);
       UserApi.getUserInfo().then((user) => {
@@ -61,10 +63,15 @@ function BasicLayout() {
     } else {
       assignStore({ user: undefined });
     }
-  }, [token, assignStore]);
+  };
 
-  const getSelectedKeys = useCallback(() => {
-    const currentPath = location.pathname.substring(1);
+  if (token !== preToken) {
+    setPreToken(token);
+    requestUser(token);
+  }
+
+  const getSelectedKeys = (pathname: string) => {
+    const currentPath = pathname.substring(1);
 
     const chain = new TreeControl<IRouteItem>().searchChain(
       MENU_LIST,
@@ -77,25 +84,22 @@ function BasicLayout() {
       },
     );
     return chain ? chain.map((item) => item.path) : [];
-  }, [location.pathname]);
+  };
 
-  const updateSelectedKeys = useCallback(() => {
-    const keys = getSelectedKeys();
+  const updateSelectedKeys = (pathname: string) => {
+    const keys = getSelectedKeys(pathname);
     setOpenMenuKeys(keys);
     setSelectedMenuKeys(keys);
-  }, [getSelectedKeys]);
+  };
+
+  if (location.pathname !== prePathName) {
+    setPrePathName(location.pathname);
+    updateSelectedKeys(location.pathname);
+  }
 
   const createMenuItems = useCallback(() => {
     return LayoutUtil.createMenuItems(MENU_LIST);
   }, []);
-
-  useEffect(() => {
-    updateSelectedKeys();
-  }, [updateSelectedKeys]);
-
-  useEffect(() => {
-    requestUser();
-  }, [requestUser]);
 
   const renderHeader = () => {
     return (
