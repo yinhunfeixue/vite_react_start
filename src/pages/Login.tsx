@@ -1,8 +1,9 @@
 import IUser from '@/model/interface/IUser';
 import useProjectStore from '@/model/ProjectStore';
 import LocaleUtil from '@/preset/tools/LocaleUtil';
+import antdMessage from '@/utils/AntdMessage';
 import UrlUtil from '@/utils/UrlUtil';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './Login.module.less';
@@ -22,7 +23,7 @@ function Login() {
   const requestLogin = () => {
     setLoading(true);
     assignStore({ token: 'login_test_token' });
-    message.success('登录成功').then(() => {
+    antdMessage.success('登录成功').then(() => {
       setLoading(false);
       if (query?.back) {
         window.location.href = decodeURIComponent(query.back as string);
@@ -42,7 +43,7 @@ function Login() {
           }}
         >
           <FormItem
-            label='帐号'
+            label={LocaleUtil.formatMessage({ id: 'username' })}
             name='account'
             rules={[
               {
@@ -50,10 +51,13 @@ function Login() {
               },
             ]}
           >
-            <Input placeholder={LocaleUtil.formatMessage({ id: 'username' })} />
+            <Input
+              placeholder={LocaleUtil.formatMessage({ id: 'username' })}
+              autoComplete='username'
+            />
           </FormItem>
           <FormItem
-            label='密码'
+            label={LocaleUtil.formatMessage({ id: 'password' })}
             name='password'
             rules={[
               {
@@ -61,7 +65,10 @@ function Login() {
               },
             ]}
           >
-            <Input.Password placeholder='密码' />
+            <Input.Password
+              placeholder={LocaleUtil.formatMessage({ id: 'password' })}
+              autoComplete='current-password'
+            />
           </FormItem>
           <FormItem>
             <Button
@@ -71,7 +78,7 @@ function Login() {
               block
               size='large'
             >
-              登录
+              {LocaleUtil.formatMessage({ id: 'login' })}
             </Button>
           </FormItem>
         </Form>

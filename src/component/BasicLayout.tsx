@@ -6,16 +6,16 @@ import useTheme from '@/hooks/useTheme';
 import useProjectStore from '@/model/ProjectStore';
 import IRouteItem from '@/preset/config/IRouteItem';
 import LocaleUtil from '@/preset/tools/LocaleUtil';
-import LayoutUtil from '@/utils/LayoutUtil';
 import PageUtil from '@/utils/PageUtil';
-import { Button, Menu, Select } from 'antd';
+import { Button, Select } from 'antd';
 import TreeControl from 'fb-project-component/es/utils/TreeControl';
 import { match } from 'path-to-regexp';
-import { Key, useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useShallow } from 'zustand/shallow';
 import styles from './BasicLayout.module.less';
+import ProjectMenu from './ProjectMenu';
 
 /**
  * BasicLayout - 基础布局组件
@@ -23,12 +23,27 @@ import styles from './BasicLayout.module.less';
  * 负责用户认证状态管理、主题切换、语言切换等全局功能
  */
 function BasicLayout() {
-  const [openMenuKeys, setOpenMenuKeys] = useState<Key[]>([]);
-  const [selectedMenuKeys, setSelectedMenuKeys] = useState<Key[]>([]);
   const location = useLocation();
 
-  const [prePathName, setPrePathName] = useState<string>();
-  const [preToken, setPreToken] = useState<string>();
+  const getSelectedKeys = (pathname: string) => {
+    const currentPath = pathname.substring(1);
+
+    const chain = new TreeControl<IRouteItem>().searchChain(
+      MENU_LIST,
+      (node) => {
+        const matcher = match(node.path);
+        if (matcher(currentPath)) {
+          return true;
+        }
+        return false;
+      },
+    );
+    return chain ? chain.map((item) => item.path) : [];
+  };
+
+  const defaultMenuData = useMemo(() => {
+    return getSelectedKeys(location.pathname);
+  }, [location.pathname]);
 
   const {
     user,
@@ -53,53 +68,31 @@ function BasicLayout() {
   const [loadingUser, setLoadingUser] = useState(false);
   const [theme, setTheme] = useTheme(storeTheme);
 
-  const requestUser = async (token?: string) => {
-    if (token) {
-      setLoadingUser(true);
-      UserApi.getUserInfo().then((user) => {
-        assignStore({ user });
-        setLoadingUser(false);
-      });
-    } else {
-      assignStore({ user: undefined });
-    }
-  };
-
-  if (token !== preToken) {
-    setPreToken(token);
-    requestUser(token);
-  }
-
-  const getSelectedKeys = (pathname: string) => {
-    const currentPath = pathname.substring(1);
-
-    const chain = new TreeControl<IRouteItem>().searchChain(
-      MENU_LIST,
-      (node) => {
-        const matcher = match(node.path);
-        if (matcher(currentPath)) {
-          return true;
+  const requestUser = useCallback(
+    (token?: string) => {
+      return new Promise<void>((resolve) => {
+        if (token) {
+          setLoadingUser(true);
+          UserApi.getUserInfo()
+            .then((user) => {
+              assignStore({ user });
+            })
+            .finally(() => {
+              setLoadingUser(false);
+              resolve();
+            });
+        } else {
+          assignStore({ user: undefined });
+          resolve();
         }
-        return false;
-      },
-    );
-    return chain ? chain.map((item) => item.path) : [];
-  };
+      });
+    },
+    [assignStore],
+  );
 
-  const updateSelectedKeys = (pathname: string) => {
-    const keys = getSelectedKeys(pathname);
-    setOpenMenuKeys(keys);
-    setSelectedMenuKeys(keys);
-  };
-
-  if (location.pathname !== prePathName) {
-    setPrePathName(location.pathname);
-    updateSelectedKeys(location.pathname);
-  }
-
-  const createMenuItems = useCallback(() => {
-    return LayoutUtil.createMenuItems(MENU_LIST);
-  }, []);
+  useEffect(() => {
+    requestUser(token);
+  }, [token, requestUser]);
 
   const renderHeader = () => {
     return (
@@ -160,18 +153,10 @@ function BasicLayout() {
     return (
       <>
         <div className={styles.Logo}>{APP_NAME}</div>
-        <Menu
-          theme='dark'
-          mode='inline'
-          items={createMenuItems()}
-          openKeys={openMenuKeys as string[]}
-          selectedKeys={selectedMenuKeys as string[]}
-          onOpenChange={(keys) => {
-            setOpenMenuKeys(keys);
-          }}
-          onSelect={(option) => {
-            setSelectedMenuKeys(option.selectedKeys);
-          }}
+        <ProjectMenu
+          defaultOpenKeys={defaultMenuData}
+          defaultSelectedKeys={defaultMenuData}
+          key={location.pathname}
         />
       </>
     );

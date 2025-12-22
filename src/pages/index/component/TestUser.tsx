@@ -1,7 +1,8 @@
 import useProjectStore from '@/model/ProjectStore';
 import LocaleUtil from '@/preset/tools/LocaleUtil';
+import antdMessage from '@/utils/AntdMessage';
 import StoreUtil from '@/utils/StoreUtil';
-import { Card, Input, message } from 'antd';
+import { Card, Input } from 'antd';
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/shallow';
 
@@ -16,7 +17,7 @@ function TestUser() {
   );
 
   useEffect(() => {
-    message.info('user render');
+    antdMessage.info('user render');
   }, [user]);
 
   return (

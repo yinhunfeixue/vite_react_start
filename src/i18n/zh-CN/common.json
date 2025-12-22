@@ -4,5 +4,6 @@
   "userList": "用户列表",
   "username": "用户名",
   "logout": "退出",
-  "login": "登录"
+  "login": "登录",
+  "password": "密码"
 }
