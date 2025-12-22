@@ -4,5 +4,6 @@
   "userList": "User List",
   "username": "Username",
   "logout": "Logout",
-  "login": "Login"
+  "login": "Login",
+  "password": "Password"
 }

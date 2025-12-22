@@ -7,10 +7,11 @@ import useProjectStore from '@/model/ProjectStore';
 import IRouteItem from '@/preset/config/IRouteItem';
 import LocaleUtil from '@/preset/tools/LocaleUtil';
 import PageUtil from '@/utils/PageUtil';
+import { useMount, useUpdateEffect } from 'ahooks';
 import { Button, Select } from 'antd';
 import TreeControl from 'fb-project-component/es/utils/TreeControl';
 import { match } from 'path-to-regexp';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useShallow } from 'zustand/shallow';
@@ -49,16 +50,14 @@ function BasicLayout() {
     user,
     token,
     assignStore,
-    temp,
     language,
     theme: storeTheme,
   } = useProjectStore(
-    useShallow(({ user, token, assignStore, temp, language, theme }) => {
+    useShallow(({ user, token, assignStore, language, theme }) => {
       return {
         user,
         token,
         assignStore,
-        temp,
         language,
         theme,
       };
@@ -70,29 +69,29 @@ function BasicLayout() {
 
   const requestUser = useCallback(
     (token?: string) => {
-      return new Promise<void>((resolve) => {
-        if (token) {
-          setLoadingUser(true);
-          UserApi.getUserInfo()
-            .then((user) => {
-              assignStore({ user });
-            })
-            .finally(() => {
-              setLoadingUser(false);
-              resolve();
-            });
-        } else {
-          assignStore({ user: undefined });
-          resolve();
-        }
-      });
+      if (token) {
+        setLoadingUser(true);
+        UserApi.getUserInfo()
+          .then((user) => {
+            assignStore({ user });
+          })
+          .finally(() => {
+            setLoadingUser(false);
+          });
+      } else {
+        assignStore({ user: undefined });
+      }
     },
     [assignStore],
   );
 
-  useEffect(() => {
+  useMount(() => {
     requestUser(token);
-  }, [token, requestUser]);
+  });
+
+  useUpdateEffect(() => {
+    requestUser(token);
+  }, [token]);
 
   const renderHeader = () => {
     return (
@@ -101,7 +100,6 @@ function BasicLayout() {
         <div className='HGroup'>
           {user ? (
             <>
-              <span>temp: {temp || '-'}</span>
               <a>
                 <FormattedMessage id='username' />: {user?.nickName}
               </a>
