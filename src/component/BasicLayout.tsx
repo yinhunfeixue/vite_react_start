@@ -10,7 +10,7 @@ import LayoutUtil from '@/utils/LayoutUtil';
 import PageUtil from '@/utils/PageUtil';
 import { Button, Menu, Select } from 'antd';
 import TreeControl from 'fb-project-component/es/utils/TreeControl';
-import { pathToRegexp } from 'path-to-regexp';
+import { match } from 'path-to-regexp';
 import { Key, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -69,8 +69,8 @@ function BasicLayout() {
     const chain = new TreeControl<IRouteItem>().searchChain(
       MENU_LIST,
       (node) => {
-        const reg = pathToRegexp(node.path);
-        if (reg.test(currentPath)) {
+        const matcher = match(node.path);
+        if (matcher(currentPath)) {
           return true;
         }
         return false;
