@@ -1,5 +1,5 @@
 import { LanguageData } from '@/i18n';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { createIntl, IntlConfig, IntlProvider } from 'react-intl';
 import LocaleUtil from '../tools/LocaleUtil';
 
@@ -16,15 +16,20 @@ function Local(props: ILocalProps) {
   const { children, onChange, locale, i18nData, ...otherProps } = props;
 
   const messages = useMemo(() => i18nData[locale] || [], [locale, i18nData]);
-  LocaleUtil.intl = useMemo(() => {
+  const intl = useMemo(() => {
     return createIntl({ locale, messages });
   }, [locale, messages]);
-  LocaleUtil.setLocale = useCallback(
-    (locale) => {
+  const setLocale = useCallback(
+    (locale: string) => {
       onChange?.(locale);
     },
     [onChange],
   );
+
+  useEffect(() => {
+    LocaleUtil.intl = intl;
+    LocaleUtil.setLocale = setLocale;
+  }, [intl, setLocale]);
 
   return (
     <IntlProvider {...otherProps} locale={locale} messages={messages}>

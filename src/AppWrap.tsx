@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { APP_NAME, DEFAULT_LANGUAGE } from './config/ProjectConfig.ts';
-import './fonts/iconfont.css';
-import './index.less';
 import Local from './preset/component/Local.tsx';
 
 import App from './App.tsx';

@@ -2,32 +2,33 @@ import { SERVER_ROOT } from '@/config/ProjectConfig';
 import PageUtil from '@/utils/PageUtil';
 import StoreUtil from '@/utils/StoreUtil';
 import { notification } from 'antd';
-import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 /**
  * Axios 网络请求初始化配置类
  */
 class HttpServer {
-  private _axios = new Axios();
+  private _axios: AxiosInstance;
 
   public get axios() {
     return this._axios;
   }
 
   constructor() {
+    this._axios = axios.create({
+      baseURL: SERVER_ROOT,
+      withCredentials: false,
+    });
     this.init();
   }
 
   /*
-   * 初始化 Axios 全局配置
+   * 初始化拦截器配置
    */
   init() {
-    axios.defaults.baseURL = SERVER_ROOT;
-    axios.defaults.withCredentials = true;
-    axios.interceptors.response.use(this.successHandler, this.errorHandler);
-    axios.interceptors.request.use((config) => {
+    this._axios.interceptors.response.use(this.successHandler, this.errorHandler);
+    this._axios.interceptors.request.use((config) => {
       config.headers['Content-Type'] = 'application/json';
-      // 如需添加全局请求头，在这里配置
       const token = StoreUtil.getStore().token;
       if (token) {
         config.headers.token = token;

@@ -14,7 +14,7 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
       return [];
     }
     //按是否有redirect排序，有redirect的在后面
-    data.sort((a, b) => {
+    const sorted = [...data].sort((a, b) => {
       if (a.redirect && !b.redirect) {
         return 1;
       } else if (!a.redirect && b.redirect) {
@@ -22,7 +22,7 @@ function RouterRender(props: { routeConfig: IRouteItem[] }) {
       }
       return 0;
     });
-    const result: ReactElement[] = data.map((item, index) => {
+    const result: ReactElement[] = sorted.map((item, index) => {
       const createElement = (props: Record<string, unknown>) => {
         if (item.redirect) {
           return <Navigate key={index} to={item.redirect} />;

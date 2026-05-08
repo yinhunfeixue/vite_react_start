@@ -51,7 +51,7 @@ function UserListPage() {
                 </Button>
                 <Button
                   onClick={() => {
-                    item.name = Math.random();
+                    item.name = String(Math.random());
                     mutate?.({ ...data });
                   }}
                 >

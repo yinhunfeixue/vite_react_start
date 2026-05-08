@@ -1,6 +1,6 @@
 import UrlUtil from '@/utils/UrlUtil';
 import React, { useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 /**
  * NavigateInit
@@ -14,6 +14,6 @@ function NavigateInit() {
     UrlUtil.native = native;
     UrlUtil.location = location;
   }, [native, location]);
-  return <Outlet />;
+  return null;
 }
 export default React.memo(NavigateInit);

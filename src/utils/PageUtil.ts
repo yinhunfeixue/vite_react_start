@@ -17,7 +17,7 @@ class PageUtil {
    */
   static isLoginPage(): boolean {
     const pathname = UrlUtil.location.pathname;
-    return pathname === '/Login';
+    return pathname.toLowerCase() === '/login';
   }
 }
 export default PageUtil;
