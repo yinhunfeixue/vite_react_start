@@ -26,9 +26,8 @@ import ProjectMenu from './ProjectMenu';
 function BasicLayout() {
   const location = useLocation();
 
-  const getSelectedKeys = (pathname: string) => {
-    const currentPath = pathname.substring(1);
-
+  const defaultMenuData = useMemo(() => {
+    const currentPath = location.pathname.substring(1);
     const chain = new TreeControl<IRouteItem>().searchChain(
       MENU_LIST,
       (node) => {
@@ -40,10 +39,6 @@ function BasicLayout() {
       },
     );
     return chain ? chain.map((item) => item.path) : [];
-  };
-
-  const defaultMenuData = useMemo(() => {
-    return getSelectedKeys(location.pathname);
   }, [location.pathname]);
 
   const {
@@ -154,7 +149,6 @@ function BasicLayout() {
         <ProjectMenu
           defaultOpenKeys={defaultMenuData}
           defaultSelectedKeys={defaultMenuData}
-          key={location.pathname}
         />
       </>
     );

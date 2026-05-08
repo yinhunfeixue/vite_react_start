@@ -7,7 +7,6 @@ import { IntlShape } from 'react-intl';
 class LocaleUtilData {
   /**
    * 设置当前语言环境
-   * @param _locale - 语言代码（暂未实现）
    */
   static setLocale: (_locale: string) => void;
 
@@ -15,6 +14,20 @@ class LocaleUtilData {
    * react-intl 实例
    */
   static intl: IntlShape;
+
+  /**
+   * 更新 intl 实例（供组件渲染时同步调用）
+   */
+  static updateIntl(intl: IntlShape) {
+    LocaleUtilData.intl = intl;
+  }
+
+  /**
+   * 更新 setLocale 方法（供组件渲染时同步调用）
+   */
+  static updateSetLocale(fn: (_locale: string) => void) {
+    LocaleUtilData.setLocale = fn;
+  }
 }
 
 /**

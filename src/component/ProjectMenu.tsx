@@ -1,7 +1,7 @@
 import { MENU_LIST } from '@/config/RouteConfig';
 import LayoutUtil from '@/utils/LayoutUtil';
 import { Menu } from 'antd';
-import React, { CSSProperties, Key, useState } from 'react';
+import { CSSProperties, Key, useState } from 'react';
 interface IProjectMenuProps {
   className?: string;
   style?: CSSProperties;
@@ -43,4 +43,4 @@ function ProjectMenu(props: IProjectMenuProps) {
     />
   );
 }
-export default React.memo(ProjectMenu);
+export default ProjectMenu
