@@ -100,8 +100,7 @@ class StoreCreater<DATA = Record<string, unknown>> {
               }, true);
             },
             getStore: () => {
-              const result = useStore.getState();
-              return result;
+              return useStore.getState();
             },
           } as storeType;
         },
@@ -109,7 +108,7 @@ class StoreCreater<DATA = Record<string, unknown>> {
           name: storageName,
           storage: createDualStorage<DATA>(storageName, sessionKeyList),
           partialize: (state) => {
-            if (!storageKeyList.length) {
+            if (!storageKeyList?.length) {
               return {} as storeType;
             }
 
