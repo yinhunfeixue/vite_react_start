@@ -3,7 +3,7 @@ import useProjectStore from '@/model/ProjectStore';
 import LocaleUtil from '@/preset/tools/LocaleUtil';
 import antdMessage from '@/utils/AntdMessage';
 import UrlUtil from '@/utils/UrlUtil';
-import { Button, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input } from 'antd';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './Login.module.less';
@@ -17,12 +17,13 @@ function Login() {
   const { assignStore } = useProjectStore();
 
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [searchParam] = useSearchParams();
   const query = Object.fromEntries(searchParam.entries());
 
   const requestLogin = () => {
     setLoading(true);
-    assignStore({ token: 'login_test_token' });
+    assignStore({ token: 'login_test_token', rememberToken: remember });
     antdMessage.success('登录成功').then(() => {
       setLoading(false);
       if (query?.back) {
@@ -69,6 +70,14 @@ function Login() {
               placeholder={LocaleUtil.formatMessage({ id: 'password' })}
               autoComplete='current-password'
             />
+          </FormItem>
+          <FormItem>
+            <Checkbox
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            >
+              {LocaleUtil.formatMessage({ id: 'rememberLogin' })}
+            </Checkbox>
           </FormItem>
           <FormItem>
             <Button

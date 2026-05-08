@@ -2,6 +2,7 @@ import lodash from 'lodash';
 import { PartialDeep } from 'type-fest';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import createDualStorage, { SessionKeyList } from './DualStorage';
 
 export interface IStoreActions<DATA> {
   /**
@@ -48,12 +49,21 @@ class StoreCreater<DATA = Record<string, unknown>> {
   constructor(
     public readonly option: {
       storageName: string;
+
+      /**
+       * 持久化的属性名，包含 localStorage / sessionStorage
+       */
       storageKeyList: (keyof DATA)[];
+
+      /**
+       * 会话持久化的属性名, 仅 sessionStorage
+       */
+      sessionKeyList?: SessionKeyList<DATA>;
     },
   ) {}
 
   create(initData: DATA) {
-    const { storageName, storageKeyList } = this.option;
+    const { storageName, storageKeyList, sessionKeyList } = this.option;
     type storeType = IStoreActions<DATA> & Partial<DATA>;
 
     // 保存初始数据的引用
@@ -97,14 +107,14 @@ class StoreCreater<DATA = Record<string, unknown>> {
         },
         {
           name: storageName,
+          storage: createDualStorage<DATA>(storageName, sessionKeyList),
           partialize: (state) => {
-            // 筛选需要持久化的键
-            if (!storageKeyList?.length) {
+            if (!storageKeyList.length) {
               return {} as storeType;
             }
 
             return Object.fromEntries(
-              storageKeyList.map((key) => [key, state[key]]),
+              storageKeyList.map((key: keyof DATA) => [key, state[key as keyof storeType]]),
             ) as unknown as storeType;
           },
         },

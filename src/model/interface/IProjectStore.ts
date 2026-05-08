@@ -11,6 +11,11 @@ export default interface IProjectStore {
   token?: string;
 
   /**
+   * 是否记住登录状态（持久化 token）
+   */
+  rememberToken?: boolean;
+
+  /**
    * 当前登录用户信息
    */
   user?: IUser;
