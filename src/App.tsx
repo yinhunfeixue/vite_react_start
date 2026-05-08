@@ -4,6 +4,7 @@
 import { DEFAULT_LANGUAGE } from '@/config/ProjectConfig';
 import { routeConfig } from '@/config/RouteConfig';
 import RouterRender from '@/preset/component/RouterRender';
+import { StyleProvider } from '@ant-design/cssinjs';
 import { ConfigProvider, message } from 'antd';
 import antdEN from 'antd/lib/locale/en_US';
 import antdZH from 'antd/lib/locale/zh_CN';
@@ -35,10 +36,12 @@ function App(props: AppProps) {
   }, [messageApi]);
 
   return (
-    <ConfigProvider locale={localSetting} theme={{ cssVar: {} }}>
-      <RouterRender routeConfig={routeConfig} />
-      {contextHolder}
-    </ConfigProvider>
+    <StyleProvider hashPriority='low'>
+      <ConfigProvider locale={localSetting} theme={{ cssVar: {} }}>
+        <RouterRender routeConfig={routeConfig} />
+        {contextHolder}
+      </ConfigProvider>
+    </StyleProvider>
   );
 }
 

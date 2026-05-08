@@ -6,13 +6,10 @@ import { createRoot } from 'react-dom/client';
 import './fonts/iconfont.css';
 import './index.less';
 
-import { StyleProvider } from '@ant-design/cssinjs';
 import AppWrap from './AppWrap.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StyleProvider hashPriority='low'>
-      <AppWrap />
-    </StyleProvider>
+    <AppWrap />
   </StrictMode>,
 );
